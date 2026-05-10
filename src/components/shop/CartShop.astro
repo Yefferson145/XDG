@@ -1,0 +1,38 @@
+---
+import CartItem from "./CartItem.astro";
+---
+
+<section class="mb-12">
+
+  <!-- TItulo -->
+  <div class="mb-8">
+    <h1 class="text-white text-3xl font-bold mb-1">
+      Shopping Cart
+    </h1>
+
+    <p class="text-zinc-600 font-medium">
+      Tienes 2 items en tu carrito
+    </p>
+  </div>
+
+  <!-- Productos -->
+  <div class="flex flex-col">
+
+    <CartItem
+      title="Hades II"
+      subtitle="ACTION ROGUELIKE • SUPERGIANT GAMES"
+      price="29.99"
+      image="https://blizzstoreperu.com/cdn/shop/files/1_99bd01c4-1799-4a26-a0aa-201099e753da.png?v=1715025635"
+    />
+
+    <CartItem
+      title="FC 24"
+      subtitle="SPORTS • EA SPORTS"
+      price="69.99"
+      badge="Edicion Estandar"
+      image="https://http2.mlstatic.com/D_NQ_NP_774458-MLA99488405342_112025-O.webp"
+    />
+
+  </div>
+
+</section>
