@@ -1,0 +1,36 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  price: string;
+  imageUrl: string;
+}
+
+const { title, description, price, imageUrl } = Astro.props;
+---
+
+<article class="flex flex-col bg-[#1A1A1D] rounded-xl overflow-hidden border border-[#27272A] hover:border-[#A78BFA] transition-all duration-300 group cursor-pointer">
+
+    <figure class="relative aspect-3/4 overflow-hidden">
+        <img 
+            src={imageUrl} 
+            alt={`Portada de ${title}`} 
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+    </figure>
+    
+    <div class="p-4 flex flex-col grow justify-between">
+        <div>
+            <h3 class="text-white font-bold text-lg truncate">{title}</h3>
+            <p class="text-[#71717A] text-xs mt-1 line-clamp-2">{description}</p>
+        </div>
+        
+        <div class="mt-4 flex justify-between items-center">
+            <span class="text-white font-semibold">{price}</span>
+            <button class="bg-[#27272A] text-white p-2 rounded-full hover:bg-[#A78BFA] hover:text-[#09090B] transition-colors">
+
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            </button>
+        </div>
+    </div>
+</article>

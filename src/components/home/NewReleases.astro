@@ -1,0 +1,61 @@
+---
+import Card from "../Card.astro";
+
+// Creas un arreglo (array) con los datos de tus 4 juegos
+const nuevosJuegos = [
+    {
+        title: "Cyber Neon 2077",
+        description:
+            "Una aventura distópica de mundo abierto en una metrópolis controlada por corporaciones.",
+        price: "$59.99",
+        imageUrl: "https://w0.peakpx.com/wallpaper/942/745/HD-wallpaper-cyberpunk-2077-cyber-neon-futurism-futuristic-dark-night-cyberpunk.jpg",
+    },
+    {
+        title: "Elden Realm",
+        description:
+            "RPG de acción con una dificultad extrema y un mundo oscuro de fantasía.",
+        price: "$69.99",
+        imageUrl: "https://preview.redd.it/elden-ring-cover-link-to-original-artist-in-comments-v0-va1x3q6gtev81.png?auto=webp&s=66a9f94d0cead1967b0a0aaeb12e15c471ccc40e",
+    },
+    {
+        title: "Half-Life",
+        description:
+            "Tras ser reanimado de la estasis en la metrópoli ocupada de Ciudad 17, Gordon Freeman se une a Alyx Vance para liderar un desesperado movimiento de resistencia humano",
+        price: "$39.99",
+        imageUrl: "https://cdn.tutsplus.com/cdn-cgi/image/width=360/psd/uploads/legacy/psdtutsarticles/linkb_60vgamecovers/19.jpg",
+    },
+    {
+        title: "Racing Apex",
+        description:
+            "Simulador de carreras de alta velocidad con los autos más veloces del mundo.",
+        price: "$49.99",
+        imageUrl: "https://f4.bcbits.com/img/a2434148106_10.jpg",
+    },
+];
+---
+
+<div class="font-space w-full">
+    <div class="flex max-w-360 mx-auto justify-between mb-6 pt-12">
+        <div>
+            <h1 class="text-2xl text-white pb-2">Nuevos Lanzamientos</h1>
+            <p class="text-xs text-[#71717A]">
+                Descubre las últimas novedades en nuestra tienda.
+            </p>
+        </div>
+        <a href="/" class="flex items-end text-[#D0BCFF] hover:border-b-2"
+            >Ver todos</a
+        >
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 ">
+        {
+            nuevosJuegos.map((juego) => (
+                <Card
+                    title={juego.title}
+                    description={juego.description}
+                    price={juego.price}
+                    imageUrl={juego.imageUrl}
+                />
+            ))
+        }
+    </div>
+</div>
