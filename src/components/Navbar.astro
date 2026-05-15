@@ -89,15 +89,21 @@
                     ></path>
                 </svg>
             </button>
-            <div class="">
-                <a href=""
-                    ><img
-                        src="icon.jpg"
-                        alt="Foto de perfil"
-                        class="rounded-full h-8 w-8"
-                    /></a
-                >
+            <div>
+                <button id="openModal" class="text-white p-2 w-40 bg-[#211E27] border-2 border-[#494454] hover:border-[#A78BFA] rounded-2xl ">Iniciar sesión</button>
             </div>
         </div>
     </div>
 </nav>
+
+<script>
+    const btn = document.getElementById("openModal")||null;
+
+    btn?.addEventListener("click", () => {
+        console.log("Abriendo modal...");
+        
+        window.dispatchEvent(
+            new CustomEvent("open-login-modal")
+        );
+    });
+</script>
