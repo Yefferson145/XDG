@@ -2,7 +2,13 @@
 import Navbar from "../Navbar.astro" 
 import Hero from "./Hero.astro"
 import Category from "./Categoryquick.astro"
+import Footer from "../Footer.astro"
+import NewReleases from "./NewReleases.astro"
 ---
 <Navbar />
-<Hero />
-<Category />
+<main class="w-full px-6 max-w-360 mx-auto">
+	<Hero />
+	<Category />
+	<NewReleases />
+</main>
+<Footer />
