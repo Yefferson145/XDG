@@ -194,34 +194,10 @@
     const registerForm= document.getElementById("registerForm")!;
     const text        = document.getElementById("text")!;
     const text2       = document.getElementById("text2")!;
-    const authMessage = document.getElementById("authMessage")!;
-
-    function showMessage(msg: string, ok: boolean) {
-        authMessage.textContent = msg;
-        authMessage.className = `mb-4 px-4 py-3 rounded-xl text-sm font-medium ${
-            ok
-                ? "bg-green-900/40 text-green-300 border border-green-700"
-                : "bg-red-900/40 text-red-300 border border-red-700"
-        }`;
-        authMessage.classList.remove("hidden");
-    }
-
-    function clearMessage() {
-        authMessage.classList.add("hidden");
-        authMessage.textContent = "";
-    }
-
-    function setLoading(btnText: HTMLElement, spinner: HTMLElement, loading: boolean) {
-        btnText.textContent = loading
-            ? (btnText.id === "loginBtnText" ? "Entrando..." : "Creando cuenta...")
-            : (btnText.id === "loginBtnText" ? "Iniciar Sesión" : "Crear Cuenta");
-        spinner.classList.toggle("hidden", !loading);
-    }
 
     window.addEventListener("open-login-modal", () => {
         overlay.classList.remove("hidden");
         overlay.classList.add("flex");
-        clearMessage();
     });
 
     closeBtn.addEventListener("click", () => {
@@ -241,7 +217,6 @@
         registerForm.classList.add("hidden");
         text.classList.remove("hidden");
         text2.classList.add("hidden");
-        clearMessage();
 
         loginTab.classList.add("bg-[#A78BFA]", "text-black", "shadow-lg");
         loginTab.classList.remove("text-[#A1A1AA]");
@@ -254,7 +229,6 @@
         loginForm.classList.add("hidden");
         text2.classList.remove("hidden");
         text.classList.add("hidden");
-        clearMessage();
 
         registerTab.classList.add("bg-[#A78BFA]", "text-black", "shadow-lg");
         registerTab.classList.remove("text-[#A1A1AA]");
@@ -265,16 +239,8 @@
     document.getElementById("loginBtn")!.addEventListener("click", async () => {
         const correo     = (document.getElementById("loginCorreo") as HTMLInputElement).value.trim();
         const contrasena = (document.getElementById("loginContrasena") as HTMLInputElement).value;
-        const btnText    = document.getElementById("loginBtnText")!;
-        const spinner    = document.getElementById("loginSpinner")!;
 
-        if (!correo || !contrasena) {
-            showMessage("Por favor completa todos los campos.", false);
-            return;
-        }
-
-        setLoading(btnText, spinner, true);
-        clearMessage();
+        if (!correo || !contrasena) return;
 
         try {
             const res = await fetch(`${API_BASE}/api/auth.jsp`, {
@@ -287,24 +253,12 @@
             const data = await res.json();
 
             if (data.success) {
-                showMessage(`¡Bienvenido, ${data.nombre}! Redirigiendo...`, true);
-                setTimeout(() => {
-                 overlay.classList.add("hidden");
-                 overlay.classList.remove("flex");
-                 window.dispatchEvent(new CustomEvent("user-logged-in", { detail: { nombre: data.nombre } }));
-                }, 1500);
-            } else {
-                const msg = data.message === "wrong password"
-                    ? "Contraseña incorrecta."
-                    : data.message === "user not found"
-                    ? "No existe una cuenta con ese correo."
-                    : "Error al iniciar sesión.";
-                showMessage(msg, false);
+                overlay.classList.add("hidden");
+                overlay.classList.remove("flex");
+                window.dispatchEvent(new CustomEvent("user-logged-in", { detail: { nombre: data.nombre } }));
             }
         } catch (err) {
-            showMessage("No se pudo conectar al servidor. Verifica que el backend esté activo.", false);
-        } finally {
-            setLoading(btnText, spinner, false);
+            console.error("Error al iniciar sesión:", err);
         }
     });
 
@@ -313,21 +267,9 @@
         const usuario    = (document.getElementById("regUsuario") as HTMLInputElement).value.trim();
         const correo     = (document.getElementById("regCorreo") as HTMLInputElement).value.trim();
         const contrasena = (document.getElementById("regContrasena") as HTMLInputElement).value;
-        const btnText    = document.getElementById("registerBtnText")!;
-        const spinner    = document.getElementById("registerSpinner")!;
 
-        if (!nombre || !usuario || !correo || !contrasena) {
-            showMessage("Por favor completa todos los campos.", false);
-            return;
-        }
-
-        if (contrasena.length < 6) {
-            showMessage("La contraseña debe tener al menos 6 caracteres.", false);
-            return;
-        }
-
-        setLoading(btnText, spinner, true);
-        clearMessage();
+        if (!nombre || !usuario || !correo || !contrasena) return;
+        if (contrasena.length < 6) return;
 
         try {
             const res = await fetch(`${API_BASE}/api/auth.jsp`, {
@@ -340,18 +282,11 @@
             const data = await res.json();
 
             if (data.success) {
-                showMessage("¡Cuenta creada! Ahora puedes iniciar sesión.", true);
-                setTimeout(() => {
-                    loginTab.click();
-                    (document.getElementById("loginCorreo") as HTMLInputElement).value = correo;
-                }, 1500);
-            } else {
-                showMessage(data.error || "Error al crear la cuenta.", false);
+                loginTab.click();
+                (document.getElementById("loginCorreo") as HTMLInputElement).value = correo;
             }
         } catch (err) {
-            showMessage("No se pudo conectar al servidor. Verifica que el backend esté activo.", false);
-        } finally {
-            setLoading(btnText, spinner, false);
+            console.error("Error al registrar:", err);
         }
     });
 </script>

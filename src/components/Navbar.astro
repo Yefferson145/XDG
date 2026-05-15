@@ -36,24 +36,16 @@
             <ul
                 class="text-[#A1A1AA] flex space-x-8 justify-center items-center h-full"
             >
-                <li
-                    class="hover:text-[#A78BFA] hover:border-b-2 border-b-color[#A78BFA]"
-                >
+                <li class="hover:text-[#A78BFA] hover:border-b-2 border-b-color[#A78BFA]">
                     <a href="#">Tienda</a>
                 </li>
-                <li
-                    class="hover:text-[#A78BFA] hover:border-b-2 border-b-color[#A78BFA]"
-                >
+                <li class="hover:text-[#A78BFA] hover:border-b-2 border-b-color[#A78BFA]">
                     <a href="#">Explorar</a>
                 </li>
-                <li
-                    class="hover:text-[#A78BFA] hover:border-b-2 border-b-color[#A78BFA]"
-                >
+                <li class="hover:text-[#A78BFA] hover:border-b-2 border-b-color[#A78BFA]">
                     <a href="#">Comunidad</a>
                 </li>
-                <li
-                    class="hover:text-[#A78BFA] hover:border-b-2 border-b-color[#A78BFA]"
-                >
+                <li class="hover:text-[#A78BFA] hover:border-b-2 border-b-color[#A78BFA]">
                     <a href="#">Soporte</a>
                 </li>
             </ul>
@@ -89,29 +81,44 @@
                     ></path>
                 </svg>
             </button>
-            <div>
-                <button id="openModal" class="text-white p-2 w-40 bg-[#211E27] border-2 border-[#494454] hover:border-[#A78BFA] rounded-2xl ">Iniciar sesión</button>
+            <div class="flex items-center gap-3">
+                <button id="openModal" class="text-white p-2 w-40 bg-[#211E27] border-2 border-[#494454] hover:border-[#A78BFA] rounded-2xl">
+                    Iniciar sesión
+                </button>
+                <button id="logoutBtn" class="hidden text-[#A78BFA] text-xs hover:text-white transition-colors">
+                    Cerrar sesión
+                </button>
             </div>
         </div>
     </div>
 </nav>
 
 <script>
-    const btn = document.getElementById("openModal")||null;
+    const btn = document.getElementById("openModal") as HTMLButtonElement;
+    const logoutBtn = document.getElementById("logoutBtn") as HTMLButtonElement;
 
     btn?.addEventListener("click", () => {
-        console.log("Abriendo modal...");
-        
-        window.dispatchEvent(
-            new CustomEvent("open-login-modal")
-        );
+        window.dispatchEvent(new CustomEvent("open-login-modal"));
     });
-     window.addEventListener("user-logged-in", (e: any) => {
-        const btn = document.getElementById("openModal");
-        if (btn) {
-            btn.textContent = `Hola, ${e.detail.nombre}`;
-            btn.classList.remove("hover:border-[#A78BFA]");
-            btn.style.pointerEvents = "none";
-        }
+
+    window.addEventListener("user-logged-in", (e: any) => {
+        btn.textContent = `Hola, ${e.detail.nombre}`;
+        btn.classList.remove("hover:border-[#A78BFA]");
+        btn.style.pointerEvents = "none";
+        logoutBtn.classList.remove("hidden");
+    });
+
+    logoutBtn?.addEventListener("click", async () => {
+        await fetch("http://localhost:8080/api/auth.jsp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ action: "logout" }),
+        });
+
+        btn.textContent = "Iniciar sesión";
+        btn.classList.add("hover:border-[#A78BFA]");
+        btn.style.pointerEvents = "auto";
+        logoutBtn.classList.add("hidden");
     });
 </script>
