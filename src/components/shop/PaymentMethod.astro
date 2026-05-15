@@ -9,11 +9,11 @@ import Button from "../../components/Button.astro";
     <h3
       class="text-white font-bold text-[11px] uppercase tracking-[0.2em] mb-6 font-space"
     >
-      Payment Method
+      Metodo de Pago
     </h3>
 
     <div class="grid grid-cols-3 gap-3 mb-8">
-      <PaymentOption label="Cards">
+      <PaymentOption label="Tarjeta">
         <div slot="icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -46,7 +46,7 @@ import Button from "../../components/Button.astro";
         </div>
       </PaymentOption>
 
-      <PaymentOption label="Crypto">
+      <PaymentOption label="Criptomoneda">
         <div slot="icon">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +65,7 @@ import Button from "../../components/Button.astro";
     </div>
 
     <div class="grid grid-cols-2 gap-4">
-      <TextField label="Expiry" name="expiry" placeholder="MM/YY" />
+      <TextField label="Expiracion" name="expiry" placeholder="MM/YY" />
       <TextField label="CVV" name="cvv" placeholder="***" />
     </div>
   </div>
@@ -75,7 +75,7 @@ import Button from "../../components/Button.astro";
   <h3
     class="text-white font-bold text-[14px] uppercase tracking-wider mb-6 font-space"
   >
-    Order Summary
+    Resumen
   </h3>
 
   <div class="space-y-4 mb-6 border-b border-zinc-800 pb-6">
@@ -84,7 +84,7 @@ import Button from "../../components/Button.astro";
       <span class="text-white font-medium">$99.98</span>
     </div>
     <div class="flex justify-between text-zinc-400 text-base font-space">
-      <span>Taxes (VAT 20%)</span>
+      <span>Impuestos (20%)</span>
       <span class="text-white font-medium">$19.99</span>
     </div>
   </div>
@@ -93,7 +93,7 @@ import Button from "../../components/Button.astro";
     <span
       class="text-white font-black text-lg uppercase tracking-tight font-space"
     >
-      Total Price
+      Precio Total
     </span>
     <span
       class="text-[#a078ff] font-black text-3xl leading-none font-space tracking-tight"

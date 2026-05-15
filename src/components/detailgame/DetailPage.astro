@@ -1,0 +1,32 @@
+---
+import Navbar from "../Navbar.astro";
+import Footer from "../Footer.astro";
+import Paygame from "./Paygame.astro";
+---
+
+<div class="fixed top-0 left-0 w-full z-50">
+    <Navbar />
+  </div>
+
+  <main class="max-w-7xl mx-auto px-6 pt-32 pb-10">
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+      <!-- Izquierda -->
+      <div class="lg:col-span-8 space-y-10">
+
+
+
+      </div>
+
+      <!-- Derecha -->
+      <aside class="lg:col-span-4">
+
+        <Paygame />
+
+      </aside>
+
+    </div>
+
+  </main>
+  <Footer />

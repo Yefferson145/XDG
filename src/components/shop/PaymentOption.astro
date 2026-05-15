@@ -7,13 +7,13 @@ const { label, active = false } = Astro.props;
 ---
 
 <button 
-  class={`group flex flex-col items-center justify-center gap-3 p-5 border rounded-sm w-full transition-all duration-300 ${
+  class={`group flex flex-col items-center justify-center gap-3 p-5 border rounded-sm w-full ${
     active 
     ? 'border-purple-500 bg-purple-500/10 text-white shadow-[0_0_15px_rgba(168,85,247,0.2)]' 
     : 'border-zinc-800 text-zinc-500 hover:border-purple-500/50 hover:bg-purple-500/5 hover:text-purple-400 hover:shadow-[0_0_10px_rgba(168,85,247,0.1)]'
   }`}
 >
-  <div class="w-7 h-7 flex items-center justify-center transition-colors duration-300">
+  <div class="w-7 h-7 flex items-center justify-center">
     <slot name="icon" />
   </div>
   
