@@ -106,4 +106,12 @@
             new CustomEvent("open-login-modal")
         );
     });
+     window.addEventListener("user-logged-in", (e: any) => {
+        const btn = document.getElementById("openModal");
+        if (btn) {
+            btn.textContent = `Hola, ${e.detail.nombre}`;
+            btn.classList.remove("hover:border-[#A78BFA]");
+            btn.style.pointerEvents = "none";
+        }
+    });
 </script>

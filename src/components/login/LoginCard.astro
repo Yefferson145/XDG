@@ -17,16 +17,15 @@
         </button>
 
         <div class="relative overflow-hidden">
-            <div class="absolute inset-0 bg-[#09090B]/70"></div>
+            <img
+                src="/XDG.jpg"
+                alt="XDG Background"
+                class="absolute inset-0 w-full h-full object-cover"
+            />
+            <div class="absolute inset-0 bg-[#09090B]/75"></div>
+            <div class="absolute inset-0 bg-linear-to-br from-[#A78BFA]/20 via-transparent to-transparent"></div>
 
-            <div
-                class="absolute inset-0 bg-linear-to-br from-[#A78BFA]/20 via-transparent to-transparent"
-            >
-            </div>
-
-            <div
-                class="relative z-10 flex flex-col justify-between h-full p-14"
-            >
+            <div class="relative z-10 flex flex-col justify-between h-full p-14">
                 <div>
                     <h1 class="text-4xl font-bold text-white tracking-tight">
                         XDG<span class="text-[#A78BFA]"> — </span>
@@ -34,16 +33,11 @@
                 </div>
 
                 <div>
-                    <h2
-                        class="text-6xl leading-[0.95] font-bold uppercase text-white"
-                    >
+                    <h2 class="text-6xl leading-[0.95] font-bold uppercase text-white">
                         Entra a tu
                         <span class="text-[#C4B5FD]">XDG.</span>
                     </h2>
-
-                    <p
-                        class="mt-8 text-[#D4D4D8] text-lg max-w-md leading-relaxed"
-                    >
+                    <p class="mt-8 text-[#D4D4D8] text-lg max-w-md leading-relaxed">
                         Acceda a su biblioteca definitiva y únase a la comunidad
                         de élite de exploradores digitales.
                     </p>
@@ -53,56 +47,47 @@
 
         <div class="bg-[#1D1A23] p-14 flex flex-col justify-between">
             <div>
-                <div
-                    class="bg-[#211E27] border border-[#2A2633] rounded-2xl p-2 flex mb-16"
-                >
+                <div class="bg-[#211E27] border border-[#2A2633] rounded-2xl p-2 flex mb-16">
                     <button
                         id="loginTab"
-                        class="flex-1 bg-[#A78BFA] text-black py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all shadow-lg target:shadow-[#A78BFA]/50"
+                        class="flex-1 bg-[#A78BFA] text-black py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all shadow-lg"
                     >
                         Login
                     </button>
-
                     <button
                         id="registerTab"
-                        class="flex-1 text-[#A1A1AA] py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all shadow-lg"
+                        class="flex-1 text-[#A1A1AA] py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all"
                     >
                         Register
                     </button>
                 </div>
 
+                <div id="authMessage" class="hidden mb-4 px-4 py-3 rounded-xl text-sm font-medium"></div>
+
                 <div id="text" class="pb-6">
-                    <span class="text-[#E7E0ED] font-bold text-2xl"
-                        >Bienvenido Denuevo</span
-                    >
-                    <p class="text-[#CBC3D7]">
-                        Continúa tu viaje donde lo dejaste.
-                    </p>
+                    <span class="text-[#E7E0ED] font-bold text-2xl">Bienvenido De Nuevo</span>
+                    <p class="text-[#CBC3D7]">Continúa tu viaje donde lo dejaste.</p>
                 </div>
 
                 <form id="loginForm" class="space-y-8">
                     <div>
-                        <label
-                            class="text-xs uppercase tracking-[0.25em] text-[#494454]"
-                        >
-                            Identificacion de Usuario
+                        <label class="text-xs uppercase tracking-[0.25em] text-[#494454]">
+                            Correo Electrónico
                         </label>
-
                         <input
-                            type="text"
-                            placeholder="Tu usuario o correo electrónico"
+                            id="loginCorreo"
+                            type="email"
+                            placeholder="Tu correo electrónico"
                             class="mt-3 w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA]"
                         />
                     </div>
 
                     <div>
-                        <label
-                            class="text-xs uppercase tracking-[0.25em] text-[#494454]"
-                        >
+                        <label class="text-xs uppercase tracking-[0.25em] text-[#494454]">
                             Contraseña
                         </label>
-
                         <input
+                            id="loginContrasena"
                             type="password"
                             placeholder="••••••••"
                             class="mt-3 w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA]"
@@ -110,96 +95,88 @@
                     </div>
 
                     <div class="flex justify-between items-center">
-                        <label
-                            class="flex items-center gap-3 text-sm text-[#494454]"
-                        >
+                        <label class="flex items-center gap-3 text-sm text-[#494454]">
                             <input
                                 type="checkbox"
                                 class="appearance-none w-4 h-4 rounded-md border border-[#494454] bg-transparent checked:bg-[#A78BFA] checked:border-[#A78BFA] transition-all cursor-pointer"
                             />
                             Guardar sesión
                         </label>
-
-                        <button
-                            type="button"
-                            class="text-[#A78BFA] text-sm hover:text-white transition-colors"
-                        >
+                        <button type="button" class="text-[#A78BFA] text-sm hover:text-white transition-colors">
                             ¿Olvidaste tu contraseña?
                         </button>
                     </div>
 
                     <button
-                        class="w-full bg-[#A78BFA] hover:bg-[#8B5CF6] transition-all text-black font-bold py-5 rounded-2xl uppercase tracking-[0.2em]"
+                        id="loginBtn"
+                        type="button"
+                        class="w-full bg-[#A78BFA] hover:bg-[#8B5CF6] transition-all text-black font-bold py-5 rounded-2xl uppercase tracking-[0.2em] flex items-center justify-center gap-2"
                     >
-                        Iniciar Sesión
+                        <span id="loginBtnText">Iniciar Sesión</span>
+                        <svg id="loginSpinner" class="hidden animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                        </svg>
                     </button>
                 </form>
 
-                <!-- Register Form -->
-
-                <div id="text2" class="pb-6">
-                    <span class="text-[#E7E0ED] font-bold text-2xl"
-                        >Registrate</span
-                    >
-                    <p class="text-[#CBC3D7]">Se un nuevo usuario de XDG.</p>
+                <div id="text2" class="pb-6 hidden">
+                    <span class="text-[#E7E0ED] font-bold text-2xl">Regístrate</span>
+                    <p class="text-[#CBC3D7]">Sé un nuevo usuario de XDG.</p>
                 </div>
 
                 <form id="registerForm" class="space-y-6 hidden">
                     <div>
-                        <label
-                            class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1"
-                            >Nombre Personal
-                        </label>
+                        <label class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1">Nombre Personal</label>
                         <input
+                            id="regNombre"
                             type="text"
                             placeholder="Nombre Personal"
-                            class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white"
+                            class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA]"
                         />
                     </div>
                     <div>
-                        <label
-                            class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1"
-                            >Usuario
-                        </label>
+                        <label class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1">Usuario</label>
                         <input
+                            id="regUsuario"
                             type="text"
                             placeholder="Nombre de usuario"
-                            class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white"
+                            class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA]"
                         />
                     </div>
                     <div>
-                        <label
-                            class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1"
-                            >Correo Electrónico</label
-                        >
+                        <label class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1">Correo Electrónico</label>
                         <input
+                            id="regCorreo"
                             type="email"
                             placeholder="Correo electrónico"
-                            class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white"
+                            class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA]"
                         />
                     </div>
                     <div>
-                        <label
-                            class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1"
-                            >Contraseña</label
-                        >
+                        <label class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1">Contraseña</label>
                         <input
+                            id="regContrasena"
                             type="password"
                             placeholder="Contraseña"
-                            class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white"
+                            class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA]"
                         />
                     </div>
                     <button
-                        class="w-full bg-[#A78BFA] hover:bg-[#8B5CF6] transition-all text-black font-bold py-5 rounded-2xl uppercase tracking-[0.2em]"
+                        id="registerBtn"
+                        type="button"
+                        class="w-full bg-[#A78BFA] hover:bg-[#8B5CF6] transition-all text-black font-bold py-5 rounded-2xl uppercase tracking-[0.2em] flex items-center justify-center gap-2"
                     >
-                        Crear Cuenta
+                        <span id="registerBtnText">Crear Cuenta</span>
+                        <svg id="registerSpinner" class="hidden animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                        </svg>
                     </button>
                 </form>
             </div>
 
-            <div
-                class="pt-10 text-center text-xs uppercase tracking-widest text-[#52525B]"
-            >
+            <div class="pt-10 text-center text-xs uppercase tracking-widest text-[#52525B]">
                 Protegido por el cifrado XDG-Shield
             </div>
         </div>
@@ -207,81 +184,174 @@
 </div>
 
 <script>
-    const overlay = document.getElementById("modalOverlay") || null;
-    const closeBtn = document.getElementById("closeModal") || null;
-    const text = document.getElementById("text") || null;
-    const text2 = document.getElementById("text2") || null;
+    const API_BASE = "http://localhost:8080";
 
-    const loginTab = document.getElementById("loginTab") || null;
-    const registerTab = document.getElementById("registerTab") || null;
+    const overlay     = document.getElementById("modalOverlay")!;
+    const closeBtn    = document.getElementById("closeModal")!;
+    const loginTab    = document.getElementById("loginTab")!;
+    const registerTab = document.getElementById("registerTab")!;
+    const loginForm   = document.getElementById("loginForm")!;
+    const registerForm= document.getElementById("registerForm")!;
+    const text        = document.getElementById("text")!;
+    const text2       = document.getElementById("text2")!;
+    const authMessage = document.getElementById("authMessage")!;
 
-    const loginForm = document.getElementById("loginForm") || null;
-    const registerForm = document.getElementById("registerForm") || null;
+    function showMessage(msg: string, ok: boolean) {
+        authMessage.textContent = msg;
+        authMessage.className = `mb-4 px-4 py-3 rounded-xl text-sm font-medium ${
+            ok
+                ? "bg-green-900/40 text-green-300 border border-green-700"
+                : "bg-red-900/40 text-red-300 border border-red-700"
+        }`;
+        authMessage.classList.remove("hidden");
+    }
+
+    function clearMessage() {
+        authMessage.classList.add("hidden");
+        authMessage.textContent = "";
+    }
+
+    function setLoading(btnText: HTMLElement, spinner: HTMLElement, loading: boolean) {
+        btnText.textContent = loading
+            ? (btnText.id === "loginBtnText" ? "Entrando..." : "Creando cuenta...")
+            : (btnText.id === "loginBtnText" ? "Iniciar Sesión" : "Crear Cuenta");
+        spinner.classList.toggle("hidden", !loading);
+    }
 
     window.addEventListener("open-login-modal", () => {
-        overlay?.classList.remove("hidden");
-        overlay?.classList.add("flex");
+        overlay.classList.remove("hidden");
+        overlay.classList.add("flex");
+        clearMessage();
     });
 
-    closeBtn?.addEventListener("click", () => {
-        overlay?.classList.add("hidden");
-        overlay?.classList.remove("flex");
+    closeBtn.addEventListener("click", () => {
+        overlay.classList.add("hidden");
+        overlay.classList.remove("flex");
     });
 
-    overlay?.addEventListener("click", (e) => {
+    overlay.addEventListener("click", (e) => {
         if (e.target === overlay) {
-            overlay?.classList.add("hidden");
-            overlay?.classList.remove("flex");
+            overlay.classList.add("hidden");
+            overlay.classList.remove("flex");
         }
     });
 
-    loginTab?.addEventListener("click", () => {
-        loginForm?.classList.remove("hidden");
-        registerForm?.classList.add("hidden");
-        text?.classList.remove("hidden");
-        text2?.classList.add("hidden");
+    loginTab.addEventListener("click", () => {
+        loginForm.classList.remove("hidden");
+        registerForm.classList.add("hidden");
+        text.classList.remove("hidden");
+        text2.classList.add("hidden");
+        clearMessage();
 
-        loginTab?.classList.add(
-            "bg-[#A78BFA]",
-            "text-black",
-            "shadow-lg",
-            "shadow-[#A78BFA]/40",
-        );
-
-        loginTab?.classList.remove("text-[#A1A1AA]");
-
-        registerTab?.classList.remove(
-            "bg-[#A78BFA]",
-            "text-black",
-            "shadow-lg",
-            "shadow-[#A78BFA]/40",
-        );
-
-        registerTab?.classList.add("text-[#A1A1AA]");
+        loginTab.classList.add("bg-[#A78BFA]", "text-black", "shadow-lg");
+        loginTab.classList.remove("text-[#A1A1AA]");
+        registerTab.classList.remove("bg-[#A78BFA]", "text-black", "shadow-lg");
+        registerTab.classList.add("text-[#A1A1AA]");
     });
 
-    registerTab?.addEventListener("click", () => {
-        registerForm?.classList.remove("hidden");
-        loginForm?.classList.add("hidden");
-        text?.classList.add("hidden");
-        text2?.classList.remove("hidden");
+    registerTab.addEventListener("click", () => {
+        registerForm.classList.remove("hidden");
+        loginForm.classList.add("hidden");
+        text2.classList.remove("hidden");
+        text.classList.add("hidden");
+        clearMessage();
 
-        registerTab?.classList.add(
-            "bg-[#A78BFA]",
-            "text-black",
-            "shadow-lg",
-            "shadow-[#A78BFA]/40",
-        );
+        registerTab.classList.add("bg-[#A78BFA]", "text-black", "shadow-lg");
+        registerTab.classList.remove("text-[#A1A1AA]");
+        loginTab.classList.remove("bg-[#A78BFA]", "text-black", "shadow-lg");
+        loginTab.classList.add("text-[#A1A1AA]");
+    });
 
-        registerTab?.classList.remove("text-[#A1A1AA]");
+    document.getElementById("loginBtn")!.addEventListener("click", async () => {
+        const correo     = (document.getElementById("loginCorreo") as HTMLInputElement).value.trim();
+        const contrasena = (document.getElementById("loginContrasena") as HTMLInputElement).value;
+        const btnText    = document.getElementById("loginBtnText")!;
+        const spinner    = document.getElementById("loginSpinner")!;
 
-        loginTab?.classList.remove(
-            "bg-[#A78BFA]",
-            "text-black",
-            "shadow-lg",
-            "shadow-[#A78BFA]/40",
-        );
+        if (!correo || !contrasena) {
+            showMessage("Por favor completa todos los campos.", false);
+            return;
+        }
 
-        loginTab?.classList.add("text-[#A1A1AA]");
+        setLoading(btnText, spinner, true);
+        clearMessage();
+
+        try {
+            const res = await fetch(`${API_BASE}/api/auth.jsp`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ action: "login", correo, contrasena }),
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                showMessage(`¡Bienvenido, ${data.nombre}! Redirigiendo...`, true);
+                setTimeout(() => {
+                 overlay.classList.add("hidden");
+                 overlay.classList.remove("flex");
+                 window.dispatchEvent(new CustomEvent("user-logged-in", { detail: { nombre: data.nombre } }));
+                }, 1500);
+            } else {
+                const msg = data.message === "wrong password"
+                    ? "Contraseña incorrecta."
+                    : data.message === "user not found"
+                    ? "No existe una cuenta con ese correo."
+                    : "Error al iniciar sesión.";
+                showMessage(msg, false);
+            }
+        } catch (err) {
+            showMessage("No se pudo conectar al servidor. Verifica que el backend esté activo.", false);
+        } finally {
+            setLoading(btnText, spinner, false);
+        }
+    });
+
+    document.getElementById("registerBtn")!.addEventListener("click", async () => {
+        const nombre     = (document.getElementById("regNombre") as HTMLInputElement).value.trim();
+        const usuario    = (document.getElementById("regUsuario") as HTMLInputElement).value.trim();
+        const correo     = (document.getElementById("regCorreo") as HTMLInputElement).value.trim();
+        const contrasena = (document.getElementById("regContrasena") as HTMLInputElement).value;
+        const btnText    = document.getElementById("registerBtnText")!;
+        const spinner    = document.getElementById("registerSpinner")!;
+
+        if (!nombre || !usuario || !correo || !contrasena) {
+            showMessage("Por favor completa todos los campos.", false);
+            return;
+        }
+
+        if (contrasena.length < 6) {
+            showMessage("La contraseña debe tener al menos 6 caracteres.", false);
+            return;
+        }
+
+        setLoading(btnText, spinner, true);
+        clearMessage();
+
+        try {
+            const res = await fetch(`${API_BASE}/api/auth.jsp`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ action: "register", nombre, usuario, correo, contrasena }),
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                showMessage("¡Cuenta creada! Ahora puedes iniciar sesión.", true);
+                setTimeout(() => {
+                    loginTab.click();
+                    (document.getElementById("loginCorreo") as HTMLInputElement).value = correo;
+                }, 1500);
+            } else {
+                showMessage(data.error || "Error al crear la cuenta.", false);
+            }
+        } catch (err) {
+            showMessage("No se pudo conectar al servidor. Verifica que el backend esté activo.", false);
+        } finally {
+            setLoading(btnText, spinner, false);
+        }
     });
 </script>
