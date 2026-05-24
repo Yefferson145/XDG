@@ -50,13 +50,13 @@
                 <div class="bg-[#211E27] border border-[#2A2633] rounded-2xl p-2 flex mb-16">
                     <button
                         id="loginTab"
-                        class="flex-1 bg-[#A78BFA] text-black py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all shadow-lg"
+                        class="flex-1 bg-[#A78BFA] text-black py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all shadow-lg shadow-[#A78BFA]/40"
                     >
                         Login
                     </button>
                     <button
                         id="registerTab"
-                        class="flex-1 text-[#A1A1AA] py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all"
+                        class="flex-1 text-[#A1A1AA] py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all "
                     >
                         Register
                     </button>
@@ -218,21 +218,22 @@
         text.classList.remove("hidden");
         text2.classList.add("hidden");
 
-        loginTab.classList.add("bg-[#A78BFA]", "text-black", "shadow-lg");
+        loginTab.classList.add("bg-[#A78BFA]", "text-black", "shadow-lg","shadow-[#A78BFA]/60");
         loginTab.classList.remove("text-[#A1A1AA]");
-        registerTab.classList.remove("bg-[#A78BFA]", "text-black", "shadow-lg");
+        registerTab.classList.remove("bg-[#A78BFA]", "text-black", "shadow-lg","shadow-[#A78BFA]/60");
         registerTab.classList.add("text-[#A1A1AA]");
     });
 
     registerTab.addEventListener("click", () => {
+        
         registerForm.classList.remove("hidden");
         loginForm.classList.add("hidden");
         text2.classList.remove("hidden");
         text.classList.add("hidden");
 
-        registerTab.classList.add("bg-[#A78BFA]", "text-black", "shadow-lg");
+        registerTab.classList.add("bg-[#A78BFA]", "text-black", "shadow-lg","shadow-[#A78BFA]/60");
         registerTab.classList.remove("text-[#A1A1AA]");
-        loginTab.classList.remove("bg-[#A78BFA]", "text-black", "shadow-lg");
+        loginTab.classList.remove("bg-[#A78BFA]", "text-black", "shadow-lg","shadow-[#A78BFA]/60");
         loginTab.classList.add("text-[#A1A1AA]");
     });
 
