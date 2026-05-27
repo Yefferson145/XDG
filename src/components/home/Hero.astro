@@ -1,25 +1,34 @@
-<section
-    class="relative w-full h-125 mt-23 mb-4 rounded-xl overflow-hidden group"
->
-    <!-- Slide 1 -->
-    <figure
-        class="slide absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out opacity-100 z-10"
-    >
-        <img
-            src="/img/img1.jpg"
-            alt="Hero Image"
-            class="w-full h-full object-cover"
-        />
-    </figure>
-    
-    <!-- Slide 2 -->
-    <figure
-        class="slide absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out opacity-0 z-0"
-    >
-        <img
-            src="/img/img2.jpg"
-            alt="Hero Image"
-            class="w-full h-full object-cover"
-        />
-    </figure>
-</section>
+---
+import HeroGame from "../HeroGame.astro";
+
+const games = [
+  {
+    title: "Cyberpunk 2077: Phantom Liberty",
+    description:
+      "Adéntrate en el peligroso distrito de Dogtown y vive una trepidante aventura de espionaje. Únete al agente secreto Solomon Reed para desentrañar una compleja red de lealtades destrozadas y oscuras conspiraciones políticas.",
+    image: "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/d96bb958-4e6c-4ce0-9447-fbe226fbbecf/dg7vy51-4ded8255-5131-41f3-b717-f2a88a25fcfd.jpg",
+    price: "$29.99",
+    genre: "Action RPG / Thriller",
+  },
+
+  {
+    title: "Red Dead Redemption 2",
+    description:
+      "Una épica historia sobre el honor y la lealtad en el implacable corazón de los Estados Unidos. Cabalga junto a Arthur Morgan y la banda de Van der Linde, sobreviviendo al ocaso del Salvaje Oeste en uno de los mundos abiertos más vivos y detallados jamás creados.",
+    image: "https://fotografias-neox.atresmedia.com/clipping/cmsimages01/2019/05/12/ED8ADE4A-1F8B-469D-BFB3-830225A5A163/98.jpg?crop=1280,720,x0,y0&width=1900&height=1069&optimize=high&format=webply",
+    price: "$59.99",
+    genre: "Acción y Aventura / Mundo Abierto",
+  },
+
+  {
+    title: "Elden Ring Nightreign",
+    description:
+      "Álzate, Sin Luz, y déjate guiar por la gracia para empuñar el poder del Círculo de Elden. Explora las majestuosas y peligrosas Tierras Intermedias en una obra maestra de fantasía oscura concebida por Hidetaka Miyazaki y George R. R. Martin.",
+    image: "https://assetsio.gnwcdn.com/ss_c97bcad291f4f45d4be4594f34bd78921d961099.1920x1080.jpg?width=690&quality=85&format=jpg&dpr=3&auto=webp",
+    price: "$59.99",
+    genre: "Action RPG / Souls-like",
+  },
+];
+---
+
+<HeroGame games={games} />
