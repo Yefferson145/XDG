@@ -99,9 +99,7 @@
 <script>
     const btn = document.getElementById("openModal")||null;
 
-    btn?.addEventListener("click", () => {
-        console.log("Abriendo modal...");
-        
+    btn?.addEventListener("click", () => {        
         window.dispatchEvent(
             new CustomEvent("open-login-modal")
         );

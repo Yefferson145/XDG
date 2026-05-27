@@ -11,7 +11,7 @@
     >
         <button
             id="closeModal"
-            class="absolute top-5 right-5 text-[#A1A1AA] hover:text-white transition-colors z-50"
+            class="absolute top-5 right-5 text-[#A1A1AA] hover:text-[#C4B5FD] transition-colors z-50"
         >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
@@ -23,6 +23,8 @@
                 class="absolute inset-0 bg-linear-to-br from-[#A78BFA]/20 via-transparent to-transparent"
             >
             </div>
+
+            <img class="absolute w-full h-200 object-cover opacity-15" src="logoxdg.webp" alt="XDG Logo">
 
             <div
                 class="relative z-10 flex flex-col justify-between h-full p-14"
@@ -37,7 +39,7 @@
                     <h2
                         class="text-6xl leading-[0.95] font-bold uppercase text-white"
                     >
-                        Entra a tu
+                        Entra a <br>
                         <span class="text-[#C4B5FD]">XDG.</span>
                     </h2>
 
@@ -58,7 +60,7 @@
                 >
                     <button
                         id="loginTab"
-                        class="flex-1 bg-[#A78BFA] text-black py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all shadow-lg target:shadow-[#A78BFA]/50"
+                        class="flex-1 bg-[#A78BFA] text-black py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all shadow-lg shadow-[#A78BFA]/50"
                     >
                         Login
                     </button>
@@ -207,6 +209,7 @@
 </div>
 
 <script>
+    
     const overlay = document.getElementById("modalOverlay") || null;
     const closeBtn = document.getElementById("closeModal") || null;
     const text = document.getElementById("text") || null;
