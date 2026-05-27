@@ -3,14 +3,12 @@ import Button from '../Button.astro';
 
 interface Props {
   title?: string;
-  edition?: string;
   price?: string;
   originalPrice?: string;
 }
 
 const { 
   title = "Starfield", 
-  edition = "STANDARD EDITION", 
   price = "$69.99", 
   originalPrice = "$79.99" 
 } = Astro.props;
@@ -19,9 +17,6 @@ const {
 <div class="bg-[#121214] border border-zinc-800/50 p-6 rounded-2xl w-full max-w-[380px] font-space shadow-2xl">
   <div class="flex justify-between items-start mb-8">
     <div class="flex flex-col gap-1">
-      <span class="text-zinc-500 font-bold text-[11px] uppercase tracking-[0.15em]">
-        {edition}
-      </span>
       <h2 class="text-white text-3xl font-bold tracking-tight leading-none">
         {title}
       </h2>
@@ -54,7 +49,6 @@ const {
       paddingY="py-3.5"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20"><path fill="#340080" d="M6 20q-.824 0-1.412-.587A1.93 1.93 0 0 1 4 18q0-.824.588-1.413A1.93 1.93 0 0 1 6 16q.824 0 1.412.587Q8 17.176 8 18t-.588 1.413A1.93 1.93 0 0 1 6 20m10 0q-.825 0-1.412-.587A1.93 1.93 0 0 1 14 18q0-.824.588-1.413A1.93 1.93 0 0 1 16 16q.824 0 1.413.587Q18 17.176 18 18t-.587 1.413A1.93 1.93 0 0 1 16 20M5.15 4l2.4 5h7l2.75-5zM4.2 2h14.75q.575 0 .875.513.3.512.025 1.037l-3.55 6.4q-.275.5-.738.775A1.95 1.95 0 0 1 14.55 11H7.1L6 13h12v2H6q-1.125 0-1.7-.988-.575-.987-.05-1.962L5.6 9.6 2 2H0V0h3.25zm3.35 7h7z"/></svg>
-
     </Button>
 
     <Button 
@@ -79,4 +73,3 @@ const {
     </div>
   </div>
 </div>
-

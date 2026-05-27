@@ -4,10 +4,9 @@ interface Props {
     title: string;
     subtitle: string;
     price: string;
-    badge?: string;
 }
 
-const { image, title, subtitle, price, badge } = Astro.props;
+const { image, title, subtitle, price } = Astro.props;
 ---
 
 <div
@@ -33,14 +32,6 @@ const { image, title, subtitle, price, badge } = Astro.props;
                 <p class="text-white font-bold text-xl">
                     ${price}
                 </p>
-
-                {
-                    badge && (
-                        <span class="bg-[#e86a1f] text-[#3e1f0a] text-[12px] font-oswald font-black leading-none px-3 py-1.5 rounded-[2px] inline-flex items-center uppercase tracking-normal">
-                            {badge}
-                        </span>
-                    )
-                }
             </div>
         </div>
 
