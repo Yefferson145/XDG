@@ -1,35 +1,87 @@
 ---
-import CartItem from "./CartItem.astro";
 ---
 
-<section class="mb-12">
-
+<section class="mb-12" id="cartSection">
   <div class="mb-8">
-    <h1 class="text-white text-4xl font-bold mb-1">
-      Carrito de Compras
-    </h1>
-
-    <p class="text-zinc-600 font-medium">
-      Tienes 2 items en tu carrito
-    </p>
+    <h1 class="text-white text-4xl font-bold mb-1">Carrito de Compras</h1>
+    <p class="text-zinc-600 font-medium" id="cartCount">Cargando...</p>
   </div>
-
-  <div class="flex flex-col">
-
-    <CartItem
-      title="Hades II"
-      subtitle="ACTION ROGUELIKE • SUPERGIANT GAMES"
-      price="29.99"
-      image="https://blizzstoreperu.com/cdn/shop/files/1_99bd01c4-1799-4a26-a0aa-201099e753da.png?v=1715025635"
-    />
-
-    <CartItem
-      title="FC 24"
-      subtitle="SPORTS • EA SPORTS"
-      price="69.99"
-      image="https://http2.mlstatic.com/D_NQ_NP_774458-MLA99488405342_112025-O.webp"
-    />
-
-  </div>
-
+  <div class="flex flex-col" id="cartItems"></div>
 </section>
+
+<script>
+    const API = "http://localhost:8080";
+
+    async function loadCart() {
+        const sessionRes = await fetch(`${API}/api/session.jsp`, { credentials: "include" });
+        const session = await sessionRes.json();
+
+        if (!session.logged) return;
+
+        const res = await fetch(`${API}/api/carrito.jsp?user_id=${session.id}`, { credentials: "include" });
+        const items = await res.json();
+
+        const container = document.getElementById("cartItems")!;
+        const count = document.getElementById("cartCount")!;
+
+        if (!items.length) {
+            container.innerHTML = "";
+            count.textContent = "Tu carrito está vacío";
+            return;
+        }
+
+        count.textContent = `Tienes ${items.length} item${items.length > 1 ? "s" : ""} en tu carrito`;
+
+        container.innerHTML = items.map((item: any) => `
+            <div data-detalle-id="${item.detalle_id}" class="flex items-center gap-4 bg-zinc-900/50 border border-zinc-800 p-4 rounded-sm mb-4">
+                <img
+                    src="${item.imagen_url || 'https://placehold.co/96x96/1A1A1D/A78BFA?text=XDG'}"
+                    alt="${item.titulo}"
+                    class="w-24 h-24 object-cover rounded-sm"
+                />
+                <div class="flex-1">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-white font-bold text-lg leading-tight">${item.titulo}</h3>
+                            <p class="text-zinc-500 text-xs uppercase font-bold tracking-wider">$${item.precio} c/u</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-white font-bold text-xl">$${item.subtotal.toFixed(2)}</p>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mt-4">
+                        <div class="flex items-center bg-zinc-800 rounded-sm px-2 py-1 gap-3">
+                            <button class="text-zinc-500 hover:text-white transition-colors qty-btn" data-action="minus" data-id="${item.detalle_id}">-</button>
+                            <span class="text-white font-bold text-sm qty-display">${item.cantidad}</span>
+                            <button class="text-zinc-500 hover:text-white transition-colors qty-btn" data-action="plus" data-id="${item.detalle_id}">+</button>
+                        </div>
+                        <button data-id="${item.detalle_id}" class="delete-btn flex items-center gap-2 text-zinc-500 hover:text-red-500 uppercase text-[10px] font-black tracking-widest">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 14 14"><path d="M2 12q-.55 0-.942-.392a1.28 1.28 0 0 1-.391-.941V3H0V1.667h3.333V1h4v.667h3.334V3H10v7.667q0 .55-.392.941a1.28 1.28 0 0 1-.941.392zm6.667-9H2v7.667h6.667zM3.333 9.333h1.334v-5H3.333zm2.667 0h1.333v-5H6z" class="fill-current"/></svg>
+                            <span>Borrar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join("");
+    }
+
+    document.getElementById("cartItems")!.addEventListener("click", async (e) => {
+        const deleteBtn = (e.target as HTMLElement).closest(".delete-btn");
+        if (!deleteBtn) return;
+
+        const detalleId = (deleteBtn as HTMLElement).dataset.id;
+        const sessionRes = await fetch(`${API}/api/session.jsp`, { credentials: "include" });
+        const session = await sessionRes.json();
+
+        await fetch(`${API}/api/carrito.jsp`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ detalle_id: detalleId, user_id: session.id }),
+        });
+
+        loadCart();
+    });
+
+    loadCart();
+</script>

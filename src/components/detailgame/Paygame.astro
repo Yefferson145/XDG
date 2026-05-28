@@ -5,21 +5,21 @@ interface Props {
   title?: string;
   price?: string;
   originalPrice?: string;
+  juegoId?: number;
 }
 
 const { 
   title = "Starfield", 
   price = "$69.99", 
-  originalPrice = "$79.99" 
+  originalPrice = "$79.99",
+  juegoId = 0,
 } = Astro.props;
 ---
 
 <div class="bg-[#121214] border border-zinc-800/50 p-6 rounded-2xl w-full max-w-[380px] font-space shadow-2xl">
   <div class="flex justify-between items-start mb-8">
     <div class="flex flex-col gap-1">
-      <h2 class="text-white text-3xl font-bold tracking-tight leading-none">
-        {title}
-      </h2>
+      <h2 class="text-white text-3xl font-bold tracking-tight leading-none">{title}</h2>
     </div>
     <div class="text-right">
       <span class="text-zinc-500 line-through text-[13px] block mb-1">{originalPrice}</span>
@@ -28,42 +28,24 @@ const {
   </div>
 
   <div class="flex flex-col gap-3 mb-6">
-    
-    <Button 
-      text="Compra Ahora" 
-      bgColor="bg-[#f4710a]" 
-      hoverColor="hover:bg-[#ff8a2b]" 
-      textColor="text-black"
-      rounded="rounded-lg"
-      paddingY="py-3.5"
-    >
+    <Button text="Compra Ahora" bgColor="bg-[#f4710a]" hoverColor="hover:bg-[#ff8a2b]" textColor="text-black" rounded="rounded-lg" paddingY="py-3.5">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="none" slot="icon" viewBox="0 0 16 20"><path fill="#000000" d="m6.55 16.2 5.175-6.2h-4l.725-5.675L3.825 11H7.3zM4 20l1-7H0L9 0h2l-1 8h6L6 20z"/></svg>
     </Button>
 
-    <Button 
-      text="Añadir a Carrito" 
-      bgColor="bg-[#a078ff]" 
-      hoverColor="hover:bg-[#b794ff]" 
-      textColor="text-[#2d0066]"
-      rounded="rounded-lg"
-      paddingY="py-3.5"
+    <button
+      id="addToCartBtn"
+      data-juego-id={juegoId}
+      class="w-full flex items-center justify-center gap-2 bg-[#a078ff] hover:bg-[#b794ff] text-[#2d0066] font-bold py-3.5 rounded-lg transition-colors uppercase tracking-widest text-sm"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 20 20"><path fill="#340080" d="M6 20q-.824 0-1.412-.587A1.93 1.93 0 0 1 4 18q0-.824.588-1.413A1.93 1.93 0 0 1 6 16q.824 0 1.412.587Q8 17.176 8 18t-.588 1.413A1.93 1.93 0 0 1 6 20m10 0q-.825 0-1.412-.587A1.93 1.93 0 0 1 14 18q0-.824.588-1.413A1.93 1.93 0 0 1 16 16q.824 0 1.413.587Q18 17.176 18 18t-.587 1.413A1.93 1.93 0 0 1 16 20M5.15 4l2.4 5h7l2.75-5zM4.2 2h14.75q.575 0 .875.513.3.512.025 1.037l-3.55 6.4q-.275.5-.738.775A1.95 1.95 0 0 1 14.55 11H7.1L6 13h12v2H6q-1.125 0-1.7-.988-.575-.987-.05-1.962L5.6 9.6 2 2H0V0h3.25zm3.35 7h7z"/></svg>
-    </Button>
+      <span id="addToCartText">Añadir a Carrito</span>
+    </button>
 
-    <Button 
-      text="Añadir a Lista de Deseos" 
-      bgColor="bg-transparent" 
-      hoverColor="hover:bg-white/5" 
-      textColor="text-zinc-300 border border-zinc-800"
-      rounded="rounded-lg"
-      paddingY="py-3.5"
-    >
+    <Button text="Añadir a Lista de Deseos" bgColor="bg-transparent" hoverColor="hover:bg-white/5" textColor="text-zinc-300 border border-zinc-800" rounded="rounded-lg" paddingY="py-3.5">
       <svg slot="icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
       </svg>
     </Button>
-
   </div>
 
   <div class="pt-4 border-t border-zinc-800/60 flex justify-between items-center opacity-50">
@@ -73,3 +55,57 @@ const {
     </div>
   </div>
 </div>
+
+<script>
+    const btn = document.getElementById("addToCartBtn") as HTMLButtonElement;
+    const btnText = document.getElementById("addToCartText")!;
+    const juegoId = btn.dataset.juegoId;
+
+    btn.addEventListener("click", async () => {
+
+        const sessionRes = await fetch("http://localhost:8080/api/session.jsp", {
+            credentials: "include",
+        });
+        const session = await sessionRes.json();
+
+        if (!session.logged) {
+            window.dispatchEvent(new CustomEvent("open-login-modal"));
+            return;
+        }
+
+        btn.disabled = true;
+        btnText.textContent = "Agregando...";
+
+        try {
+            const res = await fetch("http://localhost:8080/api/carrito.jsp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({
+                    user_id: session.id,
+                    juego_id: juegoId,
+                    cantidad: 1,
+                }),
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                btnText.textContent = "¡Agregado!";
+                btn.classList.remove("bg-[#a078ff]", "hover:bg-[#b794ff]");
+                btn.classList.add("bg-green-600");
+                setTimeout(() => {
+                    btnText.textContent = "Añadir a Carrito";
+                    btn.classList.add("bg-[#a078ff]", "hover:bg-[#b794ff]");
+                    btn.classList.remove("bg-green-600");
+                    btn.disabled = false;
+                }, 2000);
+            } else {
+                btnText.textContent = "Error";
+                btn.disabled = false;
+            }
+        } catch (err) {
+            btnText.textContent = "Error";
+            btn.disabled = false;
+        }
+    });
+</script>
