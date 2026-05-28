@@ -1,0 +1,64 @@
+---
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro";
+import Navbar from "../../components/Navbar.astro";
+import Footer from "../../components/Footer.astro";
+import Paygame from "../../components/detailgame/Paygame.astro";
+import Mediafile from "../../components/detailgame/Mediafile.astro";
+import LoginCard from "../../components/login/LoginCard.astro";
+
+const { id } = Astro.params;
+
+let juego = null;
+try {
+    const res = await fetch(`http://localhost:8080/api/juegos.jsp?id=${id}`);
+    const data = await res.json();
+    if (!data.error) juego = data;
+} catch (e) {
+    juego = null;
+}
+---
+
+<Layout>
+    <LoginCard />
+    {
+        !juego ? (
+            <div class="min-h-screen bg-[#09090B] flex items-center justify-center font-space">
+                <div class="text-center">
+                    <p class="text-[#71717A] text-lg mb-4">
+                        Juego no encontrado.
+                    </p>
+                    <a href="/" class="text-[#A78BFA] hover:underline text-sm">
+                        ← Volver al inicio
+                    </a>
+                </div>
+            </div>
+        ) : (
+            <>
+                <div class="fixed top-0 left-0 w-full z-50">
+                    <Navbar />
+                </div>
+                <main class="max-w-7xl mx-auto px-6 pt-32 pb-10">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                        <div class="lg:col-span-8 space-y-10">
+                            <Mediafile
+                                videoUrl={juego.video_url}
+                                descriptionTitle={juego.titulo}
+                                description={juego.descripcion}
+                                imageUrl={juego.imagen_url}
+                            />
+                        </div>
+                        <aside class="lg:col-span-4">
+                            <Paygame
+                                title={juego.titulo}
+                                price={`$${juego.precio}`}
+                                originalPrice={`$${juego.precio}`}
+                            />
+                        </aside>
+                    </div>
+                </main>
+                <Footer />
+            </>
+        )
+    }
+</Layout>

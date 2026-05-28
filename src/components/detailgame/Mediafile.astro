@@ -2,74 +2,67 @@
 interface Props {
   videoUrl?: string;
   descriptionTitle?: string;
+  description?: string;
+  imageUrl?: string;
 }
 
 const {
-  videoUrl = "https://www.youtube.com/watch?v=kfYEiTdsyas",
+  videoUrl = "",
   descriptionTitle = "DESCRIPCION",
+  description = "",
+  imageUrl = "",
 } = Astro.props;
 
 const getEmbedUrl = (url: string) => {
-  const regExp =
-    /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
   const match = url.match(regExp);
   const id = match && match[2].length === 11 ? match[2] : null;
-  return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`;
+  return id ? `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1` : null;
 };
 
 const embedUrl = getEmbedUrl(videoUrl);
-
-const galleryImages = [
-  "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&q=80&w=300",
-  "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=300",
-  "https://images.unsplash.com/photo-1464802686167-b939a6910659?auto=format&fit=crop&q=80&w=300",
-  "https://images.unsplash.com/photo-1506318137071-a8e063b4b4bf?auto=format&fit=crop&q=80&w=300",
-];
+const galleryImages = [imageUrl, imageUrl, imageUrl, imageUrl];
 ---
 
 <div class="flex flex-col gap-6 w-full max-w-[800px]">
-  <div
-    class="relative overflow-hidden rounded-xl border border-white/10 aspect-video bg-black shadow-2xl"
-  >
-    <iframe
-      src={embedUrl}
-      class="absolute top-0 left-0 w-full h-full"
-      title="YouTube Video"
-      frameborder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      allowfullscreen></iframe>
-  </div>
+  {embedUrl ? (
+    <div class="relative overflow-hidden rounded-xl border border-white/10 aspect-video bg-black shadow-2xl">
+      <iframe
+        src={embedUrl}
+        class="absolute top-0 left-0 w-full h-full"
+        title="YouTube Video"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen
+      ></iframe>
+    </div>
+  ) : (
+    <div class="relative overflow-hidden rounded-xl border border-white/10 aspect-video bg-zinc-900 shadow-2xl flex items-center justify-center">
+      <span class="text-zinc-600 text-sm">Sin video disponible</span>
+    </div>
+  )}
 
   <div class="grid grid-cols-4 gap-3">
-    {
-      galleryImages.map((img) => (
-        <div class="aspect-video rounded-lg overflow-hidden border border-white/5 hover:border-white/20 cursor-pointer transition-all duration-300 group">
-          <img
-            src={img}
-            alt="Game screenshot"
-            class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all"
-          />
-        </div>
-      ))
-    }
+    {galleryImages.map((img) => (
+      <div class="aspect-video rounded-lg overflow-hidden border border-white/5 hover:border-white/20 cursor-pointer transition-all duration-300 group">
+        <img
+          src={img}
+          alt="Game screenshot"
+          class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all"
+        />
+      </div>
+    ))}
   </div>
-  <section
-    class="mt-4 border border-zinc-800/50 bg-zinc-900/10 p-8 rounded-2xl relative"
-  >
+
+  <section class="mt-4 border border-zinc-800/50 bg-zinc-900/10 p-8 rounded-2xl relative">
     <div class="flex flex-col items-center text-center mb-6">
       <h2 class="text-white text-xl font-bold tracking-[0.4em] uppercase mb-1">
         {descriptionTitle}
       </h2>
       <div class="w-24 h-[2px] bg-[#f4710a]"></div>
     </div>
-
     <div class="space-y-4 text-zinc-400 text-sm leading-relaxed font-light">
-      <p>
-        Starfield 
-      </p>
-      <p>
-
-      </p>
+      <p>{description || "Sin descripción disponible."}</p>
     </div>
   </section>
 </div>

@@ -1,40 +1,8 @@
 ---
-import Card from "../Card.astro";
 
-// Creas un arreglo (array) con los datos de tus 4 juegos
-const nuevosJuegos = [
-    {
-        title: "Cyber Neon 2077",
-        description:
-            "Una aventura distópica de mundo abierto en una metrópolis controlada por corporaciones.",
-        price: "$59.99",
-        imageUrl: "https://w0.peakpx.com/wallpaper/942/745/HD-wallpaper-cyberpunk-2077-cyber-neon-futurism-futuristic-dark-night-cyberpunk.jpg",
-    },
-    {
-        title: "Elden Realm",
-        description:
-            "RPG de acción con una dificultad extrema y un mundo oscuro de fantasía.",
-        price: "$69.99",
-        imageUrl: "https://preview.redd.it/elden-ring-cover-link-to-original-artist-in-comments-v0-va1x3q6gtev81.png?auto=webp&s=66a9f94d0cead1967b0a0aaeb12e15c471ccc40e",
-    },
-    {
-        title: "Half-Life",
-        description:
-            "Tras ser reanimado de la estasis en la metrópoli ocupada de Ciudad 17, Gordon Freeman se une a Alyx Vance para liderar un desesperado movimiento de resistencia humano",
-        price: "$39.99",
-        imageUrl: "https://cdn.tutsplus.com/cdn-cgi/image/width=360/psd/uploads/legacy/psdtutsarticles/linkb_60vgamecovers/19.jpg",
-    },
-    {
-        title: "Racing Apex",
-        description:
-            "Simulador de carreras de alta velocidad con los autos más veloces del mundo.",
-        price: "$49.99",
-        imageUrl: "https://f4.bcbits.com/img/a2434148106_10.jpg",
-    },
-];
 ---
 
-<div class="font-space w-full">
+<div class="font-space w-full" id="nuevosLanzamientos">
     <div class="flex max-w-360 mx-auto justify-between mb-6 pt-12">
         <div>
             <h1 class="text-2xl text-white pb-2">Nuevos Lanzamientos</h1>
@@ -46,16 +14,114 @@ const nuevosJuegos = [
             >Ver todos</a
         >
     </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 ">
+
+    <div
+        id="gamesGrid"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+    >
         {
-            nuevosJuegos.map((juego) => (
-                <Card
-                    title={juego.title}
-                    description={juego.description}
-                    price={juego.price}
-                    imageUrl={juego.imageUrl}
-                />
+            Array.from({ length: 12 }).map(() => (
+                <div class="bg-[#1A1A1D] border border-[#27272A] rounded-xl aspect-3/4 animate-pulse" />
             ))
         }
     </div>
+
+    <div class="flex items-center justify-center gap-3 mt-10">
+        <button
+            id="prevBtn"
+            disabled
+            class="px-5 py-2.5 bg-[#211E27] border border-[#2A2633] text-[#71717A] rounded-xl text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:border-[#A78BFA] hover:text-white transition-all"
+        >
+            ← Anterior
+        </button>
+        <span id="pageInfo" class="text-[#71717A] text-sm px-4"></span>
+        <button
+            id="nextBtn"
+            disabled
+            class="px-5 py-2.5 bg-[#211E27] border border-[#2A2633] text-[#71717A] rounded-xl text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:border-[#A78BFA] hover:text-white transition-all"
+        >
+            Siguiente →
+        </button>
+    </div>
 </div>
+
+<script>
+    const API = "http://localhost:8080";
+    const PAGE_SIZE = 12;
+    let currentPage = 1;
+    let totalGames: any[] = [];
+
+    function cardHTML(juego: any) {
+        return `
+        <a href="/detail/${juego.id}" class="flex flex-col bg-[#1A1A1D] rounded-xl overflow-hidden border border-[#27272A] hover:border-[#A78BFA] transition-all duration-300 group cursor-pointer">
+            <figure class="relative aspect-[3/4] overflow-hidden">
+                <img
+                    src="${juego.imagen_url || "https://placehold.co/300x400/1A1A1D/A78BFA?text=XDG"}"
+                    alt="Portada de ${juego.titulo}"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+            </figure>
+            <div class="p-4 flex flex-col grow justify-between">
+                <div>
+                    <h3 class="text-white font-bold text-lg truncate">${juego.titulo}</h3>
+                    <p class="text-[#71717A] text-xs mt-1 line-clamp-2">${juego.descripcion}</p>
+                </div>
+                <div class="mt-4 flex justify-between items-center">
+                    <span class="text-white font-semibold">$${juego.precio}</span>
+                    <button class="bg-[#27272A] text-white p-2 rounded-full hover:bg-[#A78BFA] hover:text-[#09090B] transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    </button>
+                </div>
+            </div>
+        </a>
+    `;
+    }
+
+    async function loadGames() {
+        try {
+            const res = await fetch(`${API}/api/juegos.jsp`, {
+                credentials: "include",
+            });
+            totalGames = await res.json();
+            renderPage(1);
+        } catch (err) {
+            document.getElementById("gamesGrid")!.innerHTML = `
+                <div class="col-span-4 text-center text-[#71717A] py-20">
+                    No se pudieron cargar los juegos.
+                </div>
+            `;
+        }
+    }
+
+    function renderPage(page: number) {
+        currentPage = page;
+        const start = (page - 1) * PAGE_SIZE;
+        const games = totalGames.slice(start, start + PAGE_SIZE);
+        const totalPages = Math.ceil(totalGames.length / PAGE_SIZE);
+
+        document.getElementById("gamesGrid")!.innerHTML = games
+            .map(cardHTML)
+            .join("");
+
+        const prevBtn = document.getElementById("prevBtn") as HTMLButtonElement;
+        const nextBtn = document.getElementById("nextBtn") as HTMLButtonElement;
+        const pageInfo = document.getElementById("pageInfo")!;
+
+        prevBtn.disabled = page <= 1;
+        nextBtn.disabled = page >= totalPages;
+        pageInfo.textContent = `Página ${page} de ${totalPages}`;
+
+        document
+            .getElementById("nuevosLanzamientos")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    document
+        .getElementById("prevBtn")
+        ?.addEventListener("click", () => renderPage(currentPage - 1));
+    document
+        .getElementById("nextBtn")
+        ?.addEventListener("click", () => renderPage(currentPage + 1));
+
+    loadGames();
+</script>
