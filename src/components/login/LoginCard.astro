@@ -11,41 +11,32 @@
     >
         <button
             id="closeModal"
-            class="absolute top-5 right-5 text-[#A1A1AA] hover:text-[#C4B5FD] transition-colors z-50"
+            class="absolute top-5 right-5 text-[#A1A1AA] hover:text-white transition-colors z-50"
         >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
 
         <div class="relative overflow-hidden">
-            <div class="absolute inset-0 bg-[#09090B]/70"></div>
+            <img
+                src="/XDG.jpg"
+                alt="XDG Background"
+                class="absolute inset-0 w-full h-full object-cover"
+            />
+            <div class="absolute inset-0 bg-[#09090B]/75"></div>
+            <div class="absolute inset-0 bg-linear-to-br from-[#A78BFA]/20 via-transparent to-transparent"></div>
 
-            <div
-                class="absolute inset-0 bg-linear-to-br from-[#A78BFA]/20 via-transparent to-transparent"
-            >
-            </div>
-
-            <img class="absolute w-full h-200 object-cover opacity-15" src="logoxdg.webp" alt="XDG Logo">
-
-            <div
-                class="relative z-10 flex flex-col justify-between h-full p-14"
-            >
+            <div class="relative z-10 flex flex-col justify-between h-full p-14">
                 <div>
                     <h1 class="text-4xl font-bold text-white tracking-tight">
                         XDG<span class="text-[#A78BFA]"> — </span>
                     </h1>
                 </div>
-
                 <div>
-                    <h2
-                        class="text-6xl leading-[0.95] font-bold uppercase text-white"
-                    >
-                        Entra a <br>
+                    <h2 class="text-6xl leading-[0.95] font-bold uppercase text-white">
+                        Entra a tu
                         <span class="text-[#C4B5FD]">XDG.</span>
                     </h2>
-
-                    <p
-                        class="mt-8 text-[#D4D4D8] text-lg max-w-md leading-relaxed"
-                    >
+                    <p class="mt-8 text-[#D4D4D8] text-lg max-w-md leading-relaxed">
                         Acceda a su biblioteca definitiva y únase a la comunidad
                         de élite de exploradores digitales.
                     </p>
@@ -55,153 +46,156 @@
 
         <div class="bg-[#1D1A23] p-14 flex flex-col justify-between">
             <div>
-                <div
-                    class="bg-[#211E27] border border-[#2A2633] rounded-2xl p-2 flex mb-16"
-                >
+                <div class="bg-[#211E27] border border-[#2A2633] rounded-2xl p-2 flex mb-16">
                     <button
                         id="loginTab"
-                        class="flex-1 bg-[#A78BFA] text-black py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all shadow-lg shadow-[#A78BFA]/50"
+                        class="flex-1 bg-[#A78BFA] text-black py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all shadow-lg shadow-[#A78BFA]/40"
                     >
                         Login
                     </button>
-
                     <button
                         id="registerTab"
-                        class="flex-1 text-[#A1A1AA] py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all shadow-lg"
+                        class="flex-1 text-[#A1A1AA] py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all"
                     >
                         Register
                     </button>
                 </div>
 
+                <div id="authMessage" class="hidden mb-4 px-4 py-3 rounded-xl text-sm font-medium"></div>
+
+                <!-- LOGIN -->
                 <div id="text" class="pb-6">
-                    <span class="text-[#E7E0ED] font-bold text-2xl"
-                        >Bienvenido Denuevo</span
-                    >
-                    <p class="text-[#CBC3D7]">
-                        Continúa tu viaje donde lo dejaste.
-                    </p>
+                    <span class="text-[#E7E0ED] font-bold text-2xl">Bienvenido De Nuevo</span>
+                    <p class="text-[#CBC3D7]">Continúa tu viaje donde lo dejaste.</p>
                 </div>
 
-                <form id="loginForm" class="space-y-8">
+                <form id="loginForm" class="space-y-8" novalidate>
                     <div>
-                        <label
-                            class="text-xs uppercase tracking-[0.25em] text-[#494454]"
-                        >
-                            Identificacion de Usuario
+                        <label class="text-xs uppercase tracking-[0.25em] text-[#494454]">
+                            Correo Electrónico
                         </label>
-
                         <input
-                            type="text"
-                            placeholder="Tu usuario o correo electrónico"
-                            class="mt-3 w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA]"
+                            id="loginCorreo"
+                            type="email"
+                            placeholder="Tu correo electrónico"
+                            class="mt-3 w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors"
                         />
+                        <p id="loginCorreo-error" class="hidden mt-2 text-xs text-red-400 pl-1"></p>
                     </div>
 
                     <div>
-                        <label
-                            class="text-xs uppercase tracking-[0.25em] text-[#494454]"
-                        >
+                        <label class="text-xs uppercase tracking-[0.25em] text-[#494454]">
                             Contraseña
                         </label>
-
-                        <input
-                            type="password"
-                            placeholder="••••••••"
-                            class="mt-3 w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA]"
-                        />
+                        <div class="relative mt-3">
+                            <input
+                                id="loginContrasena"
+                                type="password"
+                                placeholder="••••••••"
+                                class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors pr-14"
+                            />
+                            <button type="button" id="toggleLoginPwd" class="absolute right-5 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#A78BFA] transition-colors">
+                                <svg id="eyeL1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <svg id="eyeL2" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            </button>
+                        </div>
+                        <p id="loginContrasena-error" class="hidden mt-2 text-xs text-red-400 pl-1"></p>
                     </div>
 
                     <div class="flex justify-between items-center">
-                        <label
-                            class="flex items-center gap-3 text-sm text-[#494454]"
-                        >
+                        <label class="flex items-center gap-3 text-sm text-[#494454]">
                             <input
                                 type="checkbox"
                                 class="appearance-none w-4 h-4 rounded-md border border-[#494454] bg-transparent checked:bg-[#A78BFA] checked:border-[#A78BFA] transition-all cursor-pointer"
                             />
                             Guardar sesión
                         </label>
-
-                        <button
-                            type="button"
-                            class="text-[#A78BFA] text-sm hover:text-white transition-colors"
-                        >
+                        <button type="button" class="text-[#A78BFA] text-sm hover:text-white transition-colors">
                             ¿Olvidaste tu contraseña?
                         </button>
                     </div>
 
                     <button
-                        class="w-full bg-[#A78BFA] hover:bg-[#8B5CF6] transition-all text-black font-bold py-5 rounded-2xl uppercase tracking-[0.2em]"
+                        id="loginBtn"
+                        type="button"
+                        class="w-full bg-[#A78BFA] hover:bg-[#8B5CF6] transition-all text-black font-bold py-5 rounded-2xl uppercase tracking-[0.2em] flex items-center justify-center gap-2"
                     >
-                        Iniciar Sesión
+                        <span id="loginBtnText">Iniciar Sesión</span>
+                        <svg id="loginSpinner" class="hidden animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                        </svg>
                     </button>
                 </form>
 
-                <!-- Register Form -->
-
-                <div id="text2" class="pb-6">
-                    <span class="text-[#E7E0ED] font-bold text-2xl"
-                        >Registrate</span
-                    >
-                    <p class="text-[#CBC3D7]">Se un nuevo usuario de XDG.</p>
+                <!-- REGISTER -->
+                <div id="text2" class="pb-6 hidden">
+                    <span class="text-[#E7E0ED] font-bold text-2xl">Regístrate</span>
+                    <p class="text-[#CBC3D7]">Sé un nuevo usuario de XDG.</p>
                 </div>
 
-                <form id="registerForm" class="space-y-6 hidden">
+                <form id="registerForm" class="space-y-6 hidden" novalidate>
                     <div>
-                        <label
-                            class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1"
-                            >Nombre Personal
-                        </label>
+                        <label class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1">Nombre Personal</label>
                         <input
+                            id="regNombre"
                             type="text"
                             placeholder="Nombre Personal"
-                            class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white"
+                            class="mt-2 w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors"
                         />
+                        <p id="regNombre-error" class="hidden mt-2 text-xs text-red-400 pl-1"></p>
                     </div>
                     <div>
-                        <label
-                            class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1"
-                            >Usuario
-                        </label>
+                        <label class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1">Usuario</label>
                         <input
+                            id="regUsuario"
                             type="text"
                             placeholder="Nombre de usuario"
-                            class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white"
+                            class="mt-2 w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors"
                         />
+                        <p id="regUsuario-error" class="hidden mt-2 text-xs text-red-400 pl-1"></p>
                     </div>
                     <div>
-                        <label
-                            class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1"
-                            >Correo Electrónico</label
-                        >
+                        <label class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1">Correo Electrónico</label>
                         <input
+                            id="regCorreo"
                             type="email"
                             placeholder="Correo electrónico"
-                            class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white"
+                            class="mt-2 w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors"
                         />
+                        <p id="regCorreo-error" class="hidden mt-2 text-xs text-red-400 pl-1"></p>
                     </div>
                     <div>
-                        <label
-                            class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1"
-                            >Contraseña</label
-                        >
-                        <input
-                            type="password"
-                            placeholder="Contraseña"
-                            class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white"
-                        />
+                        <label class="text-xs uppercase tracking-[0.25em] text-[#494454] py-1">Contraseña</label>
+                        <div class="relative mt-2">
+                            <input
+                                id="regContrasena"
+                                type="password"
+                                placeholder="Mínimo 6 caracteres"
+                                class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors pr-14"
+                            />
+                            <button type="button" id="toggleRegPwd" class="absolute right-5 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#A78BFA] transition-colors">
+                                <svg id="eyeR1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                <svg id="eyeR2" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                            </button>
+                        </div>
+                        <p id="regContrasena-error" class="hidden mt-2 text-xs text-red-400 pl-1"></p>
                     </div>
                     <button
-                        class="w-full bg-[#A78BFA] hover:bg-[#8B5CF6] transition-all text-black font-bold py-5 rounded-2xl uppercase tracking-[0.2em]"
+                        id="registerBtn"
+                        type="button"
+                        class="w-full bg-[#A78BFA] hover:bg-[#8B5CF6] transition-all text-black font-bold py-5 rounded-2xl uppercase tracking-[0.2em] flex items-center justify-center gap-2"
                     >
-                        Crear Cuenta
+                        <span id="registerBtnText">Crear Cuenta</span>
+                        <svg id="registerSpinner" class="hidden animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                        </svg>
                     </button>
                 </form>
             </div>
 
-            <div
-                class="pt-10 text-center text-xs uppercase tracking-widest text-[#52525B]"
-            >
+            <div class="pt-10 text-center text-xs uppercase tracking-widest text-[#52525B]">
                 Protegido por el cifrado XDG-Shield
             </div>
         </div>
@@ -209,82 +203,204 @@
 </div>
 
 <script>
-    
-    const overlay = document.getElementById("modalOverlay") || null;
-    const closeBtn = document.getElementById("closeModal") || null;
-    const text = document.getElementById("text") || null;
-    const text2 = document.getElementById("text2") || null;
+    const API_BASE = "http://localhost:8080";
 
-    const loginTab = document.getElementById("loginTab") || null;
-    const registerTab = document.getElementById("registerTab") || null;
+    // ─── Utilidades ───────────────────────────────────────────────────────────
+    function showError(id: string, msg: string) {
+        const el = document.getElementById(id + "-error");
+        const input = document.getElementById(id) as HTMLInputElement | null;
+        if (el) { el.textContent = msg; el.classList.remove("hidden"); }
+        if (input) input.classList.add("border-red-500/70");
+    }
+    function clearError(id: string) {
+        const el = document.getElementById(id + "-error");
+        const input = document.getElementById(id) as HTMLInputElement | null;
+        if (el) { el.textContent = ""; el.classList.add("hidden"); }
+        if (input) input.classList.remove("border-red-500/70");
+    }
+    function isValidEmail(email: string) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
 
-    const loginForm = document.getElementById("loginForm") || null;
-    const registerForm = document.getElementById("registerForm") || null;
+    // ─── Limpiar errores al escribir ──────────────────────────────────────────
+    ["loginCorreo", "loginContrasena"].forEach(id =>
+        document.getElementById(id)?.addEventListener("input", () => clearError(id))
+    );
+    ["regNombre", "regUsuario", "regCorreo", "regContrasena"].forEach(id =>
+        document.getElementById(id)?.addEventListener("input", () => clearError(id))
+    );
+
+    // ─── Toggle contraseña ────────────────────────────────────────────────────
+    document.getElementById("toggleLoginPwd")?.addEventListener("click", () => {
+        const input = document.getElementById("loginContrasena") as HTMLInputElement;
+        const isPass = input.type === "password";
+        input.type = isPass ? "text" : "password";
+        document.getElementById("eyeL1")?.classList.toggle("hidden", isPass);
+        document.getElementById("eyeL2")?.classList.toggle("hidden", !isPass);
+    });
+    document.getElementById("toggleRegPwd")?.addEventListener("click", () => {
+        const input = document.getElementById("regContrasena") as HTMLInputElement;
+        const isPass = input.type === "password";
+        input.type = isPass ? "text" : "password";
+        document.getElementById("eyeR1")?.classList.toggle("hidden", isPass);
+        document.getElementById("eyeR2")?.classList.toggle("hidden", !isPass);
+    });
+
+    // ─── Modal y tabs ─────────────────────────────────────────────────────────
+    const overlay      = document.getElementById("modalOverlay")!;
+    const closeBtn     = document.getElementById("closeModal")!;
+    const loginTab     = document.getElementById("loginTab")!;
+    const registerTab  = document.getElementById("registerTab")!;
+    const loginForm    = document.getElementById("loginForm")!;
+    const registerForm = document.getElementById("registerForm")!;
+    const text         = document.getElementById("text")!;
+    const text2        = document.getElementById("text2")!;
 
     window.addEventListener("open-login-modal", () => {
-        overlay?.classList.remove("hidden");
-        overlay?.classList.add("flex");
+        overlay.classList.remove("hidden");
+        overlay.classList.add("flex");
     });
-
-    closeBtn?.addEventListener("click", () => {
-        overlay?.classList.add("hidden");
-        overlay?.classList.remove("flex");
+    closeBtn.addEventListener("click", () => {
+        overlay.classList.add("hidden");
+        overlay.classList.remove("flex");
     });
-
-    overlay?.addEventListener("click", (e) => {
+    overlay.addEventListener("click", (e) => {
         if (e.target === overlay) {
-            overlay?.classList.add("hidden");
-            overlay?.classList.remove("flex");
+            overlay.classList.add("hidden");
+            overlay.classList.remove("flex");
         }
     });
 
-    loginTab?.addEventListener("click", () => {
-        loginForm?.classList.remove("hidden");
-        registerForm?.classList.add("hidden");
-        text?.classList.remove("hidden");
-        text2?.classList.add("hidden");
-
-        loginTab?.classList.add(
-            "bg-[#A78BFA]",
-            "text-black",
-            "shadow-lg",
-            "shadow-[#A78BFA]/40",
-        );
-
-        loginTab?.classList.remove("text-[#A1A1AA]");
-
-        registerTab?.classList.remove(
-            "bg-[#A78BFA]",
-            "text-black",
-            "shadow-lg",
-            "shadow-[#A78BFA]/40",
-        );
-
-        registerTab?.classList.add("text-[#A1A1AA]");
+    loginTab.addEventListener("click", () => {
+        loginForm.classList.remove("hidden");
+        registerForm.classList.add("hidden");
+        text.classList.remove("hidden");
+        text2.classList.add("hidden");
+        loginTab.classList.add("bg-[#A78BFA]", "text-black", "shadow-lg", "shadow-[#A78BFA]/60");
+        loginTab.classList.remove("text-[#A1A1AA]");
+        registerTab.classList.remove("bg-[#A78BFA]", "text-black", "shadow-lg", "shadow-[#A78BFA]/60");
+        registerTab.classList.add("text-[#A1A1AA]");
+    });
+    registerTab.addEventListener("click", () => {
+        registerForm.classList.remove("hidden");
+        loginForm.classList.add("hidden");
+        text2.classList.remove("hidden");
+        text.classList.add("hidden");
+        registerTab.classList.add("bg-[#A78BFA]", "text-black", "shadow-lg", "shadow-[#A78BFA]/60");
+        registerTab.classList.remove("text-[#A1A1AA]");
+        loginTab.classList.remove("bg-[#A78BFA]", "text-black", "shadow-lg", "shadow-[#A78BFA]/60");
+        loginTab.classList.add("text-[#A1A1AA]");
     });
 
-    registerTab?.addEventListener("click", () => {
-        registerForm?.classList.remove("hidden");
-        loginForm?.classList.add("hidden");
-        text?.classList.add("hidden");
-        text2?.classList.remove("hidden");
+    // ─── LOGIN ────────────────────────────────────────────────────────────────
+    document.getElementById("loginBtn")!.addEventListener("click", async () => {
+        const correo     = (document.getElementById("loginCorreo") as HTMLInputElement).value.trim();
+        const contrasena = (document.getElementById("loginContrasena") as HTMLInputElement).value;
 
-        registerTab?.classList.add(
-            "bg-[#A78BFA]",
-            "text-black",
-            "shadow-lg",
-            "shadow-[#A78BFA]/40",
-        );
+        clearError("loginCorreo");
+        clearError("loginContrasena");
 
-        registerTab?.classList.remove("text-[#A1A1AA]");
+        let valid = true;
+        if (!correo) {
+            showError("loginCorreo", "Ingresa tu correo electrónico."); valid = false;
+        } else if (!isValidEmail(correo)) {
+            showError("loginCorreo", "El correo no tiene un formato válido."); valid = false;
+        }
+        if (!contrasena) {
+            showError("loginContrasena", "Ingresa tu contraseña."); valid = false;
+        }
+        if (!valid) return;
 
-        loginTab?.classList.remove(
-            "bg-[#A78BFA]",
-            "text-black",
-            "shadow-lg",
-            "shadow-[#A78BFA]/40",
-        );
+        const btn     = document.getElementById("loginBtn")!;
+        const btnText = document.getElementById("loginBtnText")!;
+        const spinner = document.getElementById("loginSpinner")!;
+        btn.setAttribute("disabled", "true");
+        btnText.textContent = "Iniciando...";
+        spinner.classList.remove("hidden");
 
-        loginTab?.classList.add("text-[#A1A1AA]");
+        try {
+            const res = await fetch(`${API_BASE}/api/auth.jsp`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ action: "login", correo, contrasena }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                overlay.classList.add("hidden");
+                overlay.classList.remove("flex");
+                window.dispatchEvent(new CustomEvent("user-logged-in", { detail: { nombre: data.nombre } }));
+            } else {
+                showError("loginContrasena", data.message || "Correo o contraseña incorrectos.");
+            }
+        } catch (err) {
+            showError("loginContrasena", "No se pudo conectar al servidor.");
+            console.error("Error al iniciar sesión:", err);
+        } finally {
+            btn.removeAttribute("disabled");
+            btnText.textContent = "Iniciar Sesión";
+            spinner.classList.add("hidden");
+        }
+    });
+
+    // ─── REGISTER ─────────────────────────────────────────────────────────────
+    document.getElementById("registerBtn")!.addEventListener("click", async () => {
+        const nombre     = (document.getElementById("regNombre") as HTMLInputElement).value.trim();
+        const usuario    = (document.getElementById("regUsuario") as HTMLInputElement).value.trim();
+        const correo     = (document.getElementById("regCorreo") as HTMLInputElement).value.trim();
+        const contrasena = (document.getElementById("regContrasena") as HTMLInputElement).value;
+
+        ["regNombre","regUsuario","regCorreo","regContrasena"].forEach(clearError);
+
+        let valid = true;
+        if (!nombre || nombre.length < 2) {
+            showError("regNombre", "Ingresa tu nombre (mínimo 2 caracteres)."); valid = false;
+        }
+        if (!usuario || usuario.length < 3) {
+            showError("regUsuario", "El usuario debe tener al menos 3 caracteres."); valid = false;
+        } else if (/\s/.test(usuario)) {
+            showError("regUsuario", "El usuario no puede contener espacios."); valid = false;
+        }
+        if (!correo) {
+            showError("regCorreo", "Ingresa tu correo electrónico."); valid = false;
+        } else if (!isValidEmail(correo)) {
+            showError("regCorreo", "El correo no tiene un formato válido."); valid = false;
+        }
+        if (!contrasena) {
+            showError("regContrasena", "Ingresa una contraseña."); valid = false;
+        } else if (contrasena.length < 6) {
+            showError("regContrasena", "La contraseña debe tener al menos 6 caracteres."); valid = false;
+        }
+        if (!valid) return;
+
+        const btn     = document.getElementById("registerBtn")!;
+        const btnText = document.getElementById("registerBtnText")!;
+        const spinner = document.getElementById("registerSpinner")!;
+        btn.setAttribute("disabled", "true");
+        btnText.textContent = "Creando cuenta...";
+        spinner.classList.remove("hidden");
+
+        try {
+            const res = await fetch(`${API_BASE}/api/auth.jsp`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ action: "register", nombre, usuario, correo, contrasena }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                loginTab.click();
+                (document.getElementById("loginCorreo") as HTMLInputElement).value = correo;
+            } else {
+                showError("regCorreo", data.message || "No se pudo crear la cuenta.");
+            }
+        } catch (err) {
+            showError("regCorreo", "No se pudo conectar al servidor.");
+            console.error("Error al registrar:", err);
+        } finally {
+            btn.removeAttribute("disabled");
+            btnText.textContent = "Crear Cuenta";
+            spinner.classList.add("hidden");
+        }
     });
 </script>
