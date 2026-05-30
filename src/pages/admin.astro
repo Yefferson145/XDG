@@ -1,0 +1,36 @@
+---
+import SliderNavegation from "../components/admin/slider-navegation.astro";
+import Search from "../components/admin/search.astro";
+import DashboardSection from "../components/admin/sections/DashboardSection.astro";
+import RegistroJuegosSection from "../components/admin/sections/RegistroJuegosSection.astro";
+import RegistroVentasSection from "../components/admin/sections/RegistroVentasSection.astro";
+import "../styles/global.css";
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+    </head>
+    <body>
+        <div class="flex">
+            <SliderNavegation />
+            <div class="flex-1">
+                <Search />
+                <div id="admin-main-content" class="p-6 bg-white min-h-[calc(100vh-64px)]">
+                    <div data-admin-section="dashboard">
+                        <DashboardSection />
+                    </div>
+                    <div data-admin-section="registro-juegos" class="hidden">
+                        <RegistroJuegosSection />
+                    </div>
+                    <div data-admin-section="registro-ventas" class="hidden">
+                        <RegistroVentasSection />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
