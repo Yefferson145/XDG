@@ -1,0 +1,64 @@
+---
+const juegoscompra= [
+  {
+    id_orden: "#XDG-88219-12",
+    fecha: "12 Enero 2026",
+    juego: "LISA: Complete Edition",
+    total: "24.99",
+    estado: "finalizado"
+  },
+  {
+    id_orden: "#XDG-87441-25",
+    fecha: "25 Mayo 2026",
+    juego: "DEVOUR Supporter Edition",
+    total: "39.99",
+    estado: "finalizado"
+  },
+{
+    id_orden: "#XDG-86992-15",
+    fecha: "15 Feb 2024",
+    juego: "Little Nightmares III",
+    total: "109.99",
+    estado: "procesando"
+  },];
+
+const estadoClase: Record<string, string>={
+  finalizado:"bg-green-500/20 text-green-400 border border-green-500/30",
+  procesando:"bg-orange-500/20 text-orange-400 border border-orange-500/30",
+  cancelado:"bg-red-500/20 text-red-400 border border-red-500/30",
+};
+---
+
+<section id="adquisiciones"class="scroll-mt-28">
+
+  <div class="flex items-center gap-3 mb-6">
+    <span class="w-1 h-6 bg-[#A78BFA] rounded-full block"></span>
+    <h2 class="text-white font-bold text-xl tracking-tight">Adquisiciones Recientes</h2>
+  </div>
+
+  <div class="bg-[#1A1A1D] border border-[#27272A] rounded-2xl overflow-hidden">
+    <table class="w-full text-sm">
+      <thead>
+   <tr class="border-b border-[#27272A]">
+          <th class="text-left px-5 py-4 text-[#71717A] text-xs uppercase tracking-wider font-medium">ID Orden</th>
+          <th class="text-left px-5 py-4 text-[#71717A] text-xs uppercase tracking-wider font-medium">Fecha</th>
+          <th class="text-left px-5 py-4 text-[#71717A] text-xs uppercase tracking-wider font-medium">Juego</th>
+          <th class="text-left px-5 py-4 text-[#71717A] text-xs uppercase tracking-wider font-medium">Total</th>
+          <th class="text-left px-5 py-4 text-[#71717A] text-xs uppercase tracking-wider font-medium">Estado</th>
+        </tr>
+      </thead><tbody>
+        {juegoscompra.map((c, i) => (
+          <tr class={`border-b border-[#27272A] hover:bg-[#27272A]/40 transition-colors ${i === juegoscompra.length - 1 ? 'border-b-0' : ''}`}>
+            <td class="px-5 py-4 text-[#71717A] font-mono text-xs">{c.id_orden}</td>
+            <td class="px-5 py-4 text-[#A1A1AA] text-sm">{c.fecha}</td>
+            <td class="px-5 py-4 text-white font-medium text-sm">{c.juego}</td>
+            <td class="px-5 py-4 text-white font-semibold text-sm">S/.{c.total}</td>
+            <td class="px-5 py-4">
+   <span class={`text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider ${estadoClase[c.estado] ?? 'bg-zinc-800 text-zinc-400'}`}>
+                {c.estado}
+              </span>
+            </td> </tr> ))}
+      </tbody> </table>
+  </div>
+
+</section>

@@ -1,0 +1,54 @@
+---
+---
+<aside class="w-52 shrink-0 sticky top-24 self-start flex flex-col gap-1">
+        <div class="bg-[#1A1A1D] border border-[#27272A] rounded-xl p-4 flex flex-col items-center gap-3 mb-3">
+    <img
+      id="sidebarAvatar"
+      src="https://placehold.co/64x64/A78BFA/ffffff?text=p"
+      alt="Avatar"
+      class="w-16 h-16 rounded-full object-cover border-2 border-[#A78BFA]"
+    />
+    <div class="text-center">
+      <p id="sidebarNombre" class="text-white font-bold text-sm">pepito73</p>
+      <p id="sidebarUsuario" class="text-[#71717A] text-xs mt-0.5">@pepitogamer</p>
+      <p id="sidebarUsuario" class="text-[#71717A] text-xs">Level 22 Miembro Premium</p>
+    </div>
+    <span class="mt-1 inline-block text-[10px] font-bold bg-[#f4710a] text-black px-2 py-0.5 rounded-sm uppercase tracking-wider">
+      Usuario en Linea 
+    </span> </div>
+
+  <button data-vista="perfil"
+    class="nav-sidebar active-sidebar flex items-center gap-3 px-4 py-3 rounded-lg text-white bg-[#1A1A1D] transition-all text-sm font-medium w-full text-left">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+    <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+    </svg>
+    Perfil
+  </button>
+
+  <button data-vista="wishlist"
+    class="nav-sidebar flex items-center gap-3 px-4 py-3 rounded-lg text-[#A1A1AA] hover:text-white hover:bg-[#1A1A1D] transition-all text-sm font-medium w-full text-left">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/> </svg>
+                           Lista de Deseos
+  </button>
+
+  <div class="flex-1"></div>
+  <div class="pt-3 border-t border-[#27272A] mt-4">
+    <button id="sidebarLogout"
+      class="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-[#71717A] hover:text-red-400 hover:bg-red-500/10 transition-all text-sm font-medium">
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+      </svg>
+Cerrar Sesión
+    </button>
+  </div>
+</aside>
+
+<script>
+  document.getElementById('sidebarLogout')?.addEventListener('click',()=>{
+    window.location.href='/';
+    
+    });
+
+    
+</script>

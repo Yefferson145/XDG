@@ -1,0 +1,51 @@
+---
+import Navbar from '../Navbar.astro';
+import Footer from '../Footer.astro';
+import LoginCard from '../login/LoginCard.astro';
+import SliderProfile from './SliderProfile.astro';
+import AccProfile from './AccProfile.astro';
+import WishlistAcc from './WishlistAcc.astro';
+import Acquisitions from './Acquisitions.astro';
+---
+
+<Navbar/>
+<LoginCard/>
+
+<main class="font-space bg-[#09090B] min-h-screen pt-16">
+<div class="max-w-360 mx-auto px-6 py-10 flex gap-8 items-stretch">
+    <SliderProfile/>
+    <div class="flex-1">
+<div id="vista-perfil" class="vista-contenido">
+    <AccProfile/>
+      </div>
+      <div id="vista-wishlist" class="vista-contenido hidden">
+        <WishlistAcc/>
+        <div class="mt-10">
+      <Acquisitions/>
+        </div> </div></div>
+  </div>
+</main>
+<Footer/>
+
+<script>
+  document.querySelectorAll('.nav-sidebar').forEach(btn=>{
+    btn.addEventListener('click',()=> {
+      const target=(btn as HTMLElement).dataset.vista;
+
+      document.querySelectorAll('.nav-sidebar').forEach(b=>{
+       
+        b.classList.remove('text-white','bg-[#1A1A1D]');
+        b.classList.add('text-[#A1A1AA]'); 
+      
+      });
+
+    
+      btn.classList.add('text-white','bg-[#1A1A1D]');
+      btn.classList.remove('text-[#A1A1AA]');
+
+      document.querySelectorAll('.vista-contenido').forEach(v=> v.classList.add('hidden'));
+      document.getElementById(`vista-${target}`)?.classList.remove('hidden');
+    });
+    
+  });
+</script>

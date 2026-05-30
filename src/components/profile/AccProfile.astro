@@ -1,0 +1,206 @@
+---
+---
+<section id="vista-perfil" class="vista">
+
+  <div class="flex items-center gap-3 mb-6">
+    <span class="w-1 h-6 bg-[#A78BFA] rounded-full block"></span>
+    <h2 class="text-white font-bold text-xl tracking-tight">Perfil</h2>
+  </div>
+
+  <div class="bg-[#1A1A1D] border border-[#27272A] rounded-2xl overflow-hidden">
+
+    <div class="flex items-center gap-5 px-6 py-5 border-b border-[#27272A]">
+      <div class="relative group">
+        <img id="avatarPreview"
+          src="https://placehold.co/80x80/A78BFA/ffffff?text=p"
+          alt="Avatar"
+          class="w-16 h-16 rounded-full object-cover border-2 border-[#27272A]"/>
+      </div>
+      <div class="flex-1">
+ <p class="text-white font-semibold text-sm">Foto de perfil</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="btnQuitarFoto"
+    class="text-[#A1A1AA] hover:text-white text-sm transition-colors">
+          Quitar la foto
+        </button>
+        <label for="avatarInput"
+          class="cursor-pointer border border-[#27272A] hover:border-[#A78BFA] text-white text-sm px-4 py-2 rounded-lg transition-all">
+          Cambiar la foto
+        </label>
+        <input type="file" id="avatarInput" accept="image/*" class="hidden" />
+      </div> </div>
+
+    <div class="flex items-center justify-between px-6 py-5 border-b border-[#27272A]">
+      <div>
+        <p class="text-white font-semibold text-sm mb-1">Nombre</p>
+        <p id="nombreMostrado" class="text-[#A1A1AA] text-sm">pepito73</p>
+        <input id="inputNombre" type="text" placeholder="Tu nombre completo"
+          class="hidden mt-2 bg-[#15121B] border border-[#2A2633] rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors w-72"/>
+      </div>
+      <button class="btn-editar border border-[#27272A] hover:border-[#A78BFA] text-white text-sm px-4 py-2 rounded-lg transition-all"
+        data-campo="nombre">
+        Editar
+     </button></div>
+
+    <div class="flex items-center justify-between px-6 py-5 border-b border-[#27272A]">
+      <div>
+  <p class="text-white font-semibold text-sm mb-1">Usuario</p>
+   <p id="usuarioMostrado" class="text-[#A1A1AA] text-sm">@pepito73</p>
+        <input id="inputUsuario" type="text" placeholder="@usuario"
+          class="hidden mt-2 bg-[#15121B] border border-[#2A2633] rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors w-72"/>
+      </div>
+   <button class="btn-editar border border-[#27272A] hover:border-[#A78BFA] text-white text-sm px-4 py-2 rounded-lg transition-all"
+        data-campo="usuario">
+        Editar
+      </button>
+    </div>
+
+    <div class="flex items-center justify-between px-6 py-5 border-b border-[#27272A]">
+      <div>
+       <p class="text-white font-semibold text-sm mb-1">Correo electrónico</p>
+ <p id="correoMostrado" class="text-[#A1A1AA] text-sm">pepitogamer@gmail.com</p>
+        <input id="inputCorreo" type="email" placeholder="pepitogamer@gmail.com"
+          class="hidden mt-2 bg-[#15121B] border border-[#2A2633] rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors w-72"/>
+      </div>
+      <button class="btn-editar border border-[#27272A] hover:border-[#A78BFA] text-white text-sm px-4 py-2 rounded-lg transition-all" data-campo="correo">
+        Editar
+   </button>
+    </div>
+
+    <div class="flex items-center justify-between px-6 py-5">
+      <div class="flex-1">
+     <p class="text-white font-semibold text-sm mb-1">Contraseña</p>
+     <p class="text-[#A1A1AA] text-sm">••••••••</p>
+
+        <div id="formContrasena" class="hidden mt-3 flex flex-col gap-3">
+       <input id="inputPassActual" type="password" placeholder="Contraseña actual"
+            class="bg-[#15121B] border border-[#2A2633] rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors w-72" />
+          <input id="inputPassNueva" type="password" placeholder="Nueva contraseña"
+     class="bg-[#15121B] border border-[#2A2633] rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors w-72" />
+          <input id="inputPassConfirm" type="password" placeholder="Confirmar nueva contraseña"
+            class="bg-[#15121B] border border-[#2A2633] rounded-xl px-4 py-2.5 text-white text-sm placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors w-72" />
+          <p id="msgContrasena" class="text-xs hidden"></p>
+          <div class="flex gap-2">
+            <button id="btnGuardarPass"
+              class="bg-[#A78BFA] hover:bg-[#8B5CF6] text-black font-bold text-xs px-5 py-2.5 rounded-lg transition-all uppercase tracking-wider">
+              Guardar
+          </button>
+            <button id="btnCancelarPass"
+           class="border border-[#27272A] hover:border-[#A78BFA] text-[#A1A1AA] hover:text-white text-xs px-5 py-2.5 rounded-lg transition-all">
+              Cancelar
+        </button>
+          </div>
+        </div>
+      </div>
+  <button id="btnEditarPass"
+        class="border border-[#27272A] hover:border-[#A78BFA] text-white text-sm px-4 py-2 rounded-lg transition-all self-start">
+        Editar
+      </button>
+</div>
+
+  </div>
+</section>
+
+<script>
+  const avatarInput=document.getElementById('avatarInput')as HTMLInputElement;
+  const avatarPreview=document.getElementById('avatarPreview') as HTMLImageElement;
+ avatarInput?.addEventListener('change',()=>{
+  const file=avatarInput.files?.[0];
+  if(file){
+    const url=URL.createObjectURL(file);
+    avatarPreview.src=url;
+    const sidebarAvatar=document.getElementById('sidebarAvatar')as HTMLImageElement;
+    if(sidebarAvatar) sidebarAvatar.src = url;
+  }
+});
+  document.getElementById('btnQuitarFoto')?.addEventListener('click',()=>{
+    avatarPreview.src='https://placehold.co/80x80/1A1A1D/A78BFA?text=?';
+  });
+
+  const mapCampo: Record<string, {mostrado:string;input:string }> = {
+    nombre:{mostrado: 'nombreMostrado',input:'inputNombre'},
+    usuario:{mostrado: 'usuarioMostrado',input:'inputUsuario'},
+    correo: {mostrado: 'correoMostrado', input:'inputCorreo'},
+  };
+
+  document.querySelectorAll('.btn-editar').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const campo=(btn as HTMLElement).dataset.campo!;
+      const ids= mapCampo[campo];
+      const mostrado= document.getElementById(ids.mostrado)!;
+      const input=document.getElementById(ids.input) as HTMLInputElement;
+      const editando=!input.classList.contains('hidden');
+
+      if(editando) {
+        const nuevo = input.value.trim();
+        if(nuevo) mostrado.textContent = campo === 'usuario' ? `@${nuevo.replace('@','')}` : nuevo;
+        input.classList.add('hidden');
+        btn.textContent = 'Editar';}
+         else 
+      {
+        input.value=mostrado.textContent?.replace('@','') ?? '';
+        input.classList.remove('hidden');
+        input.focus();
+        btn.textContent='Guardar';
+      }
+    });
+  });
+
+  const formPass= document.getElementById('formContrasena')!;
+  const btnEditPass=document.getElementById('btnEditarPass')!;
+  const btnGuardPass=document.getElementById('btnGuardarPass')!;
+  const btnCancelPass=document.getElementById('btnCancelarPass')!;
+  const msgPass =document.getElementById('msgContrasena')as HTMLElement;
+
+  btnEditPass.addEventListener('click',()=>{
+    formPass.classList.toggle('hidden');
+    btnEditPass.classList.add('hidden');
+  });
+
+  btnCancelPass.addEventListener('click',()=> {
+    formPass.classList.add('hidden');
+    btnEditPass.classList.remove('hidden');
+    msgPass.classList.add('hidden');
+    (document.getElementById('inputPassActual') as HTMLInputElement).value = '';
+    (document.getElementById('inputPassNueva') as HTMLInputElement).value = '';
+    (document.getElementById('inputPassConfirm') as HTMLInputElement).value = '';
+  });
+
+  btnGuardPass.addEventListener('click',() => {
+    const actual= (document.getElementById('inputPassActual') as HTMLInputElement).value;
+    const nueva= (document.getElementById('inputPassNueva')as HTMLInputElement).value;
+    const confirma=(document.getElementById('inputPassConfirm')as HTMLInputElement).value;
+
+    if(!actual) {
+      msgPass.textContent= 'Ingresa tu contraseña actual.';
+      msgPass.className='text-xs text-red-400';
+      msgPass.classList.remove('hidden');
+      return;
+    }
+    if(nueva.length < 6) {
+      msgPass.textContent ='La nueva contraseña debe tener al menos 6 caracteres.';
+      msgPass.className='text-xs text-red-400';
+      msgPass.classList.remove('hidden');
+      return;
+    }
+    if(nueva !==confirma) {
+      msgPass.textContent='Las contraseñas no coinciden.';
+      msgPass.className='text-xs text-red-400';
+      msgPass.classList.remove('hidden');
+      return;
+    }
+
+    msgPass.textContent='✓ Contraseña actualizada.';
+    msgPass.className='text-xs text-green-400';
+    msgPass.classList.remove('hidden');
+    setTimeout(()=>btnCancelPass.click(), 1500);
+  });
+  document.getElementById('btnQuitarFoto')?.addEventListener('click',()=> {
+  const placeholder='https://placehold.co/80x80/1A1A1D/A78BFA?text=?';
+  avatarPreview.src=placeholder;
+  const sidebarAvatar=document.getElementById('sidebarAvatar')as HTMLImageElement;
+  if(sidebarAvatar)sidebarAvatar.src='https://placehold.co/64x64/1A1A1D/A78BFA?text=?';
+});
+
+</script>
