@@ -1,0 +1,27 @@
+---
+interface Props {
+  text: string;
+  bgColor?: string;
+  hoverColor?: string;
+  textColor?: string;
+  paddingY?: string;
+  rounded?: string;
+}
+
+const {
+  text,
+  bgColor = "bg-purple-500",
+  hoverColor = "hover:bg-purple-400",
+  textColor = "text-black",
+  paddingY = "py-4",
+  rounded = "rounded-sm"
+} = Astro.props;
+---
+
+<button
+  class={`w-full ${bgColor} ${hoverColor} ${textColor} font-black ${paddingY} ${rounded} transition-all uppercase font-space flex items-center justify-center gap-2`}
+>
+  <span>{text}</span>
+
+  <slot name="icon" />
+</button>
