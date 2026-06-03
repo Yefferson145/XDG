@@ -63,7 +63,6 @@
 
                 <div id="authMessage" class="hidden mb-4 px-4 py-3 rounded-xl text-sm font-medium"></div>
 
-                <!-- LOGIN -->
                 <div id="text" class="pb-6">
                     <span class="text-[#E7E0ED] font-bold text-2xl">Bienvenido De Nuevo</span>
                     <p class="text-[#CBC3D7]">Continúa tu viaje donde lo dejaste.</p>
@@ -128,7 +127,6 @@
                     </button>
                 </form>
 
-                <!-- REGISTER -->
                 <div id="text2" class="pb-6 hidden">
                     <span class="text-[#E7E0ED] font-bold text-2xl">Regístrate</span>
                     <p class="text-[#CBC3D7]">Sé un nuevo usuario de XDG.</p>
@@ -205,7 +203,6 @@
 <script>
     const API_BASE = "http://localhost:8080";
 
-    // ─── Utilidades ───────────────────────────────────────────────────────────
     function showError(id: string, msg: string) {
         const el = document.getElementById(id + "-error");
         const input = document.getElementById(id) as HTMLInputElement | null;
@@ -222,7 +219,6 @@
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
-    // ─── Limpiar errores al escribir ──────────────────────────────────────────
     ["loginCorreo", "loginContrasena"].forEach(id =>
         document.getElementById(id)?.addEventListener("input", () => clearError(id))
     );
@@ -230,7 +226,6 @@
         document.getElementById(id)?.addEventListener("input", () => clearError(id))
     );
 
-    // ─── Toggle contraseña ────────────────────────────────────────────────────
     document.getElementById("toggleLoginPwd")?.addEventListener("click", () => {
         const input = document.getElementById("loginContrasena") as HTMLInputElement;
         const isPass = input.type === "password";
@@ -246,7 +241,6 @@
         document.getElementById("eyeR2")?.classList.toggle("hidden", !isPass);
     });
 
-    // ─── Modal y tabs ─────────────────────────────────────────────────────────
     const overlay      = document.getElementById("modalOverlay")!;
     const closeBtn     = document.getElementById("closeModal")!;
     const loginTab     = document.getElementById("loginTab")!;
@@ -292,7 +286,6 @@
         loginTab.classList.add("text-[#A1A1AA]");
     });
 
-    // ─── LOGIN ────────────────────────────────────────────────────────────────
     document.getElementById("loginBtn")!.addEventListener("click", async () => {
         const correo     = (document.getElementById("loginCorreo") as HTMLInputElement).value.trim();
         const contrasena = (document.getElementById("loginContrasena") as HTMLInputElement).value;
@@ -351,7 +344,6 @@
         }
     });
 
-    // ─── REGISTER ─────────────────────────────────────────────────────────────
     document.getElementById("registerBtn")!.addEventListener("click", async () => {
         const nombre     = (document.getElementById("regNombre") as HTMLInputElement).value.trim();
         const usuario    = (document.getElementById("regUsuario") as HTMLInputElement).value.trim();

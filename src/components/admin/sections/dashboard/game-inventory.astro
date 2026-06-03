@@ -225,7 +225,7 @@ import ModalDes from "../../sections/dashboard/modal-des.astro";
         console.warn('No se pudieron cargar descuentos activos', err);
       }
 
-      const res = await fetch(`${API}/api/juegos.jsp`, {
+      const res = await fetch(`${API}/api/juegos_admin.jsp`, {
         credentials: "include",
       });
       const data = await res.json();
@@ -305,7 +305,7 @@ import ModalDes from "../../sections/dashboard/modal-des.astro";
         body: JSON.stringify({ id }),
       });
       const result = await res.json();
-      if (result.success) {
+      if (result.deleted) {
         inventario = inventario.filter((juego) => String(juego.id) !== id);
         inventarioFiltrado = inventarioFiltrado.filter((juego) => String(juego.id) !== id);
         renderInventario();

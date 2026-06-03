@@ -304,7 +304,6 @@
       if (result.success) {
         console.log('[registro-juegos] submitGame result:', result);
         setStatus(isEditing ? "Juego actualizado correctamente." : "Juego agregado correctamente.");
-        // Remember last edited/created id so cargarRecentGames can prioritize it
         const createdId = isEditing ? data.id : (result.id ? String(result.id) : null);
         lastEditedId = createdId || null;
         if (!isEditing) resetForm();
@@ -423,7 +422,7 @@ async function cargarRecentGames() {
 
   try {
     const [gamesRes, discountsRes] = await Promise.all([
-      fetch(`${API}/api/juegos.jsp`, { credentials: "include", cache: 'no-store' }),
+      fetch(`${API}/api/juegos_admin.jsp`, { credentials: "include", cache: 'no-store' }),
       fetch(`${API}/api/descuentos.jsp`, { credentials: "include", cache: 'no-store' }),
     ]);
     const gamesData = await parseJsonResponse(gamesRes);
