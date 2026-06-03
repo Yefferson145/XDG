@@ -1,6 +1,3 @@
----
----
-
 <style>
   .carousel-wrapper {
     position: relative;
@@ -13,32 +10,61 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    border: 1px solid #27272A;
-    background: #1A1A1D;
-    color: #A78BFA;
+    border: 1px solid #27272a;
+    background: #1a1a1d;
+    color: #a78bfa;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    transition:
+      background 0.2s,
+      color 0.2s,
+      border-color 0.2s;
     font-size: 20px;
     line-height: 1;
     user-select: none;
   }
-  .carousel-arrow:hover { background: #2C2832; border-color: #A78BFA; }
-  .carousel-arrow.left { left: -20px; }
-  .carousel-arrow.right { right: -20px; }
+  .carousel-arrow:hover {
+    background: #2c2832;
+    border-color: #a78bfa;
+  }
+  .carousel-arrow.left {
+    left: -20px;
+  }
+  .carousel-arrow.right {
+    right: -20px;
+  }
 
-  .carousel-arrow.pink { color: #F472B6; }
-  .carousel-arrow.pink:hover { border-color: #F472B6; }
-  .carousel-arrow.green { color: #34D399; }
-  .carousel-arrow.green:hover { border-color: #34D399; }
-  .carousel-arrow.wishlist-color { color: #F472B6; }
-  .carousel-arrow.wishlist-color:hover { border-color: #F472B6; }
+  .carousel-arrow.pink {
+    color: #f472b6;
+  }
+  .carousel-arrow.pink:hover {
+    border-color: #f472b6;
+  }
+  .carousel-arrow.green {
+    color: #34d399;
+  }
+  .carousel-arrow.green:hover {
+    border-color: #34d399;
+  }
+  .carousel-arrow.wishlist-color {
+    color: #f472b6;
+  }
+  .carousel-arrow.wishlist-color:hover {
+    border-color: #f472b6;
+  }
 
-  .cat-arrow:hover { background: #2C2832; border-color: #A78BFA; }
-  .cat-arrow.left { left: -16px; }
-  .cat-arrow.right { right: -16px; }
+  .cat-arrow:hover {
+    background: #2c2832;
+    border-color: #a78bfa;
+  }
+  .cat-arrow.left {
+    left: -16px;
+  }
+  .cat-arrow.right {
+    right: -16px;
+  }
 
   .carousel-track {
     cursor: grab;
@@ -55,22 +81,28 @@
 </style>
 
 <div class="font-space w-full px-4" id="home-sections">
-
   <section class="mb-16">
     <div class="flex max-w-360 mx-auto justify-between items-end mb-6">
       <div>
         <h2 class="text-2xl text-white pb-1">Juegos Destacados</h2>
-        <p class="text-xs text-[#71717A]">Los títulos más populares de nuestra tienda.</p>
+        <p class="text-xs text-[#71717A]">
+          Los títulos más populares de nuestra tienda.
+        </p>
       </div>
     </div>
     <div class="max-w-360 mx-auto carousel-wrapper">
       <button class="carousel-arrow left" id="btn-prev-destacados">&#8249;</button>
       <button class="carousel-arrow right" id="btn-next-destacados">&#8250;</button>
       <div class="overflow-hidden">
-        <div id="track-destacados" class="carousel-track flex gap-5 transition-transform duration-500">
-          {Array.from({ length: 4 }).map(() => (
-            <div class="bg-[#1A1A1D] border-[#27272A] rounded-xl flex-shrink-0 w-[calc(25%-15px)] aspect-[3/4] animate-pulse" />
-          ))}
+        <div
+          id="track-destacados"
+          class="carousel-track flex gap-5 transition-transform duration-500"
+        >
+          {
+            Array.from({ length: 4 }).map(() => (
+              <div class="bg-[#1A1A1D] border-[#27272A] rounded-xl flex-shrink-0 w-[calc(25%-15px)] aspect-[3/4] animate-pulse" />
+            ))
+          }
         </div>
       </div>
     </div>
@@ -80,17 +112,24 @@
     <div class="flex max-w-360 mx-auto justify-between items-end mb-6">
       <div>
         <h2 class="text-2xl text-white pb-1">Juegos con Descuento</h2>
-        <p class="text-xs text-[#71717A]">Aprovecha las ofertas por tiempo limitado.</p>
+        <p class="text-xs text-[#71717A]">
+          Aprovecha las ofertas por tiempo limitado.
+        </p>
       </div>
     </div>
     <div class="max-w-360 mx-auto carousel-wrapper">
       <button class="carousel-arrow left pink" id="btn-prev-descuentos">&#8249;</button>
       <button class="carousel-arrow right pink" id="btn-next-descuentos">&#8250;</button>
       <div class="overflow-hidden">
-        <div id="track-descuentos" class="carousel-track flex gap-5 transition-transform duration-500">
-          {Array.from({ length: 4 }).map(() => (
-            <div class="bg-[#1A1A1D] border-[#27272A] rounded-xl flex-shrink-0 w-[calc(25%-15px)] aspect-[3/4] animate-pulse" />
-          ))}
+        <div
+          id="track-descuentos"
+          class="carousel-track flex gap-5 transition-transform duration-500"
+        >
+          {
+            Array.from({ length: 4 }).map(() => (
+              <div class="bg-[#1A1A1D] border-[#27272A] rounded-xl flex-shrink-0 w-[calc(25%-15px)] aspect-[3/4] animate-pulse" />
+            ))
+          }
         </div>
       </div>
     </div>
@@ -106,16 +145,19 @@
       <button class="carousel-arrow left green" id="btn-prev-proximamente">&#8249;</button>
       <button class="carousel-arrow right green" id="btn-next-proximamente">&#8250;</button>
       <div class="overflow-hidden">
-        <div id="track-proximamente" class="carousel-track flex gap-5 transition-transform duration-500">
-          {Array.from({ length: 4 }).map(() => (
-            <div class="bg-[#1A1A1D] border-[#27272A] rounded-xl flex-shrink-0 w-[calc(25%-15px)] aspect-[3/4] animate-pulse" />
-          ))}
+        <div
+          id="track-proximamente"
+          class="carousel-track flex gap-5 transition-transform duration-500"
+        >
+          {
+            Array.from({ length: 4 }).map(() => (
+              <div class="bg-[#1A1A1D] border-[#27272A] rounded-xl flex-shrink-0 w-[calc(25%-15px)] aspect-[3/4] animate-pulse" />
+            ))
+          }
         </div>
       </div>
     </div>
   </section>
-  </section>
-
 </div>
 
 <script>
@@ -161,10 +203,14 @@
 
   const API = "http://localhost:8080";
 
-  const cartIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>';
-  const notifyIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
-  const heartIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
-  const trashIcon = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>';
+  const cartIcon =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>';
+  const notifyIcon =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
+  const heartIcon =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+  const trashIcon =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>';
 
   const carouselState: Record<string, CarouselState> = {};
 
@@ -203,7 +249,10 @@
     const cardW = getCardWidth(id);
     state.offset = clampOffset(id, state.offset + cardW);
     const track = document.getElementById(`track-${id}`);
-    if (track) { track.classList.remove("dragging"); track.style.transition = "transform 500ms"; }
+    if (track) {
+      track.classList.remove("dragging");
+      track.style.transition = "transform 500ms";
+    }
     applyTranslate(id, state.offset);
   }
 
@@ -218,7 +267,10 @@
       state.offset = newOffset;
     }
     const track = document.getElementById(`track-${id}`);
-    if (track) { track.classList.remove("dragging"); track.style.transition = "transform 500ms"; }
+    if (track) {
+      track.classList.remove("dragging");
+      track.style.transition = "transform 500ms";
+    }
     applyTranslate(id, state.offset);
   }
 
@@ -229,7 +281,9 @@
   function initDrag(id: string): void {
     const track = document.getElementById(`track-${id}`);
     if (!track) return;
-    let startX = 0, startOffset = 0, isDragging = false;
+    let startX = 0,
+      startOffset = 0,
+      isDragging = false;
 
     track.addEventListener("mousedown", (e: MouseEvent) => {
       isDragging = true;
@@ -260,17 +314,25 @@
       }
     });
 
-    track.addEventListener("touchstart", (e: TouchEvent) => {
-      startX = e.touches[0].clientX;
-      startOffset = carouselState[id].offset;
-      track.style.transition = "none";
-    }, { passive: true });
+    track.addEventListener(
+      "touchstart",
+      (e: TouchEvent) => {
+        startX = e.touches[0].clientX;
+        startOffset = carouselState[id].offset;
+        track.style.transition = "none";
+      },
+      { passive: true },
+    );
 
-    track.addEventListener("touchmove", (e: TouchEvent) => {
-      const delta = e.touches[0].clientX - startX;
-      carouselState[id].offset = clampOffset(id, startOffset + delta);
-      applyTranslate(id, carouselState[id].offset);
-    }, { passive: true });
+    track.addEventListener(
+      "touchmove",
+      (e: TouchEvent) => {
+        const delta = e.touches[0].clientX - startX;
+        carouselState[id].offset = clampOffset(id, startOffset + delta);
+        applyTranslate(id, carouselState[id].offset);
+      },
+      { passive: true },
+    );
 
     track.addEventListener("touchend", () => {
       track.style.transition = "transform 500ms";
@@ -288,20 +350,26 @@
     renderTrack(id);
     initDrag(id);
     autoAdvance(id);
-    document.getElementById(`btn-prev-${id}`)?.addEventListener("click", () => prevCarousel(id));
-    document.getElementById(`btn-next-${id}`)?.addEventListener("click", () => nextCarousel(id));
+    document
+      .getElementById(`btn-prev-${id}`)
+      ?.addEventListener("click", () => prevCarousel(id));
+    document
+      .getElementById(`btn-next-${id}`)
+      ?.addEventListener("click", () => nextCarousel(id));
   }
 
   function showError(trackId: string): void {
     const el = document.getElementById(trackId);
-    if (el) el.innerHTML = '<div class="text-center text-[#71717A] py-20 w-full">No se pudieron cargar los juegos.</div>';
+    if (el)
+      el.innerHTML =
+        '<div class="text-center text-[#71717A] py-20 w-full">No se pudieron cargar los juegos.</div>';
   }
 
   function cardDestacado(j: Juego): string {
     return `
     <a href="/detail/${j.id}" class="flex flex-col bg-[#1A1A1D] rounded-xl overflow-hidden border border-[#27272A] hover:border-[#A78BFA] transition-all duration-300 group cursor-pointer flex-shrink-0 w-[calc(25%-15px)]">
       <figure class="relative aspect-[3/4] overflow-hidden">
-        <img src="${j.imagen_url || 'https://placehold.co/300x400/1A1A1D/A78BFA?text=XDG'}"
+        <img src="${j.imagen_url || "https://placehold.co/300x400/1A1A1D/A78BFA?text=XDG"}"
           alt="Portada de ${j.titulo}"
           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
       </figure>
@@ -322,7 +390,7 @@
     return `
     <a href="/detail/${j.juego_id}" class="flex flex-col bg-[#1A1A1D] rounded-xl overflow-hidden border border-[#27272A] hover:border-[#F472B6] transition-all duration-300 group cursor-pointer flex-shrink-0 w-[calc(25%-15px)]">
       <figure class="relative aspect-[3/4] overflow-hidden">
-        <img src="${j.imagen_url || 'https://placehold.co/300x400/1A1A1D/F472B6?text=XDG'}"
+        <img src="${j.imagen_url || "https://placehold.co/300x400/1A1A1D/F472B6?text=XDG"}"
           alt="Portada de ${j.titulo}"
           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
         <span class="absolute top-2 left-2 bg-[#F472B6] text-[#09090B] text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full">
@@ -349,7 +417,7 @@
     return `
     <a href="/detail/${j.id}" class="flex flex-col bg-[#1A1A1D] rounded-xl overflow-hidden border border-[#27272A] hover:border-[#34D399] transition-all duration-300 group cursor-pointer flex-shrink-0 w-[calc(25%-15px)]">
       <figure class="relative aspect-[3/4] overflow-hidden">
-        <img src="${j.imagen_url || 'https://placehold.co/300x400/1A1A1D/34D399?text=XDG'}"
+        <img src="${j.imagen_url || "https://placehold.co/300x400/1A1A1D/34D399?text=XDG"}"
           alt="Portada de ${j.titulo}"
           class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-70"/>
         <span class="absolute top-2 left-2 bg-[#34D399] text-[#09090B] text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded">
@@ -363,7 +431,7 @@
           <p class="text-[#71717A] text-xs mt-1 line-clamp-2">${j.descripcion}</p>
         </div>
         <div class="mt-4 flex justify-between items-center">
-          <span class="text-[#34D399] font-semibold text-sm">${j.fecha_lanzamiento ?? 'Próximamente'}</span>
+          <span class="text-[#34D399] font-semibold text-sm">${j.fecha_lanzamiento ?? "Próximamente"}</span>
           <button class="bg-[#27272A] text-white p-2 rounded-full hover:bg-[#34D399] hover:text-[#09090B] transition-colors">${notifyIcon}</button>
         </div>
       </div>
@@ -375,7 +443,7 @@
     <div class="flex flex-col bg-[#1A1A1D] rounded-xl overflow-hidden border border-[#27272A] hover:border-[#F472B6] transition-all duration-300 group flex-shrink-0 w-[calc(25%-15px)]">
       <a href="/detail/${j.juego_id}" class="block">
         <figure class="relative aspect-[3/4] overflow-hidden">
-          <img src="${j.imagen_url || 'https://placehold.co/300x400/1A1A1D/F472B6?text=XDG'}"
+          <img src="${j.imagen_url || "https://placehold.co/300x400/1A1A1D/F472B6?text=XDG"}"
             alt="Portada de ${j.titulo}"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
           <span class="absolute top-2 left-2 bg-[#F472B6]/20 border border-[#F472B6]/40 text-[#F472B6] text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full flex items-center gap-1">
@@ -404,10 +472,11 @@
       </div>
     </div>`;
   }
+
   function cardGrid(
     j: Juego,
     descuentoMap: Map<number, Descuento>,
-    hoy: Date
+    hoy: Date,
   ): string {
     const descuento = descuentoMap.get(j.id);
     const esProximo = !!(j.fecha_lanzamiento && new Date(j.fecha_lanzamiento) > hoy);
@@ -422,7 +491,7 @@
       badge = `<span class="absolute top-2 left-2 bg-[#34D399] text-[#09090B] text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded">Pronto</span>
                <div class="absolute inset-0 bg-gradient-to-t from-[#09090B]/60 to-transparent"></div>`;
       hoverBorder = "hover:border-[#34D399]";
-      precioHtml = `<span class="text-[#34D399] font-semibold text-sm">${j.fecha_lanzamiento ?? 'Próximamente'}</span>`;
+      precioHtml = `<span class="text-[#34D399] font-semibold text-sm">${j.fecha_lanzamiento ?? "Próximamente"}</span>`;
       btnHover = "hover:bg-[#34D399] hover:text-[#09090B]";
       actionBtn = `<button class="bg-[#27272A] text-white p-2 rounded-full ${btnHover} transition-colors">${notifyIcon}</button>`;
     } else if (descuento) {
@@ -440,9 +509,9 @@
     return `
     <a href="/detail/${j.id}" class="flex flex-col bg-[#1A1A1D] rounded-xl overflow-hidden border border-[#27272A] ${hoverBorder} transition-all duration-300 group cursor-pointer">
       <figure class="relative aspect-[3/4] overflow-hidden">
-        <img src="${j.imagen_url || 'https://placehold.co/300x400/1A1A1D/A78BFA?text=XDG'}"
+        <img src="${j.imagen_url || "https://placehold.co/300x400/1A1A1D/A78BFA?text=XDG"}"
           alt="Portada de ${j.titulo}"
-          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500${esProximo ? ' opacity-70' : ''}"/>
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500${esProximo ? " opacity-70" : ""}"/>
         ${badge}
       </figure>
       <div class="p-4 flex flex-col grow justify-between">
@@ -464,27 +533,38 @@
 
   async function loadDestacados(): Promise<void> {
     try {
-      const res = await fetch(`${API}/api/juegos.jsp`, { credentials: "include" });
-      todosJuegos = await res.json() as Juego[];
+      const res = await fetch(`${API}/api/juegos.jsp`, {
+        credentials: "include",
+      });
+      todosJuegos = (await res.json()) as Juego[];
       initCarousel("destacados", todosJuegos.map(cardDestacado));
-    } catch { showError("track-destacados"); }
+    } catch {
+      showError("track-destacados");
+    }
   }
 
   async function loadDescuentos(): Promise<void> {
     try {
-      const res = await fetch(`${API}/api/descuentos.jsp`, { credentials: "include" });
-      todosDescuentos = await res.json() as Descuento[];
-      descuentoMap = new Map(todosDescuentos.map(d => [d.juego_id, d]));
+      const res = await fetch(`${API}/api/descuentos.jsp`, {
+        credentials: "include",
+      });
+      todosDescuentos = (await res.json()) as Descuento[];
+      descuentoMap = new Map(todosDescuentos.map((d) => [d.juego_id, d]));
       initCarousel("descuentos", todosDescuentos.map(cardDescuento));
-    } catch { showError("track-descuentos"); }
+    } catch {
+      showError("track-descuentos");
+    }
   }
 
   async function loadProximamente(filtro: string = ""): Promise<void> {
     const hoy = new Date();
     let proximos = todosJuegos.filter(
-      (j: Juego) => j.fecha_lanzamiento && new Date(j.fecha_lanzamiento) > hoy
+      (j: Juego) => j.fecha_lanzamiento && new Date(j.fecha_lanzamiento) > hoy,
     );
-    if (filtro) proximos = proximos.filter((j: Juego) => (j.categoria ?? "").toLowerCase() === filtro);
+    if (filtro)
+      proximos = proximos.filter(
+        (j: Juego) => (j.categoria ?? "").toLowerCase() === filtro,
+      );
     const track = document.getElementById("track-proximamente");
     if (proximos.length) {
       if (!carouselState["proximamente"]) {
@@ -495,70 +575,66 @@
         renderTrack("proximamente");
       }
     } else {
-      if (track) track.innerHTML = `<div class="text-center text-[#71717A] py-20 w-full">No hay lanzamientos próximos${filtro ? " en esta categoría" : ""}.</div>`;
+      if (track)
+        track.innerHTML = `<div class="text-center text-[#71717A] py-20 w-full">No hay lanzamientos próximos${filtro ? " en esta categoría" : ""}.</div>`;
     }
   }
-window.addEventListener("filtrar-categoria", async (e: Event) => {
-  const { categoriaId } =
-    (e as CustomEvent<{ categoriaId: string }>).detail;
 
-  const sectionesEl = document.getElementById("home-sections");
+  window.addEventListener("filtrar-categoria", async (e: Event) => {
+    const { categoriaId } = (e as CustomEvent<{ categoriaId: string }>).detail;
+    const sectionesEl = document.getElementById("home-sections");
 
-  if (!categoriaId) {
-    if (sectionesEl) sectionesEl.style.display = "";
-    document.getElementById("grid-categoria")?.remove();
-    return;
-  }
+    if (!categoriaId) {
+      if (sectionesEl) sectionesEl.style.display = "";
+      document.getElementById("grid-categoria")?.remove();
+      return;
+    }
 
-  if (!todosJuegos || todosJuegos.length === 0) {
-    console.warn("Juegos aún no cargados");
-    return;
-  }
+    if (!todosJuegos || todosJuegos.length === 0) {
+      console.warn("Juegos aún no cargados");
+      return;
+    }
 
-  const hoy = new Date();
+    const hoy = new Date();
+    const res = await fetch(`${API}/api/juegos_por_categoria.jsp?categoria_id=${categoriaId}`);
+    const juegos = await res.json();
 
-  const res = await fetch(`${API}/api/juegos_por_categoria.jsp?categoria_id=${categoriaId}`);
-const juegos = await res.json();
+    const juegosVisibles: Juego[] = juegos.filter(
+      (j: Juego) => !j.fecha_lanzamiento || new Date(j.fecha_lanzamiento) <= hoy,
+    );
 
- const juegosVisibles: Juego[] = juegos.filter((j: Juego) =>
-  !j.fecha_lanzamiento || new Date(j.fecha_lanzamiento) <= hoy
-);
+    if (sectionesEl) sectionesEl.style.display = "none";
 
+    let grid = document.getElementById("grid-categoria");
 
+    if (!grid) {
+      grid = document.createElement("div");
+      grid.id = "grid-categoria";
+      grid.className = "font-space w-full px-4 max-w-360 mx-auto";
+      sectionesEl?.insertAdjacentElement("afterend", grid);
+    }
 
-
-
-  if (sectionesEl) sectionesEl.style.display = "none";
-
-  let grid = document.getElementById("grid-categoria");
-
-  if (!grid) {
-    grid = document.createElement("div");
-    grid.id = "grid-categoria";
-    grid.className = "font-space w-full px-4 max-w-360 mx-auto";
-    sectionesEl?.insertAdjacentElement("afterend", grid);
-  }
-
-  if (juegosVisibles.length === 0) {
-    grid.innerHTML = `
+    if (juegosVisibles.length === 0) {
+      grid.innerHTML = `
       <div class="text-center text-[#71717A] py-20">
         No hay juegos en esta categoría.
-      </div>
-    `;
-    return;
-  }
+      </div>`;
+      return;
+    }
 
- grid.innerHTML = `
-  <div class="grid grid-cols-4 gap-5 py-12">
-    ${juegosVisibles.map(j => cardGrid(j, descuentoMap, hoy)).join("")}
-  </div>
-`;
-});
+    grid.innerHTML = `
+      <div class="grid grid-cols-4 gap-5 py-12">
+        ${juegosVisibles.map((j) => cardGrid(j, descuentoMap, hoy)).join("")}
+      </div>`;
+  });
+
   async function loadWishlist(): Promise<void> {
     let userId: number | null = null;
     try {
-      const sessionRes = await fetch(`${API}/api/session.jsp`, { credentials: "include" });
-      const session = await sessionRes.json() as { user_id?: number };
+      const sessionRes = await fetch(`${API}/api/session.jsp`, {
+        credentials: "include",
+      });
+      const session = (await sessionRes.json()) as { user_id?: number };
       userId = session?.user_id ?? null;
     } catch {}
 
@@ -572,11 +648,12 @@ const juegos = await res.json();
       noAuthEl?.classList.remove("hidden");
       return;
     }
-  }
 
     try {
-      const res = await fetch(`${API}/api/wishlist.jsp?user_id=${userId}`, { credentials: "include" });
-      const items = await res.json() as WishlistItem[];
+      const res = await fetch(`${API}/api/wishlist.jsp?user_id=${userId}`, {
+        credentials: "include",
+      });
+      const items = (await res.json()) as WishlistItem[];
 
       loadingEl?.classList.add("hidden");
 
@@ -591,8 +668,12 @@ const juegos = await res.json();
       const track = document.getElementById(`track-${id}`);
       if (track) track.innerHTML = carouselState[id].items.join("");
       initDrag(id);
-      document.getElementById("btn-prev-wishlist-main")?.addEventListener("click", () => prevCarousel(id));
-      document.getElementById("btn-next-wishlist-main")?.addEventListener("click", () => nextCarousel(id));
+      document
+        .getElementById("btn-prev-wishlist-main")
+        ?.addEventListener("click", () => prevCarousel(id));
+      document
+        .getElementById("btn-next-wishlist-main")
+        ?.addEventListener("click", () => nextCarousel(id));
     } catch {
       loadingEl?.classList.add("hidden");
       emptyEl?.classList.remove("hidden");
@@ -605,10 +686,12 @@ const juegos = await res.json();
         method: "DELETE",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: wishlistId })
+        body: JSON.stringify({ id: wishlistId }),
       });
       loadWishlist();
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   async function addToCart(juegoId: number): Promise<void> {
@@ -617,9 +700,11 @@ const juegos = await res.json();
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ juego_id: juegoId })
+        body: JSON.stringify({ juego_id: juegoId }),
       });
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   loadDestacados().then(() => loadProximamente());
