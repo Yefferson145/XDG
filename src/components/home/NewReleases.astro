@@ -572,6 +572,7 @@ const juegos = await res.json();
       noAuthEl?.classList.remove("hidden");
       return;
     }
+  }
 
     try {
       const res = await fetch(`${API}/api/wishlist.jsp?user_id=${userId}`, { credentials: "include" });

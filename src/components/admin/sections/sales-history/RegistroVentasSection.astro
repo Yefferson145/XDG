@@ -1,0 +1,19 @@
+---
+import StatCard from "../sales-history/StatCard.astro";
+import RevenueChart from "../sales-history/revenue-section.astro";
+import CategoryDistribution from "../sales-history/Categorydistribution.astro";
+---
+
+<div class="px-4 pb-4">
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+    <StatCard title="INGRESOS TOTALES" value="$1,284,502" change="+14.2%" trend="up" accent />
+    <StatCard title="COMPRAS PROCESADAS" value="42,801" change="+5.7%" trend="up" />
+    <StatCard title="NUEVOS CLIENTES" value="1,402" change="-2.1%" trend="down" />
+    <StatCard title="TASA DE CONVERSIÓN" value="3.8%" change="+0.4%" trend="up" accent />
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-4">
+    <RevenueChart />
+    <CategoryDistribution />
+  </div>
+</div>
