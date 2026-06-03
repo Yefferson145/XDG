@@ -326,10 +326,18 @@
                 body: JSON.stringify({ action: "login", correo, contrasena }),
             });
             const data = await res.json();
+            console.log(data);
             if (data.success) {
+
                 overlay.classList.add("hidden");
                 overlay.classList.remove("flex");
-                window.dispatchEvent(new CustomEvent("user-logged-in", { detail: { nombre: data.nombre } }));
+
+                if (data.role === "admin") {
+                window.location.href = "/admin";
+            return;
+            }
+
+            window.location.href = "/user";
             } else {
                 showError("loginContrasena", data.message || "Correo o contraseña incorrectos.");
             }

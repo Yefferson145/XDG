@@ -70,7 +70,6 @@
         </div>
     </div>
 
-    <!-- SEGUNDO RECUADRO -->
 
     <div
         class="group relative h-55 rounded-2xl border border-[#262629]
@@ -141,7 +140,6 @@
         </div>
     </div>
 
-    <!-- TERCER RECUADRO -->
     <div
         class="group relative h-55 rounded-2xl border border-[#262629]
                bg-[#17171A]/70 overflow-hidden
@@ -210,7 +208,6 @@
         </div>
     </div>
 
-    <!-- CUARTO RECUADRO -->
     <div
         class="group relative h-55 rounded-2xl border border-[#262629]
                bg-[#17171A]/70 overflow-hidden
@@ -278,4 +275,37 @@
             </div>
         </div>
     </div>
+    
+<script>
+  const API = "http://localhost:8080";
+ 
+  async function cargarResumen() {
+    try {
+      const res = await fetch(`${API}/api/admin.jsp?seccion=resumen`, {
+        credentials: "include",
+      });
+      const d = await res.json();
+      if (d.error) return;
+ 
+      const h2s = document.querySelectorAll(
+        "#admin-main-content [data-admin-section='dashboard'] h2"
+      );
+      if (h2s[0]) h2s[0].textContent = `S/ ${Number(d.total_ganancias).toFixed(2)}`;
+      if (h2s[1]) h2s[1].textContent = `${d.total_usuarios}`;
+      if (h2s[2]) h2s[2].textContent = `${d.juego_top_unidades} uds`;
+      if (h2s[3]) h2s[3].textContent = `${d.total_ventas}`;
+ 
+      document.querySelectorAll(".juego-top-label").forEach(
+        (el) => (el.textContent = d.juego_top || "N/A")
+      );
+    } catch (e) {
+      console.error("Error resumen:", e);
+    }
+  }
+ 
+  document.addEventListener("DOMContentLoaded", () => {
+    cargarResumen();
+    setInterval(cargarResumen, 30_000);
+  });
+</script>
 </div>

@@ -14,7 +14,7 @@
            transition-all duration-200 ease-out
            active:scale-95 active:duration-75"
     >
-        <a href="/" class="text-[#340080] flex items-center gap-2">
+        <button id="addGameBtn" type="button" class="text-[#340080] flex items-center gap-2">
             <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="14"
@@ -25,6 +25,17 @@
                 <path d="M6 8H0V6h6V0h2v6h6v2H8v6H6z"></path>
             </svg>
             AGREGAR JUEGO
-        </a>
+        </button>
     </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("addGameBtn")?.addEventListener("click", () => {
+            window.dispatchEvent(new CustomEvent("open-admin-section", {
+                detail: { section: "registro-juegos" },
+            }));
+        });
+    });
+</script>
 </div>
