@@ -2,18 +2,87 @@
 import StatCard from "../sales-history/StatCard.astro";
 import RevenueChart from "../sales-history/revenue-section.astro";
 import CategoryDistribution from "../sales-history/Categorydistribution.astro";
+import Sales from "../sales-history/sales.astro";
 ---
 
 <div class="px-4 pb-4">
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
-    <StatCard title="INGRESOS TOTALES" value="$1,284,502" change="+14.2%" trend="up" accent />
-    <StatCard title="COMPRAS PROCESADAS" value="42,801" change="+5.7%" trend="up" />
-    <StatCard title="NUEVOS CLIENTES" value="1,402" change="-2.1%" trend="down" />
-    <StatCard title="TASA DE CONVERSIÓN" value="3.8%" change="+0.4%" trend="up" accent />
+
+    <div id="stat-ingresos">
+      <StatCard title="INGRESOS TOTALES"    value="$0"  change="+0%" trend="up" accent />
+    </div>
+    <div id="stat-vendidos">
+      <StatCard title="COMPRAS PROCESADAS"  value="0"   change="+0%" trend="up" />
+    </div>
+    <div id="stat-clientes">
+      <StatCard title="NUEVOS CLIENTES"     value="0"   change="+0%" trend="up" />
+    </div>
+    <div id="stat-conversion">
+      <StatCard title="TASA DE CONVERSIÓN"  value="0%"  change="+0%" trend="up" accent />
+    </div>
+
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-4">
     <RevenueChart />
     <CategoryDistribution />
+    <Sales />
   </div>
 </div>
+
+<script>
+  const API = "http://localhost:8080";
+
+  // StatCard renderiza: h3 = value, el span con ↗/↘ = trend+change
+  function updateCard(wrapperId: string, value: string, change: string) {
+    const wrapper = document.getElementById(wrapperId);
+    if (!wrapper) return;
+
+    const valueEl  = wrapper.querySelector<HTMLElement>("h3");
+    const changeEl = wrapper.querySelector<HTMLElement>(".flex.items-center span:first-child");
+
+    if (valueEl)  valueEl.textContent  = value;
+    if (changeEl) {
+
+      const arrow = changeEl.textContent?.trim().charAt(0) ?? "↗";
+      changeEl.textContent = `${arrow} ${change}`;
+    }
+  }
+
+  async function loadStats() {
+    try {
+      const res   = await fetch(`${API}/api/ventas-stats.jsp`, { credentials: "include" });
+      const text  = await res.text();
+      const match = text.match(/\{[\s\S]*\}/);
+      if (!match) return;
+
+      const data = JSON.parse(match[0]);
+
+      updateCard(
+        "stat-ingresos",
+        `$${Math.round(data.monthlyTotal ?? 0).toLocaleString("es-PE")}`,
+        data.monthlyChange ?? "+0%"
+      );
+      updateCard(
+        "stat-vendidos",
+        (data.dailyTotal ?? 0).toLocaleString("es-PE"),
+        data.dailyChange ?? "+0%"
+      );
+      updateCard(
+        "stat-clientes",
+        String(data.newClients ?? 0),
+        data.clientsChange ?? "+0%"
+      );
+      updateCard(
+        "stat-conversion",
+        `${data.conversionRate ?? 0}%`,
+        data.conversionChange ?? "+0%"
+      );
+
+    } catch (e) {
+      console.error("[dashboard] Error al cargar stats:", e);
+    }
+  }
+
+  loadStats();
+</script>

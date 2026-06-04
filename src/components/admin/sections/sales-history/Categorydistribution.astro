@@ -1,50 +1,71 @@
 ---
-const categories = [
-  { label: "ACTION / RPG", pct: 45, color: "bg-[#8b5cf6]" },
-  { label: "FPS / SHOOTER", pct: 28, color: "bg-[#ffb38a]" },
-  { label: "SIMULATION / STRATEGY", pct: 15, color: "bg-[#ffb85e]" },
-  { label: "INDIE / ADVENTURE", pct: 12, color: "bg-[#d8d1eb]" },
-];
 ---
-
-<div class="rounded-[24px] border border-[#262629] bg-[#17171A]/70  p-8 flex flex-col overflow-hidden transition-all duration-300 hover:border-[#A970FF]">
+<div class="rounded-[24px] border border-[#262629] bg-[#17171A]/70 p-8 flex flex-col overflow-hidden transition-all duration-300 hover:border-[#A970FF]">
   <h2 class="text-[28px] font-medium text-white mb-8">Distribucion por Categoría</h2>
 
-  <div class="space-y-7">
-    {categories.map((cat) => (
-      <div>
-        <div class="flex justify-between mb-3">
-          <span class="text-[13px] tracking-wide text-[#9b9ba8]">{cat.label}</span>
-          <span class="text-white text-[15px]">{cat.pct}%</span>
-        </div>
-
-        <div class="h-[8px] rounded-full bg-[#23232d] overflow-hidden">
-          <div
-            class={`h-full rounded-full transition-all duration-700 ease-out ${cat.color} bar-fill`}
-            style={`width:0%`}
-            data-target={`${cat.pct}%`}
-          />
-        </div>
-      </div>
-    ))}
+  <div id="cat-list" class="space-y-7">
+    <p class="text-zinc-500 text-sm">Cargando...</p>
   </div>
 
   <div class="mt-10 rounded-2xl border border-[#35285d] bg-[#151022] p-5">
     <div class="flex gap-3">
       <span class="text-[#8b5cf6] text-xl">✦</span>
-      <p class="text-[14px] text-[#a8a1bb] leading-relaxed">
-        Análisis: Las ventas de juegos de rol han aumentado un <span class="text-white font-medium">12%</span> tras el evento de rebajas de verano.
+      <p id="cat-insight" class="text-[14px] text-[#a8a1bb] leading-relaxed">
+        Analizando datos de ventas...
       </p>
     </div>
   </div>
 </div>
 
 <script>
-  const bars = document.querySelectorAll<HTMLElement>(".bar-fill");
+  const API = "http://localhost:8080";
 
-  setTimeout(() => {
-    bars.forEach((bar) => {
-      bar.style.width = bar.dataset.target ?? "0%";
-    });
-  }, 300);
+  async function loadCategories() {
+    try {
+      const res  = await fetch(`${API}/api/ventas-stats.jsp`, { credentials: "include" });
+      const text = await res.text();
+      const match = text.match(/\{[\s\S]*\}/);
+      if (!match) return;
+      const data = JSON.parse(match[0]);
+      const cats = data.categories || [];
+
+      const list    = document.getElementById("cat-list")!;
+      const insight = document.getElementById("cat-insight")!;
+
+      if (!cats.length) {
+        list.innerHTML = `<p class="text-zinc-500 text-sm">Sin datos</p>`;
+        return;
+      }
+
+      list.innerHTML = cats.map((cat: any) => `
+        <div>
+          <div class="flex justify-between mb-3">
+            <span class="text-[13px] tracking-wide text-[#9b9ba8]">${cat.label}</span>
+            <span class="text-white text-[15px]">${cat.pct}%</span>
+          </div>
+          <div class="h-[8px] rounded-full bg-[#23232d] overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-700 ease-out bar-fill"
+                 style="width:0%; background:${cat.color}"
+                 data-target="${cat.pct}%">
+            </div>
+          </div>
+        </div>
+      `).join("");
+
+      setTimeout(() => {
+        document.querySelectorAll<HTMLElement>(".bar-fill").forEach(bar => {
+          bar.style.width = bar.dataset.target ?? "0%";
+        });
+      }, 300);
+
+      if (cats.length > 0) {
+        insight.innerHTML = `La categoría <span class="text-white font-medium">${cats[0].label}</span> lidera con el <span class="text-white font-medium">${cats[0].pct}%</span> de las ventas totales.`;
+      }
+
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  loadCategories();
 </script>

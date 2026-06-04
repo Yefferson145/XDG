@@ -1,165 +1,28 @@
-<style>
-  .carousel-wrapper {
-    position: relative;
-  }
-  .carousel-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 1px solid #27272a;
-    background: #1a1a1d;
-    color: #a78bfa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition:
-      background 0.2s,
-      color 0.2s,
-      border-color 0.2s;
-    font-size: 20px;
-    line-height: 1;
-    user-select: none;
-  }
-  .carousel-arrow:hover {
-    background: #2c2832;
-    border-color: #a78bfa;
-  }
-  .carousel-arrow.left {
-    left: -20px;
-  }
-  .carousel-arrow.right {
-    right: -20px;
-  }
-
-  .carousel-arrow.pink {
-    color: #f472b6;
-  }
-  .carousel-arrow.pink:hover {
-    border-color: #f472b6;
-  }
-  .carousel-arrow.green {
-    color: #34d399;
-  }
-  .carousel-arrow.green:hover {
-    border-color: #34d399;
-  }
-  .carousel-arrow.wishlist-color {
-    color: #f472b6;
-  }
-  .carousel-arrow.wishlist-color:hover {
-    border-color: #f472b6;
-  }
-
-  .cat-arrow:hover {
-    background: #2c2832;
-    border-color: #a78bfa;
-  }
-  .cat-arrow.left {
-    left: -16px;
-  }
-  .cat-arrow.right {
-    right: -16px;
-  }
-
-  .carousel-track {
-    cursor: grab;
-    user-select: none;
-  }
-  .carousel-track.dragging {
-    cursor: grabbing;
-    transition: none !important;
-  }
-  #cat-track.dragging {
-    cursor: grabbing;
-    transition: none !important;
-  }
-</style>
+---
+import CarouselSection from "../home/CarouselSection.astro";
+---
 
 <div class="font-space w-full px-4" id="home-sections">
-  <section class="mb-16">
-    <div class="flex max-w-360 mx-auto justify-between items-end mb-6">
-      <div>
-        <h2 class="text-2xl text-white pb-1">Juegos Destacados</h2>
-        <p class="text-xs text-[#71717A]">
-          Los títulos más populares de nuestra tienda.
-        </p>
-      </div>
-    </div>
-    <div class="max-w-360 mx-auto carousel-wrapper">
-      <button class="carousel-arrow left" id="btn-prev-destacados">&#8249;</button>
-      <button class="carousel-arrow right" id="btn-next-destacados">&#8250;</button>
-      <div class="overflow-hidden">
-        <div
-          id="track-destacados"
-          class="carousel-track flex gap-5 transition-transform duration-500"
-        >
-          {
-            Array.from({ length: 4 }).map(() => (
-              <div class="bg-[#1A1A1D] border-[#27272A] rounded-xl flex-shrink-0 w-[calc(25%-15px)] aspect-[3/4] animate-pulse" />
-            ))
-          }
-        </div>
-      </div>
-    </div>
-  </section>
+  <CarouselSection
+    id="destacados"
+    title="Juegos Destacados"
+    subtitle="Los títulos más populares de nuestra tienda."
+    color="#A78BFA"
+  />
 
-  <section class="mb-16">
-    <div class="flex max-w-360 mx-auto justify-between items-end mb-6">
-      <div>
-        <h2 class="text-2xl text-white pb-1">Juegos con Descuento</h2>
-        <p class="text-xs text-[#71717A]">
-          Aprovecha las ofertas por tiempo limitado.
-        </p>
-      </div>
-    </div>
-    <div class="max-w-360 mx-auto carousel-wrapper">
-      <button class="carousel-arrow left pink" id="btn-prev-descuentos">&#8249;</button>
-      <button class="carousel-arrow right pink" id="btn-next-descuentos">&#8250;</button>
-      <div class="overflow-hidden">
-        <div
-          id="track-descuentos"
-          class="carousel-track flex gap-5 transition-transform duration-500"
-        >
-          {
-            Array.from({ length: 4 }).map(() => (
-              <div class="bg-[#1A1A1D] border-[#27272A] rounded-xl flex-shrink-0 w-[calc(25%-15px)] aspect-[3/4] animate-pulse" />
-            ))
-          }
-        </div>
-      </div>
-    </div>
-  </section>
+  <CarouselSection
+    id="descuentos"
+    title="Juegos con Descuento"
+    subtitle="Aprovecha las ofertas por tiempo limitado."
+    color="#F472B6"
+  />
 
-  <section class="mb-16">
-    <div class="flex max-w-360 mx-auto justify-between items-end mb-6">
-      <div>
-        <h2 class="text-2xl text-white pb-1">Próximamente</h2>
-      </div>
-    </div>
-    <div class="max-w-360 mx-auto carousel-wrapper">
-      <button class="carousel-arrow left green" id="btn-prev-proximamente">&#8249;</button>
-      <button class="carousel-arrow right green" id="btn-next-proximamente">&#8250;</button>
-      <div class="overflow-hidden">
-        <div
-          id="track-proximamente"
-          class="carousel-track flex gap-5 transition-transform duration-500"
-        >
-          {
-            Array.from({ length: 4 }).map(() => (
-              <div class="bg-[#1A1A1D] border-[#27272A] rounded-xl flex-shrink-0 w-[calc(25%-15px)] aspect-[3/4] animate-pulse" />
-            ))
-          }
-        </div>
-      </div>
-    </div>
-  </section>
+  <CarouselSection
+    id="proximamente"
+    title="Próximamente"
+    color="#34D399"
+  />
 </div>
-
 <script>
   interface Juego {
     id: number;
@@ -531,17 +394,21 @@
   let todosDescuentos: Descuento[] = [];
   let descuentoMap: Map<number, Descuento> = new Map();
 
-  async function loadDestacados(): Promise<void> {
-    try {
-      const res = await fetch(`${API}/api/juegos.jsp`, {
-        credentials: "include",
-      });
-      todosJuegos = (await res.json()) as Juego[];
-      initCarousel("destacados", todosJuegos.map(cardDestacado));
-    } catch {
-      showError("track-destacados");
-    }
+async function loadDestacados(): Promise<void> {
+  try {
+    const res = await fetch(`${API}/api/juegos.jsp`, { credentials: "include" });
+    todosJuegos = (await res.json()) as Juego[];
+
+    const hoy = new Date();
+    const disponibles = todosJuegos.filter(
+      j => !j.fecha_lanzamiento || new Date(j.fecha_lanzamiento) <= hoy
+    );
+
+    initCarousel("destacados", disponibles.map(cardDestacado));
+  } catch {
+    showError("track-destacados");
   }
+}
 
   async function loadDescuentos(): Promise<void> {
     try {
@@ -634,8 +501,8 @@
       const sessionRes = await fetch(`${API}/api/session.jsp`, {
         credentials: "include",
       });
-      const session = (await sessionRes.json()) as { user_id?: number };
-      userId = session?.user_id ?? null;
+      const session = (await sessionRes.json()) as { id?: number; logged?: boolean };
+userId = session?.id ?? null;
     } catch {}
 
     const loadingEl = document.getElementById("wishlist-loading");
@@ -694,20 +561,27 @@
     }
   }
 
-  async function addToCart(juegoId: number): Promise<void> {
-    try {
-      await fetch(`${API}/api/carrito.jsp`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ juego_id: juegoId }),
-      });
-    } catch (e) {
-      console.error(e);
-    }
-  }
+async function addToCart(juegoId: number): Promise<void> {
+  try {
+    const sessionRes = await fetch(`${API}/api/session.jsp`, { credentials: "include" });
+    const session = await sessionRes.json();
+    if (!session.id) return;
 
-  loadDestacados().then(() => loadProximamente());
+    await fetch(`${API}/api/carrito.jsp`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ juego_id: juegoId, user_id: session.id }),
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+  (async () => {
+  await loadDestacados();
+  loadProximamente();
   loadDescuentos();
   loadWishlist();
+})();
 </script>

@@ -4,16 +4,29 @@ import Button from '../Button.astro';
 interface Props {
   title?: string;
   price?: string;
-  originalPrice?: string;
+  originalPrice?: string | null;
+  discount?: number | null;
   juegoId?: number;
 }
 
-const { 
-  title = "Starfield", 
-  price = "$69.99", 
-  originalPrice = "$79.99",
+const {
+  title = "Starfield",
+  price = 0,
+  discount = 0,
   juegoId = 0,
 } = Astro.props;
+
+const precioActual = Number(price);
+const descuento = Number(discount || 0);
+
+const hasDiscount = descuento > 0;
+
+const precioOriginal = hasDiscount
+  ? Number((precioActual / (1 - descuento / 100)).toFixed(2))
+  : precioActual;
+
+const precioFinal = precioActual;
+
 ---
 
 <div class="bg-[#121214] border border-zinc-800/50 p-6 rounded-2xl w-full max-w-[380px] font-space shadow-2xl">
@@ -22,9 +35,25 @@ const {
       <h2 class="text-white text-3xl font-bold tracking-tight leading-none">{title}</h2>
     </div>
     <div class="text-right">
-      <span class="text-zinc-500 line-through text-[13px] block mb-1">{originalPrice}</span>
-      <span class="text-white text-4xl font-bold leading-none">{price}</span>
-    </div>
+
+{
+  hasDiscount && (
+    <>
+      <span class="text-zinc-500 line-through text-[13px] block">
+        {hasDiscount ? `S/ ${precioOriginal.toFixed(2)}` : null}
+      </span>
+
+      <span class="inline-block bg-pink-500 text-black text-xs font-bold px-2 py-1 rounded mb-2">
+        -{discount}% 
+      </span>
+    </>
+  )
+}
+
+  <span class="text-white text-4xl font-bold leading-none">
+    S/ {precioFinal.toFixed(2)}
+  </span>
+</div>
   </div>
 
   <div class="flex flex-col gap-3 mb-6">
@@ -88,6 +117,7 @@ const {
                 }),
             });
             const data = await res.json();
+console.log("Respuesta carrito:", data);
 
             if (data.success) {
                 btnText.textContent = "¡Agregado!";
@@ -106,6 +136,9 @@ const {
         } catch (err) {
             btnText.textContent = "Error";
             btn.disabled = false;
+            
         }
+        
     });
+    
 </script>

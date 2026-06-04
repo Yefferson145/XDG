@@ -51,8 +51,8 @@ try {
                         <aside class="lg:col-span-4">
                             <Paygame
                                 title={juego.titulo}
-                                price={`$${juego.precio}`}
-                                originalPrice={`$${juego.precio}`}
+                                price={juego.precio}
+                                discount={juego.porcentaje || 0}
                                 juegoId={juego.id}
                             />
                         </aside>
