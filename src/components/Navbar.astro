@@ -1,4 +1,8 @@
 ---
+interface Props {
+  transparent?: boolean;
+}
+const { transparent = false } = Astro.props;
 ---
 
 <style is:global>
@@ -82,7 +86,12 @@
   }
 </style>
 
-<nav class="font-space bg-[#09090B] h-16 border-b-2 border-[#27272A] fixed top-0 left-0 w-full z-50">
+<nav
+  id="main-nav"
+  data-transparent={transparent ? "true" : "false"}
+  class="font-space h-16 fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b-2"
+  style={transparent ? "background:transparent;border-color:transparent;" : "background:#09090B;border-color:#27272A;"}
+>
     <div class="flex justify-between items-center h-16 px-6 max-w-360 mx-auto">
         <div class="flex items-center gap-8">
             <span class="text-2xl font-bold tracking-tighter text-white uppercase">
@@ -315,4 +324,22 @@
             searchInput.blur();
         }
     });
+
+    // Transparente → sólido al scroll
+    const nav = document.getElementById("main-nav");
+    if (nav && nav.dataset.transparent === "true") {
+        const onScroll = () => {
+            if (window.scrollY > 60) {
+                nav.style.background = "rgba(9,9,11,0.97)";
+                nav.style.borderColor = "rgba(39,39,42,0.6)";
+                nav.style.backdropFilter = "blur(12px)";
+            } else {
+                nav.style.background = "transparent";
+                nav.style.borderColor = "transparent";
+                nav.style.backdropFilter = "none";
+            }
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+    }
+
 </script>
