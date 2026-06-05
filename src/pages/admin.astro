@@ -4,6 +4,7 @@ import Search from "../components/admin/search.astro";
 import DashboardSection from "../components/admin/sections/dashboard/DashboardSection.astro";
 import RegistroJuegosSection from "../components/admin/sections/register-game/RegistroJuegosSection.astro";
 import RegistroVentasSection from "../components/admin/sections/sales-history/RegistroVentasSection.astro";
+import RegistroAdminSection from "../components/admin/sections/register-admi/RegistroAdmiSection.astro";
 import "../styles/global.css";
 ---
 
@@ -35,6 +36,10 @@ import "../styles/global.css";
 
                     <div data-admin-section="registro-ventas" class="hidden">
                         <RegistroVentasSection />
+                    </div>
+
+                    <div data-admin-section="registro-admin" class="hidden">
+                        <RegistroAdminSection />
                     </div>
                 </div>
             </div>
