@@ -166,15 +166,23 @@ const { transparent = false } = Astro.props;
     const logoutBtn = document.getElementById("logoutBtn") as HTMLButtonElement;
 
     btn?.addEventListener("click", () => {
-        window.dispatchEvent(new CustomEvent("open-login-modal"));
+        if (btn.dataset.logged === "true") {
+            window.dispatchEvent(new CustomEvent("open-profile-modal"));
+        } else {
+            window.dispatchEvent(new CustomEvent("open-login-modal"));
+        }
     });
 
     window.addEventListener("user-logged-in", (e: any) => {
         const userName = e.detail?.role === "admin" ? "Admin" : e.detail?.nombre || "Usuario";
         btn.textContent = `Hola, ${userName}`;
+        btn.dataset.logged = "true";
         btn.classList.remove("hover:border-[#A78BFA]");
-        btn.style.pointerEvents = "none";
         logoutBtn.classList.remove("hidden");
+    });
+
+    window.addEventListener("profile-updated", (e: any) => {
+        if (e.detail?.nombre) btn.textContent = `Hola, ${e.detail.nombre}`;
     });
 
     logoutBtn?.addEventListener("click", async () => {
@@ -185,8 +193,8 @@ const { transparent = false } = Astro.props;
             body: JSON.stringify({ action: "logout" }),
         });
         btn.textContent = "Iniciar sesión";
+        btn.dataset.logged = "false";
         btn.classList.add("hover:border-[#A78BFA]");
-        btn.style.pointerEvents = "auto";
         logoutBtn.classList.add("hidden");
         window.dispatchEvent(new CustomEvent("user-logged-out"));
     });
@@ -197,8 +205,8 @@ const { transparent = false } = Astro.props;
             const data = await res.json();
             if (data.logged) {
                 btn.textContent = `Hola, ${data.name}`;
+                btn.dataset.logged = "true";
                 btn.classList.remove("hover:border-[#A78BFA]");
-                btn.style.pointerEvents = "none";
                 logoutBtn.classList.remove("hidden");
             }
         } catch (err) { console.error("Error al verificar sesión:", err); }
