@@ -105,37 +105,77 @@
 </div>
 
 <script>
-  let categories: any[] = [
-    { id: 1, name: 'Tecnología' },
-    { id: 2, name: 'Marketing' },
-    { id: 3, name: 'Diseño' },
-  ];
+  const API_URL = "http://localhost:8080/api/categorias.jsp";
 
-  let nextId = 4;
-  let editId: number | null = null;
-  let deleteId: number | null = null;
+  let categories = [];
+  let nextId = 1;
+  let editId = null;
+  let deleteId = null;
   let page = 1;
   const PER_PAGE = 5;
 
-  const tbody       = document.getElementById('cat-table-body')!;
-  const countEl     = document.getElementById('cat-count')!;
-  const pageInfoEl  = document.getElementById('cat-page-info')!;
-  const btnPrev     = document.getElementById('cat-prev') as HTMLButtonElement;
-  const btnNext     = document.getElementById('cat-next') as HTMLButtonElement;
-  const searchInput = document.getElementById('cat-search') as HTMLInputElement;
+  const tbody       = document.getElementById('cat-table-body');
+  const countEl     = document.getElementById('cat-count');
+  const pageInfoEl  = document.getElementById('cat-page-info');
+  const btnPrev     = document.getElementById('cat-prev');
+  const btnNext     = document.getElementById('cat-next');
+  const searchInput = document.getElementById('cat-search');
 
-  const modalOverlay = document.getElementById('cat-modal-overlay')!;
-  const modalTitle   = document.getElementById('cat-modal-title')!;
-  const modalAvatar  = document.getElementById('cat-modal-avatar')!;
-  const modalName    = document.getElementById('cat-modal-name') as HTMLInputElement;
+  const modalOverlay = document.getElementById('cat-modal-overlay');
+  const modalTitle   = document.getElementById('cat-modal-title');
+  const modalAvatar  = document.getElementById('cat-modal-avatar');
+  const modalName    = document.getElementById('cat-modal-name');
 
-  const delOverlay   = document.getElementById('cat-delete-modal-overlay')!;
-  const delName      = document.getElementById('cat-delete-cat-name')!;
-  const toast        = document.getElementById('cat-toast')!;
-  const addButton    = document.getElementById('cat-add-btn') as HTMLButtonElement | null;
+  const delOverlay   = document.getElementById('cat-delete-modal-overlay');
+  const delName      = document.getElementById('cat-delete-cat-name');
+  const toast        = document.getElementById('cat-toast');
 
-  function initials(name: string) {
-    return name.trim().split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '--';
+  const addButton    = document.getElementById('cat-add-btn');
+
+  async function loadCategories() {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+
+    categories = data;
+
+    nextId = categories.length
+      ? Math.max(...categories.map(c => c.id)) + 1
+      : 1;
+
+    render();
+  }
+
+  async function createCategory(nombre) {
+    await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nombre })
+    });
+  }
+
+  async function updateCategory(id, nombre) {
+    await fetch(API_URL, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, nombre })
+    });
+  }
+
+  async function deleteCategory(id) {
+    await fetch(API_URL, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id })
+    });
+  }
+
+  function initials(name) {
+    return name.trim()
+      .split(' ')
+      .map(w => w[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase() || '--';
   }
 
   function showToast() {
@@ -143,32 +183,38 @@
     setTimeout(() => toast.classList.add('hidden'), 2500);
   }
 
-  function openModal(overlay: HTMLElement) { overlay.classList.remove('hidden'); }
-  function closeModal(overlay: HTMLElement) { overlay.classList.add('hidden'); }
+  function openModal(el) {
+    el.classList.remove('hidden');
+  }
+
+  function closeModal(el) {
+    el.classList.add('hidden');
+  }
 
   function getFiltered() {
     const q = searchInput.value.toLowerCase();
-    return categories.filter(c => !q || c.name.toLowerCase().includes(q));
+    return categories.filter(c =>
+      !q || c.nombre.toLowerCase().includes(q)
+    );
   }
 
   function render() {
-    const data  = getFiltered();
+    const data = getFiltered();
     const total = Math.max(1, Math.ceil(data.length / PER_PAGE));
     page = Math.min(page, total);
+
     const slice = data.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
-    countEl.textContent    = `${data.length} categoría${data.length !== 1 ? 's' : ''}`;
+    countEl.textContent = `${data.length} categoría${data.length !== 1 ? 's' : ''}`;
     pageInfoEl.textContent = `Página ${page} de ${total}`;
-    btnPrev.disabled       = page <= 1;
-    btnNext.disabled       = page >= total;
+
+    btnPrev.disabled = page <= 1;
+    btnNext.disabled = page >= total;
 
     if (!slice.length) {
       tbody.innerHTML = `
         <div class="flex flex-col items-center justify-center py-20 text-[#71717A]">
-          <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-4 opacity-40" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0M4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.9 17.9 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632"/>
-          </svg>
-          <p class="text-base">No hay categorías</p>
+          <p>No hay categorías</p>
         </div>`;
       return;
     }
@@ -177,101 +223,124 @@
       <div class="grid grid-cols-[3fr_100px] gap-4 px-6 py-5 border-b border-[#1E1E21] items-center">
 
         <div class="flex items-center gap-4">
-          <div class="w-11 h-11 rounded-full bg-[#A970FF]/20 flex items-center justify-center text-[#A970FF] text-sm font-bold flex-shrink-0">
-            ${initials(c.name)}
+          <div class="w-11 h-11 rounded-full bg-[#A970FF]/20 flex items-center justify-center text-[#A970FF] text-sm font-bold">
+            ${initials(c.nombre)}
           </div>
-          <span class="text-base text-white truncate">${c.name}</span>
+          <span class="text-base text-white truncate">${c.nombre}</span>
         </div>
 
         <div class="flex items-center gap-3">
           <button data-edit="${c.id}"
             class="p-2.5 rounded-xl border border-[#262629] text-[#71717A] hover:text-white hover:border-[#A970FF] transition-colors">
+
             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Z"/>
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Z"/>
             </svg>
+
           </button>
+
           <button data-del="${c.id}"
             class="p-2.5 rounded-xl border border-[#262629] text-[#71717A] hover:text-red-400 hover:border-red-500/40 transition-colors">
+
             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21q.512.078 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48 48 0 0 0-3.478-.397m-12 .562q.51-.089 1.022-.165m0 0a48 48 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a52 52 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a49 49 0 0 0-7.5 0"/>
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21q.512.078 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48 48 0 0 0-3.478-.397m-12 .562q.51-.089 1.022-.165m0 0a48 48 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a52 52 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a49 49 0 0 0-7.5 0"/>
             </svg>
+
           </button>
         </div>
       </div>
     `).join('');
 
-    tbody.querySelectorAll<HTMLButtonElement>('[data-edit]').forEach(btn =>
-      btn.addEventListener('click', () => openEdit(Number(btn.dataset.edit)))
+    tbody.querySelectorAll('[data-edit]').forEach(btn =>
+      btn.addEventListener('click', () => openEdit(+btn.dataset.edit))
     );
-    tbody.querySelectorAll<HTMLButtonElement>('[data-del]').forEach(btn =>
-      btn.addEventListener('click', () => openDelete(Number(btn.dataset.del)))
+
+    tbody.querySelectorAll('[data-del]').forEach(btn =>
+      btn.addEventListener('click', () => openDelete(+btn.dataset.del))
     );
   }
 
   function openAdd() {
     editId = null;
-    modalTitle.textContent = 'Agregar Categoría';
-    modalName.value = '';
-    modalAvatar.textContent = '--';
+    modalTitle.textContent = "Agregar Categoría";
+    modalName.value = "";
+    modalAvatar.textContent = "--";
     openModal(modalOverlay);
   }
 
-  function openEdit(id: number) {
+  function openEdit(id) {
     const c = categories.find(x => x.id === id);
     if (!c) return;
+
     editId = id;
-    modalTitle.textContent = 'Editar Categoría';
-    modalName.value = c.name;
-    modalAvatar.textContent = initials(c.name);
+    modalTitle.textContent = "Editar Categoría";
+    modalName.value = c.nombre;
+    modalAvatar.textContent = initials(c.nombre);
+
     openModal(modalOverlay);
   }
 
-  function openDelete(id: number) {
+  function openDelete(id) {
     const c = categories.find(x => x.id === id);
     if (!c) return;
+
     deleteId = id;
-    delName.textContent = c.name;
+    delName.textContent = c.nombre;
     openModal(delOverlay);
   }
 
-  document.getElementById('cat-modal-save')!.addEventListener('click', () => {
-    const name = modalName.value.trim();
-    if (!name) return;
+  document.getElementById('cat-modal-save').addEventListener('click', async () => {
+    const nombre = modalName.value.trim();
+    if (!nombre) return;
 
     if (editId !== null) {
-      const c = categories.find(x => x.id === editId)!;
-      c.name = name;
+      await updateCategory(editId, nombre);
     } else {
-      categories.push({ id: nextId++, name });
+      await createCategory(nombre);
     }
 
     closeModal(modalOverlay);
     showToast();
-    render();
+    await loadCategories();
   });
 
-  document.getElementById('cat-delete-confirm')!.addEventListener('click', () => {
-    categories = categories.filter(c => c.id !== deleteId);
+  document.getElementById('cat-delete-confirm').addEventListener('click', async () => {
+    if (!deleteId) return;
+
+    await deleteCategory(deleteId);
+
     closeModal(delOverlay);
     showToast();
-    render();
+    await loadCategories();
   });
 
-  // Cerrar modales
-  document.getElementById('cat-modal-close')!.addEventListener('click', () => closeModal(modalOverlay));
-  document.getElementById('cat-delete-cancel')!.addEventListener('click', () => closeModal(delOverlay));
+  document.getElementById('cat-modal-close').addEventListener('click', () =>
+    closeModal(modalOverlay)
+  );
 
-  modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(modalOverlay); });
-  delOverlay.addEventListener('click',   e => { if (e.target === delOverlay)   closeModal(delOverlay);   });
+  document.getElementById('cat-delete-cancel').addEventListener('click', () =>
+    closeModal(delOverlay)
+  );
+
+  modalOverlay.addEventListener('click', e => {
+    if (e.target === modalOverlay) closeModal(modalOverlay);
+  });
+
+  delOverlay.addEventListener('click', e => {
+    if (e.target === delOverlay) closeModal(delOverlay);
+  });
 
   modalName.addEventListener('input', () => {
-    modalAvatar.textContent = initials(modalName.value) || '--';
+    modalAvatar.textContent = initials(modalName.value);
   });
 
-  addButton?.addEventListener('click', openAdd);
   btnPrev.addEventListener('click', () => { page--; render(); });
   btnNext.addEventListener('click', () => { page++; render(); });
   searchInput.addEventListener('input', () => { page = 1; render(); });
 
-  render();
+  addButton?.addEventListener('click', openAdd);
+
+  loadCategories();
 </script>
