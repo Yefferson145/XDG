@@ -14,10 +14,10 @@ import "../styles/global.css";
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Document</title>
+        <title>XDG Admin</title>
     </head>
- <body class="font-space bg-[#15121B]">
-            <div class="flex h-screen overflow-hidden">
+    <body class="font-space bg-[#15121B]">
+        <div class="flex h-screen overflow-hidden">
             <SliderNavegation />
 
             <div class="flex-1 flex flex-col overflow-hidden">
@@ -49,5 +49,21 @@ import "../styles/global.css";
                 </div>
             </div>
         </div>
+
+        <script>
+            // Guarda client-side: si no es admin redirigir
+            async function checkAccess() {
+                try {
+                    const res  = await fetch("http://localhost:8080/api/session.jsp", { credentials: "include" });
+                    const data = await res.json();
+                    if (!data.logged || data.role !== "admin") {
+                        window.location.href = "/";
+                    }
+                } catch {
+                    window.location.href = "/";
+                }
+            }
+            checkAccess();
+        </script>
     </body>
 </html>

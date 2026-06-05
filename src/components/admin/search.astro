@@ -31,20 +31,40 @@
 
     <div>
         <div class="flex-col items-center text-white text-sm mr-8 w-50 h-10 border-l-2 border-[#3F3F46] pl-4">
-            <p class="text-center border-b border-[#A78BFA] w-35">Administrador</p>
+            <p id="adminGreeting" class="text-center border-b border-[#A78BFA] w-35">Cargando...</p>
         </div>
     </div>
 </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const searchInput = document.getElementById("adminGlobalSearch");
-    if (!searchInput) return;
+  const API = "http://localhost:8080";
 
-    searchInput.addEventListener("input", (event) => {
-      const query = (event.target as HTMLInputElement).value.trim();
-      window.dispatchEvent(new CustomEvent("admin-search", { detail: { query } }));
-    });
+  document.addEventListener("DOMContentLoaded", async () => {
+    const searchInput = document.getElementById("adminGlobalSearch");
+    const greeting    = document.getElementById("adminGreeting");
+
+    if (searchInput) {
+      searchInput.addEventListener("input", (event) => {
+        const query = (event.target as HTMLInputElement).value.trim();
+        window.dispatchEvent(new CustomEvent("admin-search", { detail: { query } }));
+      });
+    }
+
+    if (greeting) {
+      try {
+        const res  = await fetch(`${API}/api/session.jsp`, { credentials: "include" });
+        const data = await res.json();
+
+        if (data.logged) {
+          const subRol = (data.sub_role || "").toUpperCase();
+          const label  = subRol === "SOPORTE" ? "Soporte" : "Admin";
+          greeting.textContent = `Hola, ${label}`;
+        } else {
+          greeting.textContent = "Sin sesión";
+        }
+      } catch {
+        greeting.textContent = "Error";
+      }
+    }
   });
 </script>
-
