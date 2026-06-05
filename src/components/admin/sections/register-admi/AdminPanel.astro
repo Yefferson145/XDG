@@ -5,20 +5,24 @@
       <div class="relative flex-1 max-w-sm">
         <input id="admin-search" type="text" placeholder="Buscar administrador..."
           class="w-full bg-[#1A1A1D] border border-[#262629] rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder-[#71717A] focus:outline-none focus:border-[#A970FF] transition-colors" />
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 text-[#71717A] pointer-events-none" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+        </svg>
       </div>
 
       <select id="filter-role" class="bg-[#1A1A1D] border border-[#262629] rounded-lg px-4 py-2 text-sm text-white">
         <option value="">Todos los roles</option>
-        <option value="admin">Admin</option>
-        <option value="soporte">Soporte</option>
+        <option value="ADMIN">Admin</option>
+        <option value="SOPORTE">Soporte</option>
       </select>
 
       <span id="admin-count" class="ml-auto text-xs text-[#71717A] whitespace-nowrap">Cargando...</span>
     </div>
 
-    <div class="grid grid-cols-[2fr_1.5fr_1fr_80px] gap-4 px-6 py-3 border-b border-[#262629]">
+    <div class="grid grid-cols-[2fr_1.5fr_1fr_1fr_80px] gap-4 px-6 py-3 border-b border-[#262629]">
       <span class="text-[#71717A] text-xs font-semibold uppercase">Administrador</span>
       <span class="text-[#71717A] text-xs font-semibold uppercase">Email</span>
+      <span class="text-[#71717A] text-xs font-semibold uppercase">Usuario</span>
       <span class="text-[#71717A] text-xs font-semibold uppercase">Rol</span>
       <span class="text-[#71717A] text-xs font-semibold uppercase">Acciones</span>
     </div>
@@ -66,6 +70,9 @@
         <input id="modal-name" type="text" placeholder="Nombre completo"
           class="w-full bg-[#1A1A1D] border border-[#262629] rounded-lg px-4 py-2 text-sm text-white placeholder-[#71717A] focus:outline-none focus:border-[#A970FF] transition-colors" />
 
+        <input id="modal-username" type="text" placeholder="Nombre de usuario"
+          class="w-full bg-[#1A1A1D] border border-[#262629] rounded-lg px-4 py-2 text-sm text-white placeholder-[#71717A] focus:outline-none focus:border-[#A970FF] transition-colors" />
+
         <input id="modal-email" type="email" placeholder="Email"
           class="w-full bg-[#1A1A1D] border border-[#262629] rounded-lg px-4 py-2 text-sm text-white placeholder-[#71717A] focus:outline-none focus:border-[#A970FF] transition-colors" />
 
@@ -74,13 +81,19 @@
 
         <select id="modal-role"
           class="w-full bg-[#1A1A1D] border border-[#262629] rounded-lg px-4 py-2 text-sm text-white">
-          <option value="admin">Admin</option>
-          <option value="soporte">Soporte</option>
+          <option value="ADMIN">Admin</option>
+          <option value="SOPORTE">Soporte</option>
         </select>
 
+        <p id="modal-error" class="text-red-400 text-xs hidden"></p>
+
         <button id="modal-save"
-          class="w-full h-12 rounded-xl bg-[#A970FF] text-[#1D0D3B] text-sm font-semibold hover:brightness-110 active:scale-95 transition-all">
-          Guardar
+          class="w-full h-12 rounded-xl bg-[#A970FF] text-[#1D0D3B] text-sm font-semibold hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-2">
+          <span id="modal-save-label">Guardar</span>
+          <svg id="modal-spinner" class="hidden animate-spin" width="16" height="16" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="white" stroke-width="4"/>
+            <path class="opacity-75" fill="white" d="M4 12a8 8 0 0 1 8-8v4l3-3-3-3v4a8 8 0 0 0-8 8h4z"/>
+          </svg>
         </button>
       </div>
     </div>
@@ -91,19 +104,16 @@
     class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
     <div class="w-full max-w-sm rounded-2xl border border-[#262629] bg-[#17171A] shadow-2xl overflow-hidden">
       <div class="p-6 text-center space-y-4">
-
         <div class="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
           <svg width="24" height="24" fill="#f87171" viewBox="0 0 16 16">
             <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zM14 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1z"/>
           </svg>
         </div>
-
         <h3 class="text-white font-semibold">¿Eliminar administrador?</h3>
         <p class="text-[#71717A] text-sm">
           Esta acción no se puede deshacer.<br>
           <strong id="delete-admin-name" class="text-white"></strong>
         </p>
-
         <div class="flex gap-3 pt-2">
           <button id="delete-cancel"
             class="flex-1 h-10 rounded-xl border border-[#262629] text-[#71717A] hover:text-white transition-colors text-sm">
@@ -118,62 +128,126 @@
     </div>
   </div>
 
+  <!-- TOAST -->
   <div id="admin-toast"
-    class="hidden fixed bottom-6 right-6 z-50 bg-[#1A1A1D] border border-[#262629] rounded-xl px-5 py-3 text-white text-sm">
-    ✓ Operación completada
+    class="fixed bottom-6 right-6 z-50 bg-[#1A1A1D] border border-[#262629] rounded-xl px-5 py-3 text-white text-sm flex items-center gap-2">
+    <span id="toast-icon">✓</span>
+    <span id="toast-msg">Operación completada</span>
   </div>
 </div>
 
 <script>
-  let admins: any[] = [
-    { id: 1, name: 'Ana García',  email: 'ana@xdg.com',   role: 'admin'   },
-    { id: 2, name: 'Luis Méndez', email: 'luis@xdg.com',  role: 'soporte' },
-    { id: 3, name: 'Sofía Ramos', email: 'sofia@xdg.com', role: 'admin'   },
-  ];
-  let nextId = 4;
-  let editId: number | null = null;
-  let deleteId: number | null = null;
-  let page = 1;
+(function () {
+  const API = 'http://localhost:8080/api/usuarios.jsp';
+
+
+  const ROL_IDS = { ADMIN: 1, SOPORTE: 2 };
+
+  let admins   = [];
+  let editId   = null;
+  let deleteId = null;
+  let page     = 1;
   const PER_PAGE = 5;
 
-  const tbody       = document.getElementById('admin-table-body')!;
-  const countEl     = document.getElementById('admin-count')!;
-  const pageInfoEl  = document.getElementById('admin-page-info')!;
-  const btnPrev     = document.getElementById('admin-prev') as HTMLButtonElement;
-  const btnNext     = document.getElementById('admin-next') as HTMLButtonElement;
-  const searchInput = document.getElementById('admin-search') as HTMLInputElement;
-  const roleFilter  = document.getElementById('filter-role') as HTMLSelectElement;
+  const tbody       = document.getElementById('admin-table-body');
+  const countEl     = document.getElementById('admin-count');
+  const pageInfoEl  = document.getElementById('admin-page-info');
+  const btnPrev     = document.getElementById('admin-prev');
+  const btnNext     = document.getElementById('admin-next');
+  const searchInput = document.getElementById('admin-search');
+  const roleFilter  = document.getElementById('filter-role');
 
-  const modalOverlay = document.getElementById('admin-modal-overlay')!;
-  const modalTitle   = document.getElementById('modal-title')!;
-  const modalAvatar  = document.getElementById('modal-avatar')!;
-  const modalName    = document.getElementById('modal-name') as HTMLInputElement;
-  const modalEmail   = document.getElementById('modal-email') as HTMLInputElement;
-  const modalPass    = document.getElementById('modal-password') as HTMLInputElement;
-  const modalRole    = document.getElementById('modal-role') as HTMLSelectElement;
+  const modalOverlay = document.getElementById('admin-modal-overlay');
+  const modalTitle   = document.getElementById('modal-title');
+  const modalAvatar  = document.getElementById('modal-avatar');
+  const modalName    = document.getElementById('modal-name');
+  const modalUser    = document.getElementById('modal-username');
+  const modalEmail   = document.getElementById('modal-email');
+  const modalPass    = document.getElementById('modal-password');
+  const modalRole    = document.getElementById('modal-role');
+  const modalError   = document.getElementById('modal-error');
+  const modalSave    = document.getElementById('modal-save');
+  const modalLabel   = document.getElementById('modal-save-label');
+  const modalSpinner = document.getElementById('modal-spinner');
 
-  const delOverlay   = document.getElementById('delete-modal-overlay')!;
-  const delName      = document.getElementById('delete-admin-name')!;
-  const toast        = document.getElementById('admin-toast')!;
+  const delOverlay = document.getElementById('delete-modal-overlay');
+  const delName    = document.getElementById('delete-admin-name');
+  const toast      = document.getElementById('admin-toast');
+  const toastMsg   = document.getElementById('toast-msg');
+  const toastIcon  = document.getElementById('toast-icon');
 
-  function initials(name: string) {
-    return name.trim().split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '--';
+  /* ─── Helpers ────────────────────────────────────────────────── */
+  function initials(name) {
+    return (name || '').trim().split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '--';
   }
 
-  function showToast() {
+  function showToast(msg = 'Operación completada', ok = true) {
+    toastMsg.textContent = msg;
+    toastIcon.textContent = ok ? '✓' : '✕';
     toast.classList.remove('hidden');
-    setTimeout(() => toast.classList.add('hidden'), 2500);
+    toast.style.borderColor = ok ? '#262629' : '#f87171';
+    setTimeout(() => toast.classList.add('hidden'), 2800);
   }
 
-  function openModal(overlay: HTMLElement) { overlay.classList.remove('hidden'); }
-  function closeModal(overlay: HTMLElement) { overlay.classList.add('hidden'); }
+  function openModal(el)  { el.classList.remove('hidden'); }
+  function closeModal(el) { el.classList.add('hidden');    }
+
+  function setLoading(on) {
+    modalSave.disabled = on;
+    modalLabel.textContent = on ? 'Guardando...' : 'Guardar';
+    modalSpinner.classList.toggle('hidden', !on);
+  }
+
+  function showError(msg) {
+    modalError.textContent = msg;
+    modalError.classList.remove('hidden');
+  }
+  function clearError() { modalError.classList.add('hidden'); }
+
+  function getRolId(rolNombre) {
+    const match = admins.find(a => a.rol === rolNombre);
+    if (match && match.rol_id) return match.rol_id;
+    return ROL_IDS[rolNombre] || null;
+  }
+
+  async function fetchAdmins() {
+    tbody.innerHTML = `
+      <div class="flex items-center justify-center py-12 text-[#71717A] gap-2 text-sm">
+        <svg class="animate-spin" width="16" height="16" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4l3-3-3-3v4a8 8 0 0 0-8 8h4z"/>
+        </svg>
+        Cargando...
+      </div>`;
+    try {
+      const res  = await fetch(API);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      admins = data;
+
+      // Actualizar ROL_IDS con los valores reales que devuelve la BD
+      admins.forEach(a => {
+        if (a.rol && a.rol_id) ROL_IDS[a.rol] = a.rol_id;
+      });
+
+      render();
+    } catch (e) {
+      tbody.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-12 text-red-400 text-sm gap-2">
+          <span>Error al cargar: ${e.message}</span>
+          <button onclick="window.fetchAdmins()" class="text-xs underline text-[#A970FF]">Reintentar</button>
+        </div>`;
+    }
+  }
 
   function getFiltered() {
     const q = searchInput.value.toLowerCase();
     const r = roleFilter.value;
     return admins.filter(a =>
-      (!q || a.name.toLowerCase().includes(q) || a.email.toLowerCase().includes(q)) &&
-      (!r || a.role === r)
+      (!q || a.nombre.toLowerCase().includes(q) ||
+             a.usuario.toLowerCase().includes(q) ||
+             a.correo.toLowerCase().includes(q)) &&
+      (!r || a.rol === r)
     );
   }
 
@@ -191,124 +265,166 @@
     if (!slice.length) {
       tbody.innerHTML = `
         <div class="flex flex-col items-center justify-center py-16 text-[#71717A]">
-          <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3 opacity-40" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0M4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.9 17.9 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632"/></svg>
+          <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-3 opacity-40" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0M4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.9 17.9 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632"/>
+          </svg>
           <p class="text-sm">No hay administradores</p>
         </div>`;
       return;
     }
 
     tbody.innerHTML = slice.map(a => `
-      <div class="grid grid-cols-[2fr_1.5fr_1fr_80px] gap-4 px-6 py-4 border-b border-[#1E1E21] items-center">
-
+      <div class="grid grid-cols-[2fr_1.5fr_1fr_1fr_80px] gap-4 px-6 py-4 border-b border-[#1E1E21] items-center">
         <div class="flex items-center gap-3">
           <div class="w-9 h-9 rounded-full bg-[#A970FF]/20 flex items-center justify-center text-[#A970FF] text-xs font-bold flex-shrink-0">
-            ${initials(a.name)}
+            ${initials(a.nombre)}
           </div>
-          <span class="text-sm text-white truncate">${a.name}</span>
+          <span class="text-sm text-white truncate">${a.nombre}</span>
         </div>
-
-        <span class="text-sm text-[#71717A] truncate">${a.email}</span>
-
+        <span class="text-sm text-[#71717A] truncate">${a.correo}</span>
+        <span class="text-sm text-[#71717A] truncate">@${a.usuario}</span>
         <span>
           <span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            a.role === 'admin'
+            a.rol === 'ADMIN'
               ? 'bg-[#A970FF]/15 text-[#A970FF]'
               : 'bg-emerald-500/15 text-emerald-400'
           }">
-            ${a.role === 'admin' ? 'Admin' : 'Soporte'}
+            ${a.rol === 'ADMIN' ? 'Admin' : 'Soporte'}
           </span>
         </span>
-
         <div class="flex items-center gap-2">
           <button data-edit="${a.id}"
             class="p-1.5 rounded-lg border border-[#262629] text-[#71717A] hover:text-white hover:border-[#A970FF] transition-colors">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Z"/></svg>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Z"/>
+            </svg>
           </button>
-          <button data-del="${a.id}"
+          <button data-del="${a.id}" data-name="${a.nombre}"
             class="p-1.5 rounded-lg border border-[#262629] text-[#71717A] hover:text-red-400 hover:border-red-500/40 transition-colors">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21q.512.078 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48 48 0 0 0-3.478-.397m-12 .562q.51-.089 1.022-.165m0 0a48 48 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a52 52 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a49 49 0 0 0-7.5 0"/></svg>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21q.512.078 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48 48 0 0 0-3.478-.397m-12 .562q.51-.089 1.022-.165m0 0a48 48 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a52 52 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a49 49 0 0 0-7.5 0"/>
+            </svg>
           </button>
         </div>
       </div>
     `).join('');
 
-    tbody.querySelectorAll<HTMLButtonElement>('[data-edit]').forEach(btn =>
-      btn.addEventListener('click', () => openEdit(Number(btn.dataset.edit)))
+    tbody.querySelectorAll('[data-edit]').forEach(btn =>
+      btn.addEventListener('click', () => openEdit(btn.dataset.edit))
     );
-    tbody.querySelectorAll<HTMLButtonElement>('[data-del]').forEach(btn =>
-      btn.addEventListener('click', () => openDelete(Number(btn.dataset.del)))
+    tbody.querySelectorAll('[data-del]').forEach(btn =>
+      btn.addEventListener('click', () => openDelete(btn.dataset.del, btn.dataset.name))
     );
   }
 
   function openAdd() {
     editId = null;
-    modalTitle.textContent = 'Agregar Administrador';
-    modalName.value = modalEmail.value = modalPass.value = '';
-    modalRole.value = 'admin';
+    clearError();
+    modalTitle.textContent  = 'Agregar Administrador';
+    modalName.value = modalUser.value = modalEmail.value = modalPass.value = '';
+    modalRole.value = 'ADMIN';
     modalAvatar.textContent = '--';
+    modalPass.placeholder   = 'Contraseña';
     openModal(modalOverlay);
   }
 
-  function openEdit(id: number) {
+  function openEdit(id) {
     const a = admins.find(x => x.id === id);
     if (!a) return;
     editId = id;
-    modalTitle.textContent = 'Editar Administrador';
-    modalName.value  = a.name;
-    modalEmail.value = a.email;
-    modalPass.value  = '';
-    modalRole.value  = a.role;
-    modalAvatar.textContent = initials(a.name);
+    clearError();
+    modalTitle.textContent  = 'Editar Administrador';
+    modalName.value         = a.nombre;
+    modalUser.value         = a.usuario;
+    modalEmail.value        = a.correo;
+    modalPass.value         = '';
+    modalRole.value         = a.rol;
+    modalAvatar.textContent = initials(a.nombre);
+    modalPass.placeholder   = 'Contraseña (dejar vacío para no cambiar)';
     openModal(modalOverlay);
   }
 
-  function openDelete(id: number) {
-    const a = admins.find(x => x.id === id);
-    if (!a) return;
+  function openDelete(id, name) {
     deleteId = id;
-    delName.textContent = a.name;
+    delName.textContent = name;
     openModal(delOverlay);
   }
 
-  document.getElementById('modal-save')!.addEventListener('click', () => {
-    const name  = modalName.value.trim();
-    const email = modalEmail.value.trim();
-    if (!name || !email) return;
+  document.getElementById('modal-save').addEventListener('click', async () => {
+    clearError();
+    const nombre  = modalName.value.trim();
+    const usuario = modalUser.value.trim();
+    const correo  = modalEmail.value.trim();
+    const pass    = modalPass.value;
+    const rolNom  = modalRole.value;
 
-    if (editId !== null) {
-      const a = admins.find(x => x.id === editId)!;
-      a.name = name; a.email = email; a.role = modalRole.value;
-    } else {
-      admins.push({ id: nextId++, name, email, role: modalRole.value });
+    if (!nombre || !usuario || !correo) {
+      showError('Nombre, usuario y correo son obligatorios.');
+      return;
+    }
+    if (!editId && !pass) {
+      showError('La contraseña es obligatoria para nuevos usuarios.');
+      return;
     }
 
-    closeModal(modalOverlay);
-    showToast();
-    render();
+    const rol_id = getRolId(rolNom);
+    if (!rol_id) {
+      showError('No se pudo determinar el id del rol. Verifica la tabla roles en la BD.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const payload = { nombre, usuario, correo, rol_id: Number(rol_id) };
+      if (pass) payload.contrasena = pass;
+      if (editId) payload.id = editId;
+
+      const res  = await fetch(API, {
+        method:  editId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+
+      closeModal(modalOverlay);
+      showToast(editId ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente');
+      await fetchAdmins();
+    } catch (e) {
+      showError(e.message || 'Error al guardar');
+    } finally {
+      setLoading(false);
+    }
   });
 
-  document.getElementById('delete-confirm')!.addEventListener('click', () => {
-    admins = admins.filter(a => a.id !== deleteId);
-    closeModal(delOverlay);
-    showToast();
-    render();
+  document.getElementById('delete-confirm').addEventListener('click', async () => {
+    if (!deleteId) return;
+    try {
+      const res  = await fetch(`${API}?id=${encodeURIComponent(deleteId)}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      closeModal(delOverlay);
+      showToast('Usuario eliminado');
+      await fetchAdmins();
+    } catch (e) {
+      closeModal(delOverlay);
+      showToast(e.message || 'Error al eliminar', false);
+    }
   });
 
   document.getElementById('addAdminBtn')?.addEventListener('click', openAdd);
-  document.getElementById('modal-close')!.addEventListener('click', () => closeModal(modalOverlay));
-  document.getElementById('delete-cancel')!.addEventListener('click', () => closeModal(delOverlay));
-
+  document.getElementById('modal-close').addEventListener('click', () => closeModal(modalOverlay));
+  document.getElementById('delete-cancel').addEventListener('click', () => closeModal(delOverlay));
   modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(modalOverlay); });
   delOverlay.addEventListener('click',   e => { if (e.target === delOverlay)   closeModal(delOverlay);   });
-
-  modalName.addEventListener('input', () => {
-    modalAvatar.textContent = initials(modalName.value) || '--';
-  });
-
+  modalName.addEventListener('input', () => { modalAvatar.textContent = initials(modalName.value) || '--'; });
   btnPrev.addEventListener('click', () => { page--; render(); });
   btnNext.addEventListener('click', () => { page++; render(); });
-  searchInput.addEventListener('input', () => { page = 1; render(); });
+  searchInput.addEventListener('input',  () => { page = 1; render(); });
   roleFilter.addEventListener('change',  () => { page = 1; render(); });
 
-  render();
+  fetchAdmins();
+  window.fetchAdmins = fetchAdmins;
+  window.openAddAdmin = openAdd; 
+})();
 </script>
