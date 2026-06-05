@@ -208,13 +208,17 @@
         const sp  = document.getElementById("saveInfoSpinner")!;
         btn.setAttribute("disabled","true"); txt.textContent = "Guardando..."; sp.classList.remove("hidden");
         try {
-            const res  = await fetch(`${API}/api/profile.jsp`, { method:"POST", headers:{"Content-Type":"application/json"}, credentials:"include", body: JSON.stringify({action:"updateInfo",nombre,usuario,correo}) });
+            // Obtener id y rol_id de la sesión actual
+            const sess = await fetch(`${API}/api/session.jsp`, { credentials: "include" }).then(r => r.json());
+            const res  = await fetch(`${API}/api/auth.jsp`, { method:"POST", headers:{"Content-Type":"application/json"}, credentials:"include",
+                body: JSON.stringify({ action: "updateInfo", nombre, usuario, correo }) });
+            // FIX: backend auth.jsp solo acepta POST para updateInfo
             const data = await res.json();
             if (data.success) {
                 showMsg("¡Información actualizada!");
                 document.getElementById("profileAvatarLetter")!.textContent = nombre[0].toUpperCase();
                 window.dispatchEvent(new CustomEvent("profile-updated", { detail: { nombre } }));
-            } else { showMsg(data.message || "Error al actualizar.", false); }
+            } else { showMsg(data.message || data.error || "Error al actualizar.", false); }
         } catch { showMsg("Error de conexión.", false); }
         finally { btn.removeAttribute("disabled"); txt.textContent = "Guardar Cambios"; sp.classList.add("hidden"); }
     });
@@ -236,12 +240,13 @@
         const sp  = document.getElementById("savePwdSpinner")!;
         btn.setAttribute("disabled","true"); txt.textContent = "Cambiando..."; sp.classList.remove("hidden");
         try {
-            const res  = await fetch(`${API}/api/profile.jsp`, { method:"POST", headers:{"Content-Type":"application/json"}, credentials:"include", body: JSON.stringify({action:"changePassword",currentPassword:current,newPassword:newP}) });
+            const res  = await fetch(`${API}/api/auth.jsp`, { method:"POST", headers:{"Content-Type":"application/json"}, credentials:"include",
+                body: JSON.stringify({ action: "changePassword", currentPassword: current, newPassword: newP }) });
             const data = await res.json();
             if (data.success) {
                 showMsg("¡Contraseña cambiada!");
                 ["currentPwd","newPwd","confirmPwd"].forEach(id => (document.getElementById(id) as HTMLInputElement).value = "");
-            } else { showMsg(data.message || "Contraseña actual incorrecta.", false); }
+            } else { showMsg(data.message || data.error || "No se pudo cambiar.", false); }
         } catch { showMsg("Error de conexión.", false); }
         finally { btn.removeAttribute("disabled"); txt.textContent = "Cambiar Contraseña"; sp.classList.add("hidden"); }
     });
