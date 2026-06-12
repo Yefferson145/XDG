@@ -1,0 +1,357 @@
+<div class="px-4 pb-4">
+  <div class="rounded-2xl border border-[#262629] bg-[#17171A]/70 overflow-hidden">
+
+    <div class="px-6 py-4 border-b border-[#262629] flex items-center gap-4">
+      <div class="relative flex-1 max-w-sm">
+        <input id="usr-search" type="text" placeholder="Buscar usuario..."
+          class="w-full bg-[#1A1A1D] border border-[#262629] rounded-lg pl-10 pr-4 py-3 text-base text-white placeholder-[#71717A] focus:outline-none focus:border-[#A970FF] transition-colors" />
+      </div>
+      <span id="usr-count" class="ml-auto text-sm text-[#71717A] whitespace-nowrap">Cargando...</span>
+    </div>
+
+    <div class="grid grid-cols-[2fr_1.5fr_1fr_120px] gap-4 px-6 py-4 border-b border-[#262629]">
+      <span class="text-[#71717A] text-xs font-semibold uppercase">Usuario</span>
+      <span class="text-[#71717A] text-xs font-semibold uppercase">Email</span>
+      <span class="text-[#71717A] text-xs font-semibold uppercase">Contraseña</span>
+      <span class="text-[#71717A] text-xs font-semibold uppercase">Acciones</span>
+    </div>
+
+    <div id="usr-table-body"></div>
+
+    <div class="px-6 py-4 border-t border-[#262629] flex items-center justify-between">
+      <button id="usr-prev" disabled
+        class="text-sm text-[#71717A] hover:text-white transition-colors disabled:opacity-30 flex items-center gap-1">
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        Anterior
+      </button>
+      <span id="usr-page-info" class="text-sm text-[#71717A]">Página 1 de 1</span>
+      <button id="usr-next"
+        class="text-sm text-[#71717A] hover:text-white transition-colors disabled:opacity-30 flex items-center gap-1">
+        Siguiente
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL AGREGAR / EDITAR -->
+<div id="usr-modal-overlay"
+  class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+  <div class="w-full max-w-md rounded-2xl border border-[#262629] bg-[#17171A] shadow-2xl overflow-hidden">
+
+    <div class="px-6 py-5 border-b border-[#262629] flex items-center justify-between">
+      <h2 id="usr-modal-title" class="text-sm font-semibold uppercase tracking-wider text-white">Agregar Usuario</h2>
+      <button id="usr-modal-close" class="text-[#71717A] hover:text-white transition text-2xl leading-none">✕</button>
+    </div>
+
+    <div class="p-6 space-y-4">
+      <div class="flex items-center gap-4">
+        <div id="usr-modal-avatar"
+          class="w-16 h-16 rounded-full bg-[#A970FF]/20 flex items-center justify-center text-[#A970FF] text-2xl font-bold">
+          --
+        </div>
+        <p class="text-sm text-[#71717A]">Las iniciales se generan automáticamente</p>
+      </div>
+
+      <input id="usr-modal-nombre" type="text" placeholder="Nombre completo"
+        class="w-full bg-[#1A1A1D] border border-[#262629] rounded-lg px-5 py-3 text-base text-white placeholder-[#71717A] focus:outline-none focus:border-[#A970FF] transition-colors" />
+
+      <input id="usr-modal-usuario" type="text" placeholder="Nombre de usuario"
+        class="w-full bg-[#1A1A1D] border border-[#262629] rounded-lg px-5 py-3 text-base text-white placeholder-[#71717A] focus:outline-none focus:border-[#A970FF] transition-colors" />
+
+      <input id="usr-modal-correo" type="email" placeholder="Correo electrónico"
+        class="w-full bg-[#1A1A1D] border border-[#262629] rounded-lg px-5 py-3 text-base text-white placeholder-[#71717A] focus:outline-none focus:border-[#A970FF] transition-colors" />
+
+      <input id="usr-modal-contrasena" type="password" placeholder="Contraseña"
+        class="w-full bg-[#1A1A1D] border border-[#262629] rounded-lg px-5 py-3 text-base text-white placeholder-[#71717A] focus:outline-none focus:border-[#A970FF] transition-colors" />
+
+      <button id="usr-modal-save"
+        class="w-full h-14 rounded-xl bg-[#A970FF] text-[#1D0D3B] text-base font-semibold hover:brightness-110 active:scale-95 transition-all">
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>
+
+  <!-- MODAL ELIMINAR -->
+  <div id="usr-delete-modal-overlay"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="w-full max-w-sm rounded-2xl border border-[#262629] bg-[#17171A] shadow-2xl overflow-hidden">
+      <div class="p-6 text-center space-y-4">
+
+        <div class="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
+          <svg width="24" height="24" fill="#f87171" viewBox="0 0 16 16">
+            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zM14 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1z"/>
+          </svg>
+        </div>
+
+        <h3 class="text-white font-semibold">¿Eliminar usuario?</h3>
+        <p class="text-[#71717A] text-sm">
+          Esta acción no se puede deshacer.<br>
+          <strong id="usr-delete-user-name" class="text-white"></strong>
+        </p>
+
+        <div class="flex gap-3 pt-2">
+          <button id="usr-delete-cancel"
+            class="flex-1 h-11 rounded-xl border border-[#262629] text-[#71717A] hover:text-white transition-colors text-sm">
+            Cancelar
+          </button>
+          <button id="usr-delete-confirm"
+            class="flex-1 h-11 rounded-xl bg-red-500 hover:bg-red-600 text-white transition-colors text-sm font-semibold">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="usr-toast"
+    class="hidden fixed bottom-6 right-6 z-50 bg-[#1A1A1D] border border-[#262629] rounded-xl px-5 py-3 text-white text-sm">
+    ✓ Operación completada
+  </div>
+</div>
+
+<script>
+  const API_URL = "http://localhost:8080/api/usuarios.jsp?seccion=clientes";
+
+  let users    = [];
+  let editId   = null;
+  let deleteId = null;
+  let page     = 1;
+  const PER_PAGE = 5;
+
+  /* ── DOM refs ── */
+  const tbody       = document.getElementById('usr-table-body');
+  const countEl     = document.getElementById('usr-count');
+  const pageInfoEl  = document.getElementById('usr-page-info');
+  const btnPrev     = document.getElementById('usr-prev');
+  const btnNext     = document.getElementById('usr-next');
+  const searchInput = document.getElementById('usr-search');
+
+  const modalOverlay   = document.getElementById('usr-modal-overlay');
+  const modalTitle     = document.getElementById('usr-modal-title');
+  const modalAvatar    = document.getElementById('usr-modal-avatar');
+  const modalNombre    = document.getElementById('usr-modal-nombre');
+  const modalUsuario   = document.getElementById('usr-modal-usuario');
+  const modalCorreo    = document.getElementById('usr-modal-correo');
+  const modalContrasena = document.getElementById('usr-modal-contrasena');
+
+  const delOverlay = document.getElementById('usr-delete-modal-overlay');
+  const delName    = document.getElementById('usr-delete-user-name');
+  const toast      = document.getElementById('usr-toast');
+  const addButton  = document.getElementById('usr-add-btn');
+
+  /* ── API ── */
+  async function loadUsers() {
+    try {
+      const res  = await fetch(API_URL);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      users = data;
+      render();
+    } catch (e) {
+      tbody.innerHTML = `<div class="flex justify-center py-16 text-red-400 text-sm">${e.message}</div>`;
+      countEl.textContent = "Error";
+    }
+  }
+
+  async function createUser(payload) {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    return res.json();
+  }
+
+  async function updateUser(id, payload) {
+    const res = await fetch(API_URL, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, ...payload })
+    });
+    return res.json();
+  }
+
+  async function deleteUser(id) {
+    const res = await fetch(API_URL, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id })
+    });
+    return res.json();
+  }
+
+  /* ── Helpers ── */
+  function initials(name) {
+    return (name || '').trim().split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '--';
+  }
+
+  function showToast(msg = "✓ Operación completada") {
+    toast.textContent = msg;
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 2500);
+  }
+
+  function openModal(el)  { el.classList.remove('hidden'); }
+  function closeModal(el) { el.classList.add('hidden'); }
+
+  function getFiltered() {
+    const q = searchInput.value.toLowerCase();
+    return users.filter(u =>
+      !q ||
+      (u.nombre  || '').toLowerCase().includes(q) ||
+      (u.usuario || '').toLowerCase().includes(q) ||
+      (u.correo  || '').toLowerCase().includes(q)
+    );
+  }
+
+  /* ── Render ── */
+  function render() {
+    const data  = getFiltered();
+    const total = Math.max(1, Math.ceil(data.length / PER_PAGE));
+    page = Math.min(page, total);
+    const slice = data.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+    countEl.textContent    = `${data.length} usuario${data.length !== 1 ? 's' : ''}`;
+    pageInfoEl.textContent = `Página ${page} de ${total}`;
+    btnPrev.disabled       = page <= 1;
+    btnNext.disabled       = page >= total;
+
+    if (!slice.length) {
+      tbody.innerHTML = `<div class="flex justify-center py-20 text-[#71717A] text-sm">No hay usuarios</div>`;
+      return;
+    }
+
+    tbody.innerHTML = slice.map(u => `
+      <div class="grid grid-cols-[2fr_1.5fr_1fr_120px] gap-4 px-6 py-5 border-b border-[#1E1E21] items-center">
+
+        <div class="flex items-center gap-4 min-w-0">
+          <div class="w-11 h-11 rounded-full bg-[#A970FF]/20 flex items-center justify-center text-[#A970FF] text-sm font-bold flex-shrink-0">
+            ${initials(u.nombre)}
+          </div>
+          <div class="min-w-0">
+            <p class="text-base text-white truncate">${u.nombre}</p>
+            <p class="text-xs text-[#71717A] truncate">@${u.usuario}</p>
+          </div>
+        </div>
+
+        <span class="text-sm text-[#71717A] truncate">${u.correo}</span>
+
+        <span class="text-xs text-[#71717A] tracking-widest">••••••••</span>
+
+        <div class="flex items-center gap-3">
+          <button data-edit="${u.id}"
+            class="p-2.5 rounded-xl border border-[#262629] text-[#71717A] hover:text-white hover:border-[#A970FF] transition-colors">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Z"/>
+            </svg>
+          </button>
+          <button data-del="${u.id}"
+            class="p-2.5 rounded-xl border border-[#262629] text-[#71717A] hover:text-red-400 hover:border-red-500/40 transition-colors">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21q.512.078 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48 48 0 0 0-3.478-.397m-12 .562q.51-.089 1.022-.165m0 0a48 48 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a52 52 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a49 49 0 0 0-7.5 0"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    `).join('');
+
+    tbody.querySelectorAll('[data-edit]').forEach(btn =>
+      btn.addEventListener('click', () => openEdit(btn.dataset.edit))
+    );
+    tbody.querySelectorAll('[data-del]').forEach(btn =>
+      btn.addEventListener('click', () => openDelete(btn.dataset.del))
+    );
+  }
+
+  /* ── Modal helpers ── */
+  function openAdd() {
+    editId = null;
+    modalTitle.textContent      = "Agregar Cliente";
+    modalNombre.value           = "";
+    modalUsuario.value          = "";
+    modalCorreo.value           = "";
+    modalContrasena.value       = "";
+    modalContrasena.placeholder = "Contraseña";
+    modalAvatar.textContent     = "--";
+    openModal(modalOverlay);
+  }
+
+  function openEdit(id) {
+    const u = users.find(x => x.id == id);
+    if (!u) return;
+    editId = id;
+    modalTitle.textContent      = "Editar Cliente";
+    modalNombre.value           = u.nombre;
+    modalUsuario.value          = u.usuario;
+    modalCorreo.value           = u.correo;
+    modalContrasena.value       = "";
+    modalContrasena.placeholder = "Nueva contraseña (dejar vacío para no cambiar)";
+    modalAvatar.textContent     = initials(u.nombre);
+    openModal(modalOverlay);
+  }
+
+  function openDelete(id) {
+    const u = users.find(x => x.id == id);
+    if (!u) return;
+    deleteId = id;
+    delName.textContent = u.nombre;
+    openModal(delOverlay);
+  }
+
+  /* ── Save ── */
+  document.getElementById('usr-modal-save').addEventListener('click', async () => {
+    const nombre     = modalNombre.value.trim();
+    const usuario    = modalUsuario.value.trim();
+    const correo     = modalCorreo.value.trim();
+    const contrasena = modalContrasena.value;
+
+    if (!nombre || !usuario || !correo) return;
+    if (editId === null && !contrasena) return;
+
+    const payload = { nombre, usuario, correo };
+    if (contrasena) payload.contrasena = contrasena;
+
+    const res = editId !== null
+      ? await updateUser(editId, payload)
+      : await createUser(payload);
+
+    if (res.error) { showToast("✗ " + res.error); return; }
+
+    closeModal(modalOverlay);
+    showToast();
+    await loadUsers();
+  });
+
+  /* ── Delete ── */
+  document.getElementById('usr-delete-confirm').addEventListener('click', async () => {
+    if (deleteId === null) return;
+    const res = await deleteUser(deleteId);
+    if (res.error) { showToast("✗ " + res.error); return; }
+    closeModal(delOverlay);
+    showToast("✓ Usuario eliminado");
+    deleteId = null;
+    await loadUsers();
+  });
+
+  /* ── Cierre modales ── */
+  document.getElementById('usr-modal-close').addEventListener('click',  () => closeModal(modalOverlay));
+  document.getElementById('usr-delete-cancel').addEventListener('click', () => closeModal(delOverlay));
+  modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(modalOverlay); });
+  delOverlay.addEventListener('click',   e => { if (e.target === delOverlay)   closeModal(delOverlay); });
+
+  modalNombre.addEventListener('input', () => { modalAvatar.textContent = initials(modalNombre.value); });
+
+  btnPrev.addEventListener('click', () => { page--; render(); });
+  btnNext.addEventListener('click', () => { page++; render(); });
+  searchInput.addEventListener('input', () => { page = 1; render(); });
+  addButton?.addEventListener('click', openAdd);
+
+  loadUsers();
+</script>
