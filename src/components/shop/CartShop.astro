@@ -1,0 +1,182 @@
+
+<section class="mb-12" id="cartSection">
+  <div class="mb-8">
+    <h1 class="text-white text-4xl font-bold mb-1">Carrito de Compras</h1>
+    <p class="text-zinc-600 font-medium" id="cartCount">Cargando...</p>
+  </div>
+  <div class="flex flex-col" id="cartItems">
+
+  </div>
+</section>
+
+<script>
+const API = "http://localhost:8080";
+const IGV = 0.18; // 18%
+let sessionUserId: number | null = null;
+
+function qs<T extends Element>(sel: string, root: Element | Document = document) {
+    return root.querySelector<T>(sel);
+}
+
+function updateSummary(items: any[]) {
+    const subtotal = items.reduce((acc, i) => acc + i.precio_final * i.cantidad, 0);
+    const igv      = subtotal * IGV;
+    const total    = subtotal + igv;
+
+    const fmt = (n: number) => `$${n.toFixed(2)}`;
+
+    const elSub   = document.getElementById("summary-subtotal");
+    const elIgv   = document.getElementById("summary-igv");
+    const elTotal = document.getElementById("summary-total");
+
+    if (elSub)   elSub.textContent   = fmt(subtotal);
+    if (elIgv)   elIgv.textContent   = fmt(igv);
+    if (elTotal) elTotal.textContent = fmt(total);
+}
+
+function renderItems(items: any[]) {
+    const container = document.getElementById("cartItems")!;
+    const count     = document.getElementById("cartCount")!;
+
+    if (!items.length) {
+        container.innerHTML = `<p class="text-zinc-500 py-12 text-center">Tu carrito está vacío.</p>`;
+        count.textContent   = "Tu carrito está vacío";
+        updateSummary([]);
+        return;
+    }
+
+    count.textContent = `${items.length} item${items.length !== 1 ? "s" : ""} en tu carrito`;
+
+    container.innerHTML = items.map(item => {
+        const hasDiscount = item.porcentaje != null;
+        const subtotal    = (item.precio_final * item.cantidad).toFixed(2);
+
+        return `
+        <div data-detalle-id="${item.detalle_id}"
+             class="cart-item flex items-center gap-4 bg-zinc-900/50 border border-zinc-800 p-4 rounded-sm mb-4">
+            <img src="${item.imagen_url || 'https://placehold.co/96x96/1A1A1D/A78BFA?text=XDG'}"
+                 alt="${item.titulo}" class="w-24 h-24 object-cover rounded-sm"/>
+
+            <div class="flex-1">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="text-white font-bold text-lg leading-tight">${item.titulo}</h3>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            ${hasDiscount ? `<span class="text-zinc-500 text-xs line-through">$${item.precio.toFixed(2)}</span>` : ""}
+                            <span class="text-xs font-bold uppercase tracking-wider ${hasDiscount ? 'text-[#A78BFA]' : 'text-zinc-500'}">
+                                $${item.precio_final.toFixed(2)} c/u
+                            </span>
+                            ${hasDiscount ? `<span class="bg-[#A78BFA] text-[#09090B] text-[10px] font-bold px-1.5 py-0.5 rounded">-${item.porcentaje}%</span>` : ""}
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-white font-bold text-xl" data-subtotal>$${subtotal}</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center mt-4">
+                    <div class="flex items-center bg-zinc-800 rounded-sm px-2 py-1 gap-3">
+                        <button class="qty-btn text-zinc-500 hover:text-white transition-colors"
+                                data-action="minus" data-id="${item.detalle_id}" data-precio="${item.precio_final}">−</button>
+                        <span class="text-white font-bold text-sm qty-display">${item.cantidad}</span>
+                        <button class="qty-btn text-zinc-500 hover:text-white transition-colors"
+                                data-action="plus" data-id="${item.detalle_id}" data-precio="${item.precio_final}">+</button>
+                    </div>
+                    <button class="delete-btn flex items-center gap-2 text-zinc-500 hover:text-red-500 uppercase text-[10px] font-black tracking-widest"
+                            data-id="${item.detalle_id}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 14 14">
+                            <path d="M2 12q-.55 0-.942-.392a1.28 1.28 0 0 1-.391-.941V3H0V1.667h3.333V1h4v.667h3.334V3H10v7.667q0 .55-.392.941a1.28 1.28 0 0 1-.941.392zm6.667-9H2v7.667h6.667zM3.333 9.333h1.334v-5H3.333zm2.667 0h1.333v-5H6z" class="fill-current"/>
+                        </svg>
+                        <span>Borrar</span>
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }).join("");
+
+    updateSummary(items);
+}
+let currentItems: any[] = [];
+
+async function loadCart() {
+    try {
+        const sessionRes = await fetch(`${API}/api/session.jsp`, { credentials: "include" });
+        const session    = await sessionRes.json();
+        if (!session.logged) return;
+        sessionUserId = session.id;
+
+        const res  = await fetch(`${API}/api/carrito.jsp?user_id=${session.id}`, { credentials: "include" });
+        const text = await res.text();
+        
+        const match = text.match(/\[[\s\S]*\]/);
+        if (!match) {
+            renderItems([]);
+            return;
+        }
+
+        currentItems = JSON.parse(match[0]);
+        renderItems(currentItems);
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+document.getElementById("cartItems")!.addEventListener("click", async (e) => {
+    const target = e.target as HTMLElement;
+
+    const deleteBtn = target.closest<HTMLElement>(".delete-btn");
+    if (deleteBtn) {
+        const id = deleteBtn.dataset.id!;
+        await fetch(`${API}/api/carrito.jsp`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ detalle_id: id, user_id: sessionUserId }),
+        });
+        await loadCart();
+        return;
+    }
+
+    const qtyBtn = target.closest<HTMLElement>(".qty-btn");
+    if (qtyBtn) {
+        const action  = qtyBtn.dataset.action!;
+        const id      = qtyBtn.dataset.id!;
+        const precio  = parseFloat(qtyBtn.dataset.precio!);
+
+        const item = currentItems.find(i => String(i.detalle_id) === id);
+        if (!item) return;
+
+        if (action === "minus" && item.cantidad === 1) {
+            await fetch(`${API}/api/carrito.jsp`, {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ detalle_id: id, user_id: sessionUserId }),
+            });
+            await loadCart();
+            return;
+        }
+
+        const delta = action === "plus" ? 1 : -1;
+
+        item.cantidad += delta;
+        const row      = document.querySelector<HTMLElement>(`[data-detalle-id="${id}"]`);
+        if (row) {
+            row.querySelector<HTMLElement>(".qty-display")!.textContent    = String(item.cantidad);
+            row.querySelector<HTMLElement>("[data-subtotal]")!.textContent = `$${(precio * item.cantidad).toFixed(2)}`;
+        }
+        updateSummary(currentItems);
+        
+        await fetch(`${API}/api/carrito.jsp`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ user_id: sessionUserId, juego_id: item.juego_id, cantidad: delta }),
+        });
+    }
+});
+
+loadCart();
+
+</script>
+

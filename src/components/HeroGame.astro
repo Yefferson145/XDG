@@ -1,0 +1,172 @@
+---
+interface Game {
+  title: string;
+  description: string;
+  image: string;
+  price: string;
+  genre: string;
+}
+
+interface Props {
+  games: Game[];
+}
+
+const { games } = Astro.props;
+---
+
+<section
+  class="hero-slider relative w-full h-130 mt-24 rounded-2xl overflow-hidden"
+>
+  {
+    games.map((game, index) => (
+      <figure
+        class={`slide absolute inset-0 w-full h-full transition-opacity duration-700 ${
+          index === 0 ? "opacity-100 z-10" : "opacity-0 z-0"
+        }`}
+        data-slide={index}
+      >
+        <img
+          src={game.image}
+          alt={game.title}
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+
+        <div class="absolute inset-0 bg-black/55 z-0"></div>
+
+        <div
+          class="absolute inset-0 z-20 flex flex-col justify-center px-8 md:px-16 max-w-2xl text-white"
+        >
+          <div class="flex items-center gap-3 mb-5">
+            <span
+              class="bg-orange-500 text-black text-xs font-bold px-3 py-1 rounded-md uppercase tracking-wide"
+            >
+              Featured Deal
+            </span>
+
+            <span
+              class="bg-white/10 border border-white/20 backdrop-blur-sm text-xs px-3 py-1 rounded-md"
+            >
+              {game.genre}
+            </span>
+          </div>
+
+          <h1
+            class="text-4xl md:text-6xl font-extrabold leading-tight mb-5"
+          >
+            {game.title}
+          </h1>
+
+          <p class="text-gray-300 text-lg leading-relaxed mb-8">
+            {game.description}
+          </p>
+
+          <div class="flex items-center gap-4">
+            <button
+              class="bg-violet-500 hover:bg-violet-400 text-white font-semibold px-7 py-4 rounded-xl transition-all duration-300"
+            >
+              Compra Ahora - {game.price}
+            </button>
+
+            <button
+              class="border border-white/20 bg-white/5 hover:bg-white/10 backdrop-blur-md px-6 py-4 rounded-xl transition-all duration-300"
+            >
+              + Wishlist
+            </button>
+          </div>
+        </div>
+      </figure>
+    ))
+  }
+
+  <div
+    class="absolute bottom-8 right-8 z-30 flex items-center gap-3"
+  >
+    {
+      games.map((_, index) => (
+        <button
+          class="indicator"
+          data-indicator={index}
+        >
+          <span
+            class={`block w-12 h-1 rounded-full transition-all duration-300 ${
+              index === 0 ? "bg-white" : "bg-white/30"
+            }`}
+          ></span>
+        </button>
+      ))
+    }
+  </div>
+</section>
+
+<script>
+  const slider = document.querySelector(".hero-slider");
+
+  if (slider) {
+    const slides = slider.querySelectorAll(".slide");
+    const indicators = slider.querySelectorAll(".indicator");
+
+    let currentIndex = 0;
+
+    let interval:any;
+
+    const showSlide = (index:any) => {
+
+        slides.forEach((slide) => {
+        slide.classList.remove("opacity-100", "z-10");
+        slide.classList.add("opacity-0", "z-0");
+      });
+
+      const activeSlide = slider.querySelector(
+        `.slide[data-slide="${index}"]`
+      );
+
+      activeSlide?.classList.remove("opacity-0", "z-0");
+      activeSlide?.classList.add("opacity-100", "z-10");
+
+
+      indicators.forEach((item) => {
+        const span = item.querySelector("span");
+
+        span?.classList.remove("bg-white");
+        span?.classList.add("bg-white/30");
+      });
+
+      const activeIndicator = slider.querySelector(
+        `.indicator[data-indicator="${index}"] span`
+      );
+
+      activeIndicator?.classList.remove("bg-white/30");
+      activeIndicator?.classList.add("bg-white");
+
+      currentIndex = index;
+    };
+
+     
+    const startSlider = () => {
+      interval = setInterval(() => {
+        let nextIndex = currentIndex + 1;
+
+        if (nextIndex >= slides.length) {
+          nextIndex = 0;
+        }
+
+        showSlide(nextIndex);
+      }, 5000);
+    };
+
+    indicators.forEach((indicator) => {
+      indicator.addEventListener("click", () => {
+        const index = Number(
+          indicator.getAttribute("data-indicator")
+        );
+
+        showSlide(index);
+
+        clearInterval(interval);
+        startSlider();
+      });
+    });
+
+    startSlider();
+  }
+</script>

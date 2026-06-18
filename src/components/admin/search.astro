@@ -1,0 +1,50 @@
+---
+
+---
+
+<div
+    class="flex w-full items-center justify-between h-16 border-b-2 border-[#27272A] bg-[#09090B]"
+>
+    <div
+        class="ml-8 hidden md:flex items-center bg-[#18181B] w-180 h-8 px-4 py-3.5 rounded-lg border border-outline-variant hover:border-white transition-all duration-600"
+    >
+        <span class="material-symbols-outline text-[#71717A] text-sm"
+            ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="11"
+                height="11"
+                fill="none"
+                viewBox="0 0 11 11"
+                ><path
+                    fill="#71717a"
+                    d="M9.683 10.5 6.008 6.825a3.56 3.56 0 0 1-2.217.758q-1.59 0-2.69-1.1Q0 5.38 0 3.791T1.101 1.1 3.791 0t2.691 1.101 1.101 2.69a3.56 3.56 0 0 1-.758 2.217L10.5 9.683zM3.792 6.417q1.094 0 1.859-.766.765-.765.766-1.86 0-1.092-.766-1.859a2.53 2.53 0 0 0-1.86-.765q-1.092 0-1.859.765-.765.765-.765 1.86 0 1.094.765 1.859t1.86.766"
+                ></path></svg
+            ></span
+        >
+        <input
+            id="adminGlobalSearch"
+            type="text"
+            placeholder="Buscar Juegos, Transacciones, Usuarios..."
+            class="bg-transparent border-none text-sm text-on-superface-variant placeholder:text-[#71717A] w-64 focus:outline-none ml-2 text-white"
+        />
+    </div>
+
+    <div>
+        <div class="flex-col items-center text-white text-sm mr-8 w-50 h-10 border-l-2 border-[#3F3F46] pl-4">
+            <p class="text-center border-b border-[#A78BFA] w-35">Administrador</p>
+        </div>
+    </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.getElementById("adminGlobalSearch");
+    if (!searchInput) return;
+
+    searchInput.addEventListener("input", (event) => {
+      const query = (event.target as HTMLInputElement).value.trim();
+      window.dispatchEvent(new CustomEvent("admin-search", { detail: { query } }));
+    });
+  });
+</script>
+

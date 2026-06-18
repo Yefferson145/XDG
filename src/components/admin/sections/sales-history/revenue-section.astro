@@ -1,0 +1,100 @@
+---
+---
+<div class="rounded-[24px] border border-[#262629] bg-[#17171A]/70 p-8 overflow-hidden transition-colors duration-300 hover:border-[#A970FF]">
+  <div class="flex items-start justify-between mb-8">
+    <div>
+      <h2 class="text-[28px] font-medium text-white">RENDIMIENTO DE VENTAS</h2>
+      <p class="text-[15px] text-[#757584] mt-1">Datos históricos para el año fiscal actual</p>
+    </div>
+    <div class="flex gap-2">
+      <button id="btn-daily"   class="px-5 py-2 rounded-md bg-white/10 text-[#c6c6cf] text-sm transition-colors duration-200">DIARIO</button>
+      <button id="btn-monthly" class="px-5 py-2 rounded-md bg-[#8b5cf6] text-white   text-sm transition-colors duration-200">MENSUAL</button>
+    </div>
+  </div>
+
+  <div class="relative h-80">
+    <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
+      <div class="border-b border-white/5"></div>
+      <div class="border-b border-white/5"></div>
+      <div class="border-b border-white/5"></div>
+      <div></div>
+    </div>
+    <div id="bars-container" class="absolute inset-0 flex items-end pb-8">
+      <p class="text-zinc-500 text-sm m-auto">Cargando...</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = "http://localhost:8080";
+  const BASE = "bar w-5/6 rounded-t-md transition-all duration-500 ease-out";
+
+  const btnDaily   = document.getElementById("btn-daily")!;
+  const btnMonthly = document.getElementById("btn-monthly")!;
+  const container  = document.getElementById("bars-container")!;
+
+  let monthlyData: any[] = [];
+  let dailyData:   any[] = [];
+
+  function activate(active: Element, inactive: Element) {
+    active.classList.remove("bg-white/10", "text-[#c6c6cf]");
+    active.classList.add("bg-[#8b5cf6]", "text-white");
+    inactive.classList.remove("bg-[#8b5cf6]", "text-white");
+    inactive.classList.add("bg-white/10", "text-[#c6c6cf]");
+  }
+
+  function renderBars(data: any[]) {
+    if (!data.length) {
+      container.innerHTML = `<p class="text-zinc-500 text-sm m-auto">Sin datos</p>`;
+      return;
+    }
+
+    const max = Math.max(...data.map((d: any) => d.value));
+
+    container.innerHTML = data.map((d: any) => `
+      <div class="flex-1 flex flex-col items-center justify-end h-full">
+        <div class="${BASE} bg-[#22222c]"
+             style="height:0%"
+             data-value="${d.value}"
+             data-max="${max}">
+        </div>
+        <span class="bar-label mt-3 text-[13px] tracking-wide text-[#7a7a86]">${d.label}</span>
+      </div>
+    `).join("");
+
+    setTimeout(() => {
+      container.querySelectorAll<HTMLElement>(".bar").forEach(bar => {
+        const val = parseFloat(bar.dataset.value!);
+        const mx  = parseFloat(bar.dataset.max!);
+        const pct = mx > 0 ? (val / mx) * 100 : 0;
+        bar.style.height = `${pct}%`;
+        if (pct >= 99) {
+          bar.style.background = "#8b5cf6";
+          bar.style.boxShadow  = "0 0 30px rgba(139,92,246,.3)";
+        }
+      });
+    }, 50);
+  }
+
+  async function loadStats() {
+    try {
+      const res  = await fetch(`${API}/api/ventas-stats.jsp`, { credentials: "include" });
+      const text = await res.text();
+      const match = text.match(/\{[\s\S]*\}/);
+      if (!match) return;
+      const data = JSON.parse(match[0]);
+
+      monthlyData = data.monthly || [];
+      dailyData   = data.daily   || [];
+
+      renderBars(monthlyData);
+    } catch(e) {
+      console.error(e);
+    }
+  }
+
+  btnDaily.addEventListener("click",   () => { activate(btnDaily, btnMonthly); renderBars(dailyData); });
+  btnMonthly.addEventListener("click", () => { activate(btnMonthly, btnDaily); renderBars(monthlyData); });
+
+  loadStats();
+</script>

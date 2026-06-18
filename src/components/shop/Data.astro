@@ -1,0 +1,46 @@
+---
+import TextField from "../../components/TextField.astro";
+---
+
+<section>
+
+<div class="flex items-center gap-2 mb-6 border-t border-zinc-800 pt-8">
+
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="18" fill="none" class="shrink-0" viewBox="0 0 24 18"><path fill="#d0bcff" d="M14 8h7V3h-7zm3.5-1.25L15 5V4l2.5 1.75L20 4v1zM2 18q-.824 0-1.412-.587A1.93 1.93 0 0 1 0 16V2Q0 1.176.588.588A1.93 1.93 0 0 1 2 0h20q.824 0 1.413.588Q24 1.175 24 2v14q0 .824-.587 1.413A1.93 1.93 0 0 1 22 18zm13.9-2H22V2H2v14h.1A7.6 7.6 0 0 1 5 13.063 7.9 7.9 0 0 1 9 12q2.15 0 4 1.063A7.6 7.6 0 0 1 15.9 16M9 11q1.25 0 2.125-.875A2.9 2.9 0 0 0 12 8q0-1.25-.875-2.125A2.9 2.9 0 0 0 9 5q-1.25 0-2.125.875A2.9 2.9 0 0 0 6 8q0 1.25.875 2.125A2.9 2.9 0 0 0 9 11m-4.45 5h8.9a6 6 0 0 0-2.012-1.475A5.9 5.9 0 0 0 9 14q-1.275 0-2.425.525A6.3 6.3 0 0 0 4.55 16M9 9a.97.97 0 0 1-.713-.287A.97.97 0 0 1 8 8q0-.424.287-.713A.97.97 0 0 1 9 7q.424 0 .713.287Q10 7.576 10 8t-.287.713A.97.97 0 0 1 9 9"/></svg>
+
+  <h2 class="text-white font-bold text-xl tracking-wide uppercase">
+    Información de Facturación
+  </h2>
+
+</div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+
+    <TextField
+      label="Primer Nombre"
+      placeholder="John"
+    />
+
+    <TextField
+      label="Apellido"
+      placeholder="Doe"
+    />
+
+  </div>
+
+  <div class="space-y-6">
+
+    <TextField
+      label="Correo Electrónico"
+      type="email"
+      placeholder="gamer@xdg.store"
+    />
+
+    <TextField
+      label="Dirección"
+      placeholder="123 Neon Circuit"
+    />
+
+  </div>
+
+</section>

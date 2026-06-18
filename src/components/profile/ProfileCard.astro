@@ -1,0 +1,253 @@
+---
+---
+
+<div
+    id="profileOverlay"
+    class="font-space fixed hidden inset-0 bg-black/70 backdrop-blur-md z-[60] items-center justify-center px-6 py-10"
+>
+    <div class="w-full max-w-6xl bg-[#17141F] border border-[#2A2633] rounded-3xl overflow-hidden grid md:grid-cols-2 relative shadow-2xl">
+
+        <button id="closeProfile" class="absolute top-5 right-5 text-[#A1A1AA] hover:text-white transition-colors z-50">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+
+        <!-- Panel izquierdo -->
+        <div class="relative overflow-hidden">
+            <img src="/XDG.jpg" alt="XDG" class="absolute inset-0 w-full h-full object-cover" />
+            <div class="absolute inset-0 bg-[#09090B]/75"></div>
+            <div class="absolute inset-0 bg-linear-to-br from-[#A78BFA]/20 via-transparent to-transparent"></div>
+            <div class="relative z-10 flex flex-col justify-between h-full p-14">
+                <h1 class="text-4xl font-bold text-white tracking-tight">XDG<span class="text-[#A78BFA]"> — </span></h1>
+                <div>
+                    <div class="w-24 h-24 rounded-2xl bg-[#A78BFA]/20 border-2 border-[#A78BFA]/40 flex items-center justify-center mb-6">
+                        <span id="profileAvatarLetter" class="text-[#A78BFA] font-bold text-5xl uppercase">?</span>
+                    </div>
+                    <h2 class="text-5xl leading-tight font-bold uppercase text-white">Tu<br><span class="text-[#C4B5FD]">Perfil.</span></h2>
+                    <p class="mt-6 text-[#D4D4D8] text-base max-w-md leading-relaxed">
+                        Administra tu información personal, cambia tu contraseña y mantén tu cuenta segura.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel derecho -->
+        <div class="bg-[#1D1A23] p-14 flex flex-col justify-between overflow-y-auto max-h-[90vh]">
+            <div>
+                <!-- Tabs -->
+                <div class="bg-[#211E27] border border-[#2A2633] rounded-2xl p-2 flex mb-10">
+                    <button id="infoTab" class="flex-1 bg-[#A78BFA] text-black py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all shadow-lg shadow-[#A78BFA]/40">Mi Info</button>
+                    <button id="passwordTab" class="flex-1 text-[#A1A1AA] py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all">Contraseña</button>
+                </div>
+
+                <div id="profileMessage" class="hidden mb-4 px-4 py-3 rounded-xl text-sm font-medium"></div>
+
+                <!-- INFO PANEL -->
+                <div id="infoPanel">
+                    <div class="pb-6">
+                        <span class="text-[#E7E0ED] font-bold text-2xl">Información Personal</span>
+                        <p class="text-[#CBC3D7]">Actualiza tu nombre y correo electrónico.</p>
+                    </div>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="text-xs uppercase tracking-[0.25em] text-[#494454]">Nombre</label>
+                            <input id="profileNombre" type="text" placeholder="Tu nombre"
+                                class="mt-3 w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors" />
+                            <p id="profileNombre-error" class="hidden mt-2 text-xs text-red-400 pl-1"></p>
+                        </div>
+                        <div>
+                            <label class="text-xs uppercase tracking-[0.25em] text-[#494454]">Usuario</label>
+                            <input id="profileUsuario" type="text" placeholder="Nombre de usuario"
+                                class="mt-3 w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors" />
+                            <p id="profileUsuario-error" class="hidden mt-2 text-xs text-red-400 pl-1"></p>
+                        </div>
+                        <div>
+                            <label class="text-xs uppercase tracking-[0.25em] text-[#494454]">Correo Electrónico</label>
+                            <input id="profileCorreo" type="email" placeholder="tu@correo.com"
+                                class="mt-3 w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors" />
+                            <p id="profileCorreo-error" class="hidden mt-2 text-xs text-red-400 pl-1"></p>
+                        </div>
+                        <button id="saveInfoBtn" class="w-full bg-[#A78BFA] hover:bg-[#8B5CF6] transition-all text-black font-bold py-5 rounded-2xl uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                            <span id="saveInfoText">Guardar Cambios</span>
+                            <svg id="saveInfoSpinner" class="hidden animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PASSWORD PANEL -->
+                <div id="passwordPanel" class="hidden">
+                    <div class="pb-6">
+                        <span class="text-[#E7E0ED] font-bold text-2xl">Cambiar Contraseña</span>
+                        <p class="text-[#CBC3D7]">Elige una contraseña segura.</p>
+                    </div>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="text-xs uppercase tracking-[0.25em] text-[#494454]">Contraseña Actual</label>
+                            <div class="relative mt-3">
+                                <input id="currentPwd" type="password" placeholder="••••••••"
+                                    class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors pr-14" />
+                                <button type="button" id="toggleCurrentPwd" class="absolute right-5 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#A78BFA]">
+                                    <svg id="eyeC1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    <svg id="eyeC2" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                </button>
+                            </div>
+                            <p id="currentPwd-error" class="hidden mt-2 text-xs text-red-400 pl-1"></p>
+                        </div>
+                        <div>
+                            <label class="text-xs uppercase tracking-[0.25em] text-[#494454]">Nueva Contraseña</label>
+                            <div class="relative mt-3">
+                                <input id="newPwd" type="password" placeholder="Mínimo 6 caracteres"
+                                    class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors pr-14" />
+                                <button type="button" id="toggleNewPwd" class="absolute right-5 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#A78BFA]">
+                                    <svg id="eyeN1" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    <svg id="eyeN2" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                                </button>
+                            </div>
+                            <p id="newPwd-error" class="hidden mt-2 text-xs text-red-400 pl-1"></p>
+                        </div>
+                        <div>
+                            <label class="text-xs uppercase tracking-[0.25em] text-[#494454]">Confirmar Nueva Contraseña</label>
+                            <div class="relative mt-3">
+                                <input id="confirmPwd" type="password" placeholder="Repite la nueva contraseña"
+                                    class="w-full bg-[#15121B] border border-[#2A2633] rounded-2xl px-6 py-5 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#A78BFA] transition-colors pr-14" />
+                            </div>
+                            <p id="confirmPwd-error" class="hidden mt-2 text-xs text-red-400 pl-1"></p>
+                        </div>
+                        <button id="savePwdBtn" class="w-full bg-[#A78BFA] hover:bg-[#8B5CF6] transition-all text-black font-bold py-5 rounded-2xl uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                            <span id="savePwdText">Cambiar Contraseña</span>
+                            <svg id="savePwdSpinner" class="hidden animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-10 text-center text-xs uppercase tracking-widest text-[#52525B]">Protegido por el cifrado XDG-Shield</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API = "http://localhost:8080";
+    const overlay = document.getElementById("profileOverlay")!;
+
+    function showMsg(text: string, ok = true) {
+        const el = document.getElementById("profileMessage")!;
+        el.textContent = text;
+        el.className = `mb-4 px-4 py-3 rounded-xl text-sm font-medium ${ok ? "bg-[#A78BFA]/10 text-[#A78BFA] border border-[#A78BFA]/30" : "bg-red-500/10 text-red-400 border border-red-500/30"}`;
+        el.classList.remove("hidden");
+        setTimeout(() => el.classList.add("hidden"), 4000);
+    }
+    function showErr(id: string, msg: string) {
+        const el = document.getElementById(id + "-error");
+        const inp = document.getElementById(id) as HTMLInputElement | null;
+        if (el) { el.textContent = msg; el.classList.remove("hidden"); }
+        if (inp) inp.classList.add("border-red-500/70");
+    }
+    function clearErr(id: string) {
+        const el = document.getElementById(id + "-error");
+        const inp = document.getElementById(id) as HTMLInputElement | null;
+        if (el) el.classList.add("hidden");
+        if (inp) inp.classList.remove("border-red-500/70");
+    }
+
+    // Abrir modal y precargar datos
+    window.addEventListener("open-profile-modal", async () => {
+        overlay.classList.remove("hidden"); overlay.classList.add("flex");
+        try {
+            const data = await fetch(`${API}/api/session.jsp`, { credentials: "include" }).then(r => r.json());
+            if (data.logged) {
+                (document.getElementById("profileNombre") as HTMLInputElement).value = data.name || "";
+                (document.getElementById("profileUsuario") as HTMLInputElement).value = data.username || data.name || "";
+                (document.getElementById("profileCorreo") as HTMLInputElement).value = data.email || "";
+                document.getElementById("profileAvatarLetter")!.textContent = (data.name || "?")[0].toUpperCase();
+            }
+        } catch {}
+    });
+
+    document.getElementById("closeProfile")!.addEventListener("click", () => { overlay.classList.add("hidden"); overlay.classList.remove("flex"); });
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) { overlay.classList.add("hidden"); overlay.classList.remove("flex"); } });
+
+    // Tabs
+    const infoTab = document.getElementById("infoTab")!;
+    const pwdTab  = document.getElementById("passwordTab")!;
+    infoTab.addEventListener("click", () => {
+        document.getElementById("infoPanel")!.classList.remove("hidden");
+        document.getElementById("passwordPanel")!.classList.add("hidden");
+        infoTab.classList.add("bg-[#A78BFA]","text-black","shadow-lg"); infoTab.classList.remove("text-[#A1A1AA]");
+        pwdTab.classList.remove("bg-[#A78BFA]","text-black","shadow-lg"); pwdTab.classList.add("text-[#A1A1AA]");
+    });
+    pwdTab.addEventListener("click", () => {
+        document.getElementById("passwordPanel")!.classList.remove("hidden");
+        document.getElementById("infoPanel")!.classList.add("hidden");
+        pwdTab.classList.add("bg-[#A78BFA]","text-black","shadow-lg"); pwdTab.classList.remove("text-[#A1A1AA]");
+        infoTab.classList.remove("bg-[#A78BFA]","text-black","shadow-lg"); infoTab.classList.add("text-[#A1A1AA]");
+    });
+
+    // Toggle passwords
+    [["toggleCurrentPwd","currentPwd","eyeC1","eyeC2"],["toggleNewPwd","newPwd","eyeN1","eyeN2"]].forEach(([b,i,e1,e2]) => {
+        document.getElementById(b)?.addEventListener("click", () => {
+            const inp = document.getElementById(i) as HTMLInputElement;
+            inp.type = inp.type === "password" ? "text" : "password";
+            document.getElementById(e1)?.classList.toggle("hidden");
+            document.getElementById(e2)?.classList.toggle("hidden");
+        });
+    });
+
+    // Guardar info
+    document.getElementById("saveInfoBtn")!.addEventListener("click", async () => {
+        const nombre  = (document.getElementById("profileNombre") as HTMLInputElement).value.trim();
+        const usuario = (document.getElementById("profileUsuario") as HTMLInputElement).value.trim();
+        const correo  = (document.getElementById("profileCorreo") as HTMLInputElement).value.trim();
+        ["profileNombre","profileUsuario","profileCorreo"].forEach(clearErr);
+        let ok = true;
+        if (nombre.length < 2) { showErr("profileNombre","Mínimo 2 caracteres."); ok = false; }
+        if (usuario.length < 3) { showErr("profileUsuario","Mínimo 3 caracteres."); ok = false; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) { showErr("profileCorreo","Correo inválido."); ok = false; }
+        if (!ok) return;
+
+        const btn = document.getElementById("saveInfoBtn")!;
+        const txt = document.getElementById("saveInfoText")!;
+        const sp  = document.getElementById("saveInfoSpinner")!;
+        btn.setAttribute("disabled","true"); txt.textContent = "Guardando..."; sp.classList.remove("hidden");
+        try {
+            // Obtener id y rol_id de la sesión actual
+            const sess = await fetch(`${API}/api/session.jsp`, { credentials: "include" }).then(r => r.json());
+            const res  = await fetch(`${API}/api/auth.jsp`, { method:"POST", headers:{"Content-Type":"application/json"}, credentials:"include",
+                body: JSON.stringify({ action: "updateInfo", nombre, usuario, correo }) });
+            // FIX: backend auth.jsp solo acepta POST para updateInfo
+            const data = await res.json();
+            if (data.success) {
+                showMsg("¡Información actualizada!");
+                document.getElementById("profileAvatarLetter")!.textContent = nombre[0].toUpperCase();
+                window.dispatchEvent(new CustomEvent("profile-updated", { detail: { nombre } }));
+            } else { showMsg(data.message || data.error || "Error al actualizar.", false); }
+        } catch { showMsg("Error de conexión.", false); }
+        finally { btn.removeAttribute("disabled"); txt.textContent = "Guardar Cambios"; sp.classList.add("hidden"); }
+    });
+
+    // Cambiar contraseña
+    document.getElementById("savePwdBtn")!.addEventListener("click", async () => {
+        const current = (document.getElementById("currentPwd") as HTMLInputElement).value;
+        const newP    = (document.getElementById("newPwd") as HTMLInputElement).value;
+        const confirm = (document.getElementById("confirmPwd") as HTMLInputElement).value;
+        ["currentPwd","newPwd","confirmPwd"].forEach(clearErr);
+        let ok = true;
+        if (!current) { showErr("currentPwd","Ingresa tu contraseña actual."); ok = false; }
+        if (newP.length < 6) { showErr("newPwd","Mínimo 6 caracteres."); ok = false; }
+        if (newP !== confirm) { showErr("confirmPwd","Las contraseñas no coinciden."); ok = false; }
+        if (!ok) return;
+
+        const btn = document.getElementById("savePwdBtn")!;
+        const txt = document.getElementById("savePwdText")!;
+        const sp  = document.getElementById("savePwdSpinner")!;
+        btn.setAttribute("disabled","true"); txt.textContent = "Cambiando..."; sp.classList.remove("hidden");
+        try {
+            const res  = await fetch(`${API}/api/auth.jsp`, { method:"POST", headers:{"Content-Type":"application/json"}, credentials:"include",
+                body: JSON.stringify({ action: "changePassword", currentPassword: current, newPassword: newP }) });
+            const data = await res.json();
+            if (data.success) {
+                showMsg("¡Contraseña cambiada!");
+                ["currentPwd","newPwd","confirmPwd"].forEach(id => (document.getElementById(id) as HTMLInputElement).value = "");
+            } else { showMsg(data.message || data.error || "No se pudo cambiar.", false); }
+        } catch { showMsg("Error de conexión.", false); }
+        finally { btn.removeAttribute("disabled"); txt.textContent = "Cambiar Contraseña"; sp.classList.add("hidden"); }
+    });
+</script>

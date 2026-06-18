@@ -1,0 +1,546 @@
+---
+---
+
+<div class="p-4 font-space">
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6">
+    <div>
+      <h1 id="gameFormTitle" class="text-white font-bold text-4xl pb-1">Registro de Juegos</h1>
+      <p class="text-[#71717A] text-sm">Agrega o edita juegos completos desde el panel administrador.</p>
+    </div>
+    <button id="newGameBtn" class="text-sm text-[#A78BFA] border border-[#A78BFA] rounded-full px-4 py-2 hover:bg-[#A78BFA]/10 transition-colors">
+      Nuevo juego
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6">
+    <form id="gameForm" class="rounded-2xl border border-[#262629] bg-[#17171A]/70 p-6 space-y-6">
+      <input type="hidden" id="juegoId" />
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <label class="block text-sm text-[#A1A1AA]">
+          <span class="text-white text-sm">Título</span>
+          <input id="titulo" class="mt-2 w-full rounded-xl border border-[#27272A] bg-[#0F0F14] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#A78BFA]" placeholder="Ej: Cyber Heist" />
+        </label>
+
+        <label class="block text-sm text-[#A1A1AA]">
+          <span class="text-white text-sm">Precio</span>
+          <input id="precio" type="number" min="0" step="0.01" class="mt-2 w-full rounded-xl border border-[#27272A] bg-[#0F0F14] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#A78BFA]" placeholder="59.99" />
+        </label>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <label class="block text-sm text-[#A1A1AA]">
+          <span class="text-white text-sm">Fecha de lanzamiento</span>
+          <input id="fecha_lanzamiento" type="date" class="mt-2 w-full rounded-xl border border-[#27272A] bg-[#0F0F14] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#A78BFA]" />
+        </label>
+
+        <label class="block text-sm text-[#A1A1AA]">
+          <span class="text-white text-sm">Imagen URL</span>
+          <input id="imagen_url" class="mt-2 w-full rounded-xl border border-[#27272A] bg-[#0F0F14] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#A78BFA]" placeholder="https://..." />
+        </label>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <label class="block text-sm text-[#A1A1AA]">
+          <span class="text-white text-sm">Video URL</span>
+          <input id="video_url" class="mt-2 w-full rounded-xl border border-[#27272A] bg-[#0F0F14] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#A78BFA]" placeholder="https://..." />
+        </label>
+
+        <label class="block text-sm text-[#A1A1AA]">
+          <span class="text-white text-sm">Categoría</span>
+          <select id="categoria" class="mt-2 w-full rounded-xl border border-[#27272A] bg-[#0F0F14] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#A78BFA]">
+            <option value="">Selecciona categoría</option>
+          </select>
+          <div id="categoriaTags" class="mt-3 hidden flex flex-wrap gap-2"></div>
+        </label>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <label class="block text-sm text-[#A1A1AA]">
+          <span class="text-white text-sm">Slug</span>
+          <input id="slug" class="mt-2 w-full rounded-xl border border-[#27272A] bg-[#0F0F14] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#A78BFA]" placeholder="cyber-heist" />
+        </label>
+
+        <label class="block text-sm text-[#A1A1AA]">
+          <span class="text-white text-sm">Descuento (%)</span>
+          <input id="descuento_porcentaje" type="number" min="0" max="100" class="mt-2 w-full rounded-xl border border-[#27272A] bg-[#0F0F14] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#A78BFA]" placeholder="10" />
+        </label>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <label class="block text-sm text-[#A1A1AA]">
+          <span class="text-white text-sm">Inicio de descuento</span>
+          <input id="descuento_inicio" type="datetime-local" class="mt-2 w-full rounded-xl border border-[#27272A] bg-[#0F0F14] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#A78BFA]" />
+        </label>
+        <label class="block text-sm text-[#A1A1AA]">
+          <span class="text-white text-sm">Fin de descuento</span>
+          <input id="descuento_fin" type="datetime-local" class="mt-2 w-full rounded-xl border border-[#27272A] bg-[#0F0F14] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#A78BFA]" />
+        </label>
+      </div>
+
+      <label class="block text-sm text-[#A1A1AA]">
+        <span class="text-white text-sm">Descripción</span>
+        <textarea id="descripcion" rows="5" class="mt-2 w-full rounded-xl border border-[#27272A] bg-[#0F0F14] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#A78BFA]" placeholder="Descripción breve del juego..."></textarea>
+      </label>
+
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p id="formStatus" class="text-sm text-[#A78BFA]"></p>
+        <div class="flex gap-3 flex-wrap">
+          <button id="saveGameBtn" type="submit" class="rounded-full bg-[#A78BFA] px-6 py-3 text-sm font-semibold text-black hover:brightness-110 transition-all">
+            Guardar juego
+          </button>
+          <button id="cancelGameBtn" type="button" class="rounded-full border border-[#27272A] px-6 py-3 text-sm text-white hover:border-[#A78BFA] transition-all">
+            Limpiar formulario
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="rounded-2xl border border-[#262629] bg-[#17171A]/70 p-6 mt-6">
+      <div class="flex items-center justify-between gap-4 mb-4">
+        <div>
+          <h2 class="text-white font-semibold text-xl">Juegos recientes</h2>
+          <p class="text-[#71717A] text-sm">Los últimos juegos agregados o editados se muestran aquí.</p>
+        </div>
+        <button id="refreshRecentGames" type="button" class="rounded-full border border-[#27272A] px-4 py-2 text-xs text-[#A78BFA] hover:bg-[#A78BFA]/10 transition-colors">
+          Actualizar
+        </button>
+      </div>
+      <div id="recentGamesList" class="space-y-3">
+        <p class="text-sm text-[#71717A]">Cargando juegos recientes...</p>
+      </div>
+    </div>
+</div>
+
+<script>
+  const API = "http://localhost:8080";
+  const form = document.getElementById("gameForm") as HTMLFormElement;
+  const statusMessage = document.getElementById("formStatus") as HTMLParagraphElement;
+  const saveBtn = document.getElementById("saveGameBtn") as HTMLButtonElement;
+  const cancelBtn = document.getElementById("cancelGameBtn") as HTMLButtonElement;
+  const newGameBtn = document.getElementById("newGameBtn") as HTMLButtonElement;
+  const categorySelect = document.getElementById("categoria") as HTMLSelectElement | null;
+  const categoriaTags = document.getElementById("categoriaTags") as HTMLElement | null;
+  const discountStartInput = document.getElementById("descuento_inicio") as HTMLInputElement | null;
+  const discountEndInput = document.getElementById("descuento_fin") as HTMLInputElement | null;
+  const discountPercentInput = document.getElementById("descuento_porcentaje") as HTMLInputElement | null;
+  let categorias: any[] = [];
+  let recentGames: any[] = [];
+  let lastEditedId: string | null = null;
+
+  function getRecentGamesList() {
+    return document.getElementById("recentGamesList") as HTMLElement | null;
+  }
+
+  async function parseJsonResponse(res: Response) {
+    const text = await res.text();
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      const sanitized = text.replace(/[\x00-\x1F]/g, "");
+      try {
+        return JSON.parse(sanitized);
+      } catch (e2) {
+        console.error("Failed to parse JSON response. Raw response:", text);
+        throw new Error("Invalid JSON response from server");
+      }
+    }
+  }
+
+  function setStatus(message: string, success = true) {
+    if (!statusMessage) return;
+    statusMessage.textContent = message;
+    statusMessage.className = success ? "text-sm text-[#A78BFA]" : "text-sm text-red-400";
+  }
+
+  function resetForm() {
+    form.reset();
+    setStatus("Formulario listo para un nuevo juego.");
+    document.getElementById("juegoId")!.removeAttribute("value");
+    document.getElementById("gameFormTitle")!.textContent = "Registro de Juegos";
+    saveBtn.textContent = "Guardar juego";
+    if (discountStartInput) discountStartInput.value = "";
+    if (discountEndInput) discountEndInput.value = "";
+    if (discountPercentInput) discountPercentInput.value = "";
+    if (categorySelect) categorySelect.value = "";
+    if (categoriaTags) {
+      categoriaTags.innerHTML = "";
+      categoriaTags.classList.add("hidden");
+    }
+    if (categorySelect) categorySelect.classList.remove("hidden");
+  }
+
+  function fillForm(game: any) {
+    const gameId = game.id ?? game.ID ?? game.juego_id ?? game.id_juego ?? "";
+    const normalizedId = gameId === false || gameId === "false" ? "" : String(gameId);
+    const precioValue = game.precio != null && game.precio !== false ? String(game.precio) : "";
+
+    const titleValue = game.titulo ?? game.title ?? "";
+    const slugValue = game.slug ?? "";
+    const descValue = game.descripcion ?? game.description ?? "";
+    const imageValue = game.imagen_url ?? game.imagenUrl ?? "";
+    const videoValue = game.video_url ?? game.videoUrl ?? "";
+    const launchValue = game.fecha_lanzamiento ?? game.fecha_lanzamiento ?? "";
+
+    (document.getElementById("juegoId") as HTMLInputElement).value = normalizedId;
+    (document.getElementById("titulo") as HTMLInputElement).value = titleValue;
+    (document.getElementById("slug") as HTMLInputElement).value = slugValue;
+    (document.getElementById("descripcion") as HTMLTextAreaElement).value = descValue;
+    (document.getElementById("imagen_url") as HTMLInputElement).value = imageValue;
+    (document.getElementById("video_url") as HTMLInputElement).value = videoValue;
+    (document.getElementById("fecha_lanzamiento") as HTMLInputElement).value = launchValue;
+    (document.getElementById("precio") as HTMLInputElement).value = precioValue;
+
+    const categories = Array.isArray(game.categorias) && game.categorias.length ? game.categorias : [];
+    if (!categories.length && game.categoria_id) {
+      categories.push({ id: String(game.categoria_id), nombre: game.categoria_nombre || game.categoria || "" });
+    }
+
+    if (categoriaTags) {
+      categoriaTags.innerHTML = categories.length
+        ? categories.map((cat: any) => `<span class="inline-flex items-center rounded-full bg-[#27272A] px-3 py-1 text-xs text-[#E5E7EB]">${cat.nombre || 'Sin categoría'}</span>`).join("")
+        : `<span class="inline-flex items-center rounded-full bg-[#27272A] px-3 py-1 text-xs text-[#E5E7EB]">Sin categoría</span>`;
+      categoriaTags.classList.remove("hidden");
+    }
+    if (categorySelect) {
+      categorySelect.classList.add("hidden");
+    }
+
+    if (discountStartInput) discountStartInput.value = game.descuento_inicio || game.fecha_inicio || "";
+    if (discountEndInput) discountEndInput.value = game.descuento_fin || game.fecha_fin || "";
+    if (discountPercentInput) discountPercentInput.value = game.descuento_porcentaje ? String(game.descuento_porcentaje) : game.porcentaje ? String(game.porcentaje) : "";
+
+    document.getElementById("gameFormTitle")!.textContent = "Editar Juego";
+    saveBtn.textContent = "Actualizar juego";
+    setStatus("Editando juego seleccionado.");
+  }
+
+  function getFormData() {
+    const selectedCategory = categorySelect ? categorySelect.value : "";
+    const selectedCategoryName = categorySelect ? categorySelect.options[categorySelect.selectedIndex]?.textContent?.trim() : "";
+    const rawId = (document.getElementById("juegoId") as HTMLInputElement).value;
+    const normalizedId = rawId === "false" ? "" : rawId;
+
+    return {
+      id: normalizedId,
+      titulo: (document.getElementById("titulo") as HTMLInputElement).value.trim(),
+      slug: (document.getElementById("slug") as HTMLInputElement).value.trim(),
+      descripcion: (document.getElementById("descripcion") as HTMLTextAreaElement).value.trim(),
+      imagen_url: (document.getElementById("imagen_url") as HTMLInputElement).value.trim(),
+      video_url: (document.getElementById("video_url") as HTMLInputElement).value.trim(),
+      fecha_lanzamiento: (document.getElementById("fecha_lanzamiento") as HTMLInputElement).value,
+      precio: (document.getElementById("precio") as HTMLInputElement).value.trim(),
+      categoria_id: selectedCategory,
+      categoria: selectedCategoryName !== "Selecciona categoría" ? selectedCategoryName : "",
+      descuento_inicio: discountStartInput ? discountStartInput.value : "",
+      descuento_fin: discountEndInput ? discountEndInput.value : "",
+      descuento_porcentaje: discountPercentInput ? discountPercentInput.value.trim() : "",
+    };
+  }
+
+  function validateGame(data: any) {
+    if (!data.titulo) return "El título es obligatorio.";
+    if (!data.precio || Number(data.precio) <= 0) return "El precio debe ser mayor a cero.";
+    if (!data.descripcion) return "La descripción es obligatoria.";
+    return "";
+  }
+
+  async function submitGame(event: Event) {
+    event.preventDefault();
+    const data = getFormData();
+    const error = validateGame(data);
+    if (error) {
+      setStatus(error, false);
+      return;
+    }
+
+    const payload: any = {
+      titulo: data.titulo,
+      slug: data.slug,
+      descripcion: data.descripcion,
+      imagen_url: data.imagen_url,
+      video_url: data.video_url,
+      fecha_lanzamiento: data.fecha_lanzamiento ? (data.fecha_lanzamiento.split && data.fecha_lanzamiento.split('T')[0]) : undefined,
+      precio: Number(data.precio),
+      descuento_inicio: data.descuento_inicio || undefined,
+      descuento_fin: data.descuento_fin || undefined,
+      descuento_porcentaje: data.descuento_porcentaje ? Number(data.descuento_porcentaje) : null,
+    };
+    if (!data.id && data.categoria_id) {
+      payload.categoria_id = Number(data.categoria_id);
+    }
+
+    const isEditing = data.id !== "";
+    const url = `${API}/api/juegos.jsp${isEditing ? `?id=${data.id}` : ""}`;
+    const method = isEditing ? "PUT" : "POST";
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = isEditing ? "Actualizando..." : "Guardando...";
+
+    async function parseJsonResponse(res: Response) {
+      const text = await res.text();
+      try {
+        return JSON.parse(text);
+      } catch (e) {
+        const sanitized = text.replace(/[\x00-\x1F]/g, "");
+        try {
+          return JSON.parse(sanitized);
+        } catch (e2) {
+          console.error("Failed to parse JSON response. Raw response:", text);
+          throw new Error("Invalid JSON response from server");
+        }
+      }
+    }
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ ...payload, id: data.id }),
+      });
+      const result = await parseJsonResponse(response);
+      if (result.success) {
+        console.log('[registro-juegos] submitGame result:', result);
+        setStatus(isEditing ? "Juego actualizado correctamente." : "Juego agregado correctamente.");
+        const createdId = isEditing ? data.id : (result.id ? String(result.id) : null);
+        lastEditedId = createdId || null;
+        if (!isEditing) resetForm();
+        if (payload.descuento_porcentaje && payload.descuento_fin) {
+          const juegoId = isEditing ? data.id : result.id || null;
+          if (juegoId) {
+              try {
+                const discRes = await fetch(`${API}/api/descuentos.jsp`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  credentials: "include",
+                  body: JSON.stringify({ juego_id: Number(juegoId), porcentaje: Number(payload.descuento_porcentaje), fecha_fin: payload.descuento_fin }),
+                });
+                const discResult = await parseJsonResponse(discRes);
+                if (!discResult.success) {
+                  console.warn("No se pudo crear descuento:", discResult);
+                  setStatus("Juego guardado, pero no se pudo crear el descuento.", false);
+                }
+              } catch (err) {
+                console.error("Error creando descuento:", err);
+                setStatus("Juego guardado, pero error al crear descuento.", false);
+              }
+          } else {
+            console.warn("No se obtuvo el ID del juego creado; no se pudo crear descuento automáticamente.");
+          }
+        }
+        console.log('[registro-juegos] dispatching inventory-updated, lastEditedId=', lastEditedId);
+        window.dispatchEvent(new CustomEvent("inventory-updated"));
+      } else {
+        setStatus(result.error || result.message || "No se pudo guardar el juego.", false);
+      }
+    } catch (err) {
+      console.error(err);
+      setStatus("Error de conexión con el servidor.", false);
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = isEditing ? "Actualizar juego" : "Guardar juego";
+    }
+  }
+
+  async function cargarCategorias() {
+    if (!categorySelect) return;
+
+    try {
+      const res = await fetch(`${API}/api/categorias.jsp`, {
+        credentials: "include",
+      });
+      const data = await parseJsonResponse(res);
+      categorias = Array.isArray(data) ? data : data.categorias || [];
+
+      categorySelect.innerHTML = `<option value="">Selecciona categoría</option>` + categorias
+        .map((cat) => `<option value="${cat.id}">${cat.nombre}</option>`)
+        .join("");
+    } catch (error) {
+      console.error("Error cargando categorías:", error);
+      categorySelect.innerHTML = `<option value="">No se pudieron cargar categorías</option>`;
+    }
+  }
+
+  function renderRecentGames(games: any[]) {
+    const recentGamesListEl = getRecentGamesList();
+    if (!recentGamesListEl) return;
+    recentGames = games;
+    console.log('[registro-juegos] renderRecentGames: rendering', games.length);
+    if (!games.length) {
+      recentGamesListEl.innerHTML = `<p class="text-sm text-[#71717A]">No hay juegos registrados todavía.</p>`;
+      return;
+    }
+
+    recentGamesListEl.innerHTML = `
+      <div class="space-y-3">
+        ${games.slice(0, 5).map((juego) => {
+          const discount = Number(juego.porcentaje ?? juego.descuento_porcentaje ?? 0);
+          const originalPrice = Number(juego.precio_original ?? juego.precioOriginal ?? juego.precio ?? 0);
+          const backendPrice = Number(juego.precio ?? 0);
+          const discountedPriceFromBackend = Number(juego.precio_actual ?? juego.precio_con_descuento ?? 0);
+          const calculatedDiscountedPrice = discount > 0 && originalPrice > 0
+            ? Number((originalPrice * (1 - discount / 100)).toFixed(2))
+            : backendPrice;
+          const discountedPrice = discountedPriceFromBackend > 0 && discountedPriceFromBackend <= originalPrice
+            ? discountedPriceFromBackend
+            : calculatedDiscountedPrice;
+          const showOriginal = originalPrice > 0 && originalPrice !== discountedPrice;
+
+          return `
+          <button type="button" data-action="open-recent" data-id="${juego.id}" class="w-full text-left rounded-2xl border border-[#27272A] bg-[#111214] p-3 hover:border-[#A78BFA] hover:bg-[#1F1F28] transition-colors">
+            <div class="flex items-center justify-between gap-3">
+              <div>
+                <p class="text-sm text-white font-semibold">${juego.titulo || 'Sin título'}</p>
+                <p class="text-xs text-[#71717A]">${juego.categoria || juego.categoria_nombre || 'Sin categoría'}</p>
+              </div>
+              <p class="text-xs text-zinc-400">S/ ${Number(discountedPrice).toFixed(2)}</p>
+            </div>
+            <div class="mt-3 grid gap-2 text-[11px] text-[#71717A]">
+              ${showOriginal ? `<p>Precio original: <span class="text-white">S/ ${Number(originalPrice).toFixed(2)}</span></p>` : ''}
+              <p>Descuento: <span class="text-[#A78BFA]">-${discount.toFixed(0)}%</span></p>
+              <p>Precio con descuento: <span class="text-white">S/ ${Number(discountedPrice).toFixed(2)}</span></p>
+            </div>
+          </button>
+        `}).join("")}
+      </div>
+    `;
+  }
+async function cargarRecentGames() {
+  const recentGamesListEl = getRecentGamesList();
+  if (!recentGamesListEl) return;
+
+  console.log('[registro-juegos] cargarRecentGames: start');
+  const refreshBtn = document.getElementById("refreshRecentGames") as HTMLButtonElement | null;
+  if (refreshBtn) {
+    refreshBtn.disabled = true;
+    refreshBtn.classList.add('opacity-50', 'cursor-wait');
+  }
+
+  recentGamesListEl.innerHTML = `<p class="text-sm text-[#71717A]">Cargando juegos recientes...</p>`;
+
+  try {
+    const [gamesRes, discountsRes] = await Promise.all([
+      fetch(`${API}/api/juegos_admin.jsp`, { credentials: "include", cache: 'no-store' }),
+      fetch(`${API}/api/descuentos.jsp`, { credentials: "include", cache: 'no-store' }),
+    ]);
+    const gamesData = await parseJsonResponse(gamesRes);
+    const discountData = await parseJsonResponse(discountsRes);
+
+    const games = Array.isArray(gamesData) ? gamesData : gamesData.juegos || gamesData.items || [];
+    const discounts = Array.isArray(discountData) ? discountData : discountData.descuentos || discountData.items || [];
+
+    const discountsMap: Record<string, any> = {};
+    discounts.forEach((d: any) => {
+      if (d && d.juego_id != null) {
+        discountsMap[String(d.juego_id)] = d;
+      }
+    });
+
+    const gamesWithDiscounts = games.map((juego: any) => {
+      const discount = discountsMap[String(juego.id)];
+      if (!discount) return juego;
+      return {
+        ...juego,
+        porcentaje: discount.porcentaje ?? discount.descuento_porcentaje ?? juego.porcentaje,
+        descuento_fin: discount.fecha_fin ?? juego.descuento_fin,
+        descuento_inicio: discount.fecha_inicio ?? juego.descuento_inicio,
+        precio_original: discount.precio_original ?? juego.precio_original,
+        precio_actual: discount.precio_actual ?? juego.precio_actual,
+        precio_con_descuento: discount.precio_con_descuento ?? juego.precio_con_descuento,
+      };
+    });
+
+    const uniqueGamesMap: Record<string, any> = {};
+
+    gamesWithDiscounts.forEach((game: any) => {
+      const id = String(game.id);
+      if (!uniqueGamesMap[id]) {
+        uniqueGamesMap[id] = { ...game, categorias: [] };
+      }
+      const cat = game.categoria || game.categoria_nombre;
+      if (cat && !uniqueGamesMap[id].categorias.includes(cat)) {
+        uniqueGamesMap[id].categorias.push(cat);
+      }
+    });
+
+    const uniqueGames = Object.values(uniqueGamesMap);
+
+    uniqueGames.sort(
+      (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+    );
+
+    renderRecentGames(uniqueGames);
+
+  } catch (error) {
+    console.error("Error cargando juegos recientes:", error);
+    if (recentGamesListEl) {
+      recentGamesListEl.innerHTML = `<p class="text-sm text-red-400">Error cargando los juegos recientes.</p>`;
+    }
+  } finally {
+    console.log('[registro-juegos] cargarRecentGames: end');
+    if (refreshBtn) {
+      refreshBtn.disabled = false;
+      refreshBtn.classList.remove('opacity-50', 'cursor-wait');
+    }
+  }
+}
+
+  function initRegistroJuegosSection() {
+    if (!form || !saveBtn || !cancelBtn || !newGameBtn) {
+      console.error("RegistroJuegosSection: faltan elementos del formulario");
+      return;
+    }
+
+    cargarCategorias();
+    form.addEventListener("submit", submitGame);
+    cancelBtn.addEventListener("click", resetForm);
+    newGameBtn.addEventListener("click", () => {
+      resetForm();
+      window.dispatchEvent(new CustomEvent("open-admin-section", { detail: { section: "registro-juegos" } }));
+    });
+
+    const refreshRecentGamesBtn = document.getElementById("refreshRecentGames") as HTMLButtonElement | null;
+    if (refreshRecentGamesBtn) {
+      refreshRecentGamesBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        console.log('[registro-juegos] refresh button clicked');
+        cargarRecentGames();
+      });
+    }
+
+    window.addEventListener("open-admin-section", (event: any) => {
+      if (event.detail?.section !== "registro-juegos") return;
+      const game = event.detail?.game;
+      if (game) {
+        fillForm(game);
+      } else {
+        resetForm();
+      }
+    });
+
+    const recentGamesListEl = getRecentGamesList();
+    if (recentGamesListEl) {
+      recentGamesListEl.addEventListener("click", (event: any) => {
+        const button = (event.target as HTMLElement).closest("button[data-action='open-recent']") as HTMLButtonElement | null;
+        if (!button) return;
+        const id = button.dataset.id;
+        if (!id) return;
+        const game = recentGames.find((juego) => String(juego.id) === id);
+        if (game) {
+          window.dispatchEvent(new CustomEvent("open-admin-section", { detail: { section: "registro-juegos", game } }));
+        }
+      });
+    }
+
+    window.addEventListener("inventory-updated", cargarRecentGames);
+    cargarRecentGames();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initRegistroJuegosSection);
+  } else {
+    initRegistroJuegosSection();
+  }
+</script>

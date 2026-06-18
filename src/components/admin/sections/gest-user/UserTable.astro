@@ -1,0 +1,353 @@
+<div class="px-4 pb-4">
+  <div class="rounded-2xl border border-[#262629] bg-[#17171A]/70 overflow-hidden">
+    <div class="px-6 py-4 border-b border-[#262629] flex flex-wrap items-center gap-3">
+      <div class="relative flex-1 min-w-[180px] max-w-sm">
+        <input id="usr-search" type="text" placeholder="Buscar usuario..."
+          class="w-full bg-[#1A1A1D] border border-[#262629] rounded-lg pl-4 pr-4 py-2.5 text-sm text-white placeholder-[#71717A] focus:outline-none focus:border-[#A970FF] transition-colors" />
+      </div>
+      <select id="usr-inactivity-filter"
+        class="bg-[#1A1A1D] border border-[#262629] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-[#A970FF]">
+        <option value="">Todos los usuarios</option>
+        <option value="365">Inactivos +365 días</option>
+        <option value="180">Inactivos +180 días</option>
+        <option value="90">Inactivos +90 días</option>
+      </select>
+      <span id="usr-count" class="ml-auto text-sm text-[#71717A] whitespace-nowrap">Cargando...</span>
+    </div>
+
+    <div class="grid grid-cols-[2fr_1.5fr_1fr_1fr_140px] gap-4 px-6 py-3 border-b border-[#262629]">
+      <span class="text-[#71717A] text-xs font-semibold uppercase">Usuario</span>
+      <span class="text-[#71717A] text-xs font-semibold uppercase">Email</span>
+      <span class="text-[#71717A] text-xs font-semibold uppercase">Último acceso</span>
+      <span class="text-[#71717A] text-xs font-semibold uppercase">Compras</span>
+      <span class="text-[#71717A] text-xs font-semibold uppercase">Acciones</span>
+    </div>
+
+    <div id="usr-table-body"></div>
+
+    <div class="px-6 py-4 border-t border-[#262629] flex items-center justify-between">
+      <button id="usr-prev" disabled
+        class="text-sm text-[#71717A] hover:text-white transition-colors disabled:opacity-30 flex items-center gap-1">
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>
+        Anterior
+      </button>
+      <span id="usr-page-info" class="text-sm text-[#71717A]">Página 1 de 1</span>
+      <button id="usr-next"
+        class="text-sm text-[#71717A] hover:text-white transition-colors disabled:opacity-30 flex items-center gap-1">
+        Siguiente
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="usr-discount-overlay"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="w-full max-w-sm rounded-2xl border border-[#262629] bg-[#17171A] shadow-2xl overflow-hidden">
+      <div class="px-6 py-5 border-b border-[#262629] flex items-center justify-between">
+        <h2 class="text-sm font-semibold uppercase tracking-wider text-white">Dar Descuento a Cliente</h2>
+        <button id="usr-discount-close" class="text-[#71717A] hover:text-white text-2xl leading-none">✕</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <p class="text-[#71717A] text-sm">Cliente: <strong id="usr-discount-name" class="text-white"></strong></p>
+        <div>
+          <label class="text-xs uppercase tracking-widest text-[#494454]">Descuento (%)</label>
+          <input id="usr-discount-pct" type="number" min="1" max="90" placeholder="Ej: 20"
+            class="mt-2 w-full bg-[#1A1A1D] border border-[#262629] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#A970FF] transition-colors" />
+        </div>
+        <div>
+          <label class="text-xs uppercase tracking-widest text-[#494454]">Juego (ID)</label>
+          <select id="usr-discount-game"
+            class="mt-2 w-full bg-[#1A1A1D] border border-[#262629] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#A970FF]">
+            <option value="">Selecciona un juego...</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs uppercase tracking-widest text-[#494454]">Válido hasta</label>
+          <input id="usr-discount-date" type="datetime-local"
+            class="mt-2 w-full bg-[#1A1A1D] border border-[#262629] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#A970FF] transition-colors" />
+        </div>
+        <p id="usr-discount-error" class="hidden text-xs text-red-400"></p>
+        <button id="usr-discount-confirm"
+          class="w-full h-12 rounded-xl bg-[#A970FF] text-[#1D0D3B] font-semibold hover:brightness-110 active:scale-95 transition-all">
+          Aplicar Descuento
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="usr-delete-overlay"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="w-full max-w-sm rounded-2xl border border-[#262629] bg-[#17171A] shadow-2xl overflow-hidden">
+      <div class="p-6 text-center space-y-4">
+        <div class="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
+          <svg width="24" height="24" fill="#f87171" viewBox="0 0 16 16">
+            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zM14 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1z"/>
+          </svg>
+        </div>
+        <h3 class="text-white font-semibold">¿Eliminar usuario?</h3>
+        <p class="text-[#71717A] text-sm">
+          Esta acción es permanente.<br>
+          <strong id="usr-delete-name" class="text-white"></strong>
+        </p>
+        <div class="flex gap-3 pt-2">
+          <button id="usr-delete-cancel"
+            class="flex-1 h-11 rounded-xl border border-[#262629] text-[#71717A] hover:text-white transition-colors text-sm">
+            Cancelar
+          </button>
+          <button id="usr-delete-confirm"
+            class="flex-1 h-11 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition-colors">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="usr-toast"
+    class="hidden fixed bottom-6 right-6 z-50 bg-[#1A1A1D] border border-[#262629] rounded-xl px-5 py-3 text-white text-sm">
+    ✓ Operación completada
+  </div>
+</div>
+
+<script>
+  const API_USERS  = "http://localhost:8080/api/usuarios.jsp?seccion=clientes";
+  const API_GAMES  = "http://localhost:8080/api/juegos.jsp";
+  const API_DISC   = "http://localhost:8080/api/descuentos.jsp";
+  const API_SESSION = "http://localhost:8080/api/auth.jsp?action=session";
+
+  let users: any[]        = [];
+  let deleteId: any       = null;
+  let discountUserId: any = null;
+  let page                = 1;
+  let currentSubRole      = "";
+  const PER_PAGE          = 8;
+
+  const tbody          = document.getElementById("usr-table-body")!;
+  const countEl        = document.getElementById("usr-count")!;
+  const pageInfoEl     = document.getElementById("usr-page-info")!;
+  const btnPrev        = document.getElementById("usr-prev") as HTMLButtonElement;
+  const btnNext        = document.getElementById("usr-next") as HTMLButtonElement;
+  const searchInput    = document.getElementById("usr-search") as HTMLInputElement;
+  const inactivityFilter = document.getElementById("usr-inactivity-filter") as HTMLSelectElement;
+
+  const delOverlay  = document.getElementById("usr-delete-overlay")!;
+  const delName     = document.getElementById("usr-delete-name")!;
+  const discOverlay = document.getElementById("usr-discount-overlay")!;
+  const discName    = document.getElementById("usr-discount-name")!;
+  const discError   = document.getElementById("usr-discount-error")!;
+  const toast       = document.getElementById("usr-toast")!;
+
+  function initials(name: string) {
+    return (name || "").trim().split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase() || "--";
+  }
+  function showToast(msg = "✓ Operación completada") {
+    toast.textContent = msg;
+    toast.classList.remove("hidden");
+    setTimeout(() => toast.classList.add("hidden"), 2500);
+  }
+  function openModal(el: Element)  { el.classList.remove("hidden"); }
+  function closeModal(el: Element) { el.classList.add("hidden"); }
+
+  function daysSince(dateStr: string | null): number {
+    if (!dateStr) return 9999;
+    const diff = Date.now() - new Date(dateStr).getTime();
+    return Math.floor(diff / (1000 * 60 * 60 * 24));
+  }
+
+  function getFiltered(): any[] {
+    const q = searchInput.value.toLowerCase();
+    const inactiveDays = inactivityFilter.value ? parseInt(inactivityFilter.value) : 0;
+    return users.filter(u => {
+      const matchQ = !q
+        || (u.nombre  || "").toLowerCase().includes(q)
+        || (u.usuario || "").toLowerCase().includes(q)
+        || (u.correo  || "").toLowerCase().includes(q);
+      const days = daysSince(u.ultimo_acceso || u.fecha_registro);
+      const matchInactive = !inactiveDays || days >= inactiveDays;
+      return matchQ && matchInactive;
+    });
+  }
+
+  function render() {
+    const data  = getFiltered();
+    const total = Math.max(1, Math.ceil(data.length / PER_PAGE));
+    page = Math.min(page, total);
+    const slice = data.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+    countEl.textContent    = `${data.length} usuario${data.length !== 1 ? "s" : ""}`;
+    pageInfoEl.textContent = `Página ${page} de ${total}`;
+    btnPrev.disabled       = page <= 1;
+    btnNext.disabled       = page >= total;
+
+    if (!slice.length) {
+      tbody.innerHTML = `<div class="flex justify-center py-16 text-[#71717A] text-sm">No hay usuarios con estos filtros.</div>`;
+      return;
+    }
+
+    tbody.innerHTML = slice.map((u: any) => {
+      const days       = daysSince(u.ultimo_acceso || u.fecha_registro);
+      const isInactive = days >= 7;
+      const isFrequent = (u.total_compras || 0) >= 5;
+      const canDelete  = isInactive && currentSubRole !== "SOPORTE";
+
+      return `
+      <div class="grid grid-cols-[2fr_1.5fr_1fr_1fr_140px] gap-4 px-6 py-4 border-b border-[#1E1E21] items-center">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-9 h-9 rounded-full bg-[#A970FF]/20 flex items-center justify-center text-[#A970FF] text-xs font-bold flex-shrink-0">
+            ${initials(u.nombre)}
+          </div>
+          <div class="min-w-0">
+            <p class="text-sm text-white truncate">${u.nombre}</p>
+            <p class="text-xs text-[#71717A] truncate">@${u.usuario}</p>
+          </div>
+        </div>
+
+        <span class="text-sm text-[#71717A] truncate">${u.correo}</span>
+
+        <div>
+          <span class="text-xs ${isInactive ? "text-red-400" : "text-[#71717A]"}">
+            ${days < 9999 ? `Hace ${days}d` : "—"}
+          </span>
+          ${isInactive ? `<span class="ml-1 text-[10px] bg-red-500/15 text-red-400 px-1.5 py-0.5 rounded-full">Inactivo</span>` : ""}
+        </div>
+
+        <div class="flex items-center gap-1">
+          <span class="text-xs text-[#71717A]">${u.total_compras || 0} compras</span>
+          ${isFrequent ? `<span class="ml-1 text-[10px] bg-[#A970FF]/15 text-[#A970FF] px-1.5 py-0.5 rounded-full">Frecuente</span>` : ""}
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button data-discount="${u.id}" data-name="${u.nombre}"
+            title="Dar descuento"
+            class="p-1.5 rounded-lg border border-[#262629] text-[#71717A] hover:text-[#A970FF] hover:border-[#A970FF] transition-colors">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m0 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm-6 6a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
+            </svg>
+          </button>
+          ${canDelete ? `
+          <button data-del="${u.id}" data-name="${u.nombre}"
+            title="Eliminar (inactivo)"
+            class="p-1.5 rounded-lg border border-[#262629] text-[#71717A] hover:text-red-400 hover:border-red-500/40 transition-colors">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21q.512.078 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48 48 0 0 0-3.478-.397m-12 .562q.51-.089 1.022-.165m0 0a48 48 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a52 52 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a49 49 0 0 0-7.5 0"/>
+            </svg>
+          </button>` : `<span class="w-7"></span>`}
+        </div>
+      </div>`;
+    }).join("");
+
+    tbody.querySelectorAll<HTMLButtonElement>("[data-del]").forEach(btn =>
+      btn.addEventListener("click", () => openDelete(btn.dataset.del!, btn.dataset.name!))
+    );
+    tbody.querySelectorAll<HTMLButtonElement>("[data-discount]").forEach(btn =>
+      btn.addEventListener("click", () => openDiscount(btn.dataset.discount!, btn.dataset.name!))
+    );
+  }
+
+  async function loadUsers() {
+    tbody.innerHTML = `<div class="flex justify-center py-12 text-[#71717A] text-sm">Cargando...</div>`;
+    try {
+      const sess = await fetch(API_SESSION, { credentials: "include" }).then(r => r.json());
+      currentSubRole = sess.sub_role || "";
+
+      const res  = await fetch(API_USERS, { credentials: "include" });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      users = data;
+      render();
+    } catch (e: any) {
+      tbody.innerHTML = `<div class="flex justify-center py-12 text-red-400 text-sm">${e.message}</div>`;
+    }
+  }
+
+  function openDelete(id: string, name: string) {
+    deleteId = id;
+    delName.textContent = name;
+    openModal(delOverlay);
+  }
+
+  async function openDiscount(id: string, name: string) {
+    discountUserId = id;
+    discName.textContent = name;
+    discError.classList.add("hidden");
+    (document.getElementById("usr-discount-pct")  as HTMLInputElement).value = "";
+    (document.getElementById("usr-discount-date") as HTMLInputElement).value = "";
+
+    const sel = document.getElementById("usr-discount-game") as HTMLSelectElement;
+    sel.innerHTML = `<option value="">Cargando...</option>`;
+    try {
+      const games: any[] = await fetch(API_GAMES, { credentials: "include" }).then(r => r.json());
+      sel.innerHTML = `<option value="">Selecciona un juego...</option>` +
+        games.map(g => `<option value="${g.id}">${g.titulo} — S/ ${Number(g.precio).toFixed(2)}</option>`).join("");
+    } catch {
+      sel.innerHTML = `<option value="">Error al cargar juegos</option>`;
+    }
+
+    openModal(discOverlay);
+  }
+
+  document.getElementById("usr-delete-confirm")!.addEventListener("click", async () => {
+    if (!deleteId) return;
+    try {
+      const res  = await fetch(API_USERS, {
+        method: "DELETE", headers: { "Content-Type": "application/json" }, credentials: "include",
+        body: JSON.stringify({ id: deleteId }),
+      });
+      const data = await res.json();
+      if (data.error) { showToast("✗ " + data.error); return; }
+      closeModal(delOverlay);
+      showToast("✓ Usuario eliminado");
+      deleteId = null;
+      await loadUsers();
+    } catch { showToast("✗ Error de conexión"); }
+  });
+
+  document.getElementById("usr-discount-confirm")!.addEventListener("click", async () => {
+    const pct      = (document.getElementById("usr-discount-pct")  as HTMLInputElement).value.trim();
+    const juegoId  = (document.getElementById("usr-discount-game") as HTMLSelectElement).value;
+    const fechaFin = (document.getElementById("usr-discount-date") as HTMLInputElement).value;
+
+    discError.classList.add("hidden");
+    if (!pct || !juegoId || !fechaFin) {
+      discError.textContent = "Completa todos los campos.";
+      discError.classList.remove("hidden");
+      return;
+    }
+    if (Number(pct) < 1 || Number(pct) > 90) {
+      discError.textContent = "El descuento debe ser entre 1 y 90%.";
+      discError.classList.remove("hidden");
+      return;
+    }
+
+    try {
+      const res  = await fetch(API_DISC, {
+        method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include",
+        body: JSON.stringify({ juego_id: juegoId, porcentaje: pct, fecha_fin: fechaFin }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        closeModal(discOverlay);
+        showToast("✓ Descuento aplicado");
+      } else {
+        discError.textContent = data.error || "Error al aplicar descuento.";
+        discError.classList.remove("hidden");
+      }
+    } catch {
+      discError.textContent = "Error de conexión.";
+      discError.classList.remove("hidden");
+    }
+  });
+
+  document.getElementById("usr-delete-cancel")!.addEventListener("click",  () => closeModal(delOverlay));
+  document.getElementById("usr-discount-close")!.addEventListener("click", () => closeModal(discOverlay));
+  delOverlay.addEventListener("click",  e => { if (e.target === delOverlay)  closeModal(delOverlay);  });
+  discOverlay.addEventListener("click", e => { if (e.target === discOverlay) closeModal(discOverlay); });
+
+  btnPrev.addEventListener("click", () => { page--; render(); });
+  btnNext.addEventListener("click", () => { page++; render(); });
+  searchInput.addEventListener("input",       () => { page = 1; render(); });
+  inactivityFilter.addEventListener("change", () => { page = 1; render(); });
+
+  loadUsers();
+</script>

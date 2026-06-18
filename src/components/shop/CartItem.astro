@@ -1,0 +1,78 @@
+---
+interface Props {
+    detalleId: number;
+    juegoId: number;
+    image: string;
+    title: string;
+    precio: number;
+    precioFinal: number;
+    porcentaje?: number | null;
+    cantidad: number;
+}
+
+const { detalleId, juegoId, image, title, precio, precioFinal, porcentaje, cantidad } = Astro.props;
+const hasDiscount = porcentaje != null && porcentaje > 0;
+const subtotal = (precioFinal * cantidad).toFixed(2);
+---
+
+<div
+    data-detalle-id={detalleId}
+    class="cart-item flex items-center gap-4 bg-zinc-900/50 border border-zinc-800 p-4 rounded-sm mb-4"
+>
+    <img src={image} alt={title} class="w-24 h-24 object-cover rounded-sm" />
+
+    <div class="flex-1">
+        <div class="flex justify-between items-start">
+            <div>
+                <h3 class="text-white font-bold text-lg leading-tight">{title}</h3>
+                <div class="flex items-center gap-2 mt-0.5">
+                    {hasDiscount && (
+                        <span class="text-zinc-500 text-xs line-through">${precio.toFixed(2)}</span>
+                    )}
+                    <span class={`text-xs font-bold uppercase tracking-wider ${hasDiscount ? "text-[#A78BFA]" : "text-zinc-500"}`}>
+                        ${precioFinal.toFixed(2)} c/u
+                    </span>
+                    {hasDiscount && (
+                        <span class="bg-[#A78BFA] text-[#09090B] text-[10px] font-bold px-1.5 py-0.5 rounded">
+                            -{porcentaje}%
+                        </span>
+                    )}
+                </div>
+            </div>
+
+            <div class="text-right">
+                <p class="text-white font-bold text-xl" data-subtotal>${subtotal}</p>
+            </div>
+        </div>
+
+        <div class="flex justify-between items-center mt-4">
+            <div class="flex items-center bg-zinc-800 rounded-sm px-2 py-1 gap-3">
+                <button
+                    class="qty-btn text-zinc-500 hover:text-white transition-colors"
+                    data-action="minus"
+                    data-id={detalleId}
+                    data-precio={precioFinal}
+                >−</button>
+
+                <span class="text-white font-bold text-sm qty-display">{cantidad}</span>
+
+                <button
+                    class="qty-btn text-zinc-500 hover:text-white transition-colors"
+                    data-action="plus"
+                    data-id={detalleId}
+                    data-precio={precioFinal}
+                >+</button>
+            </div>
+
+            <button
+                class="delete-btn flex items-center gap-2 text-zinc-500 hover:text-red-500 uppercase text-[10px] font-black tracking-widest"
+                data-id={detalleId}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 14 14">
+                    <path d="M2 12q-.55 0-.942-.392a1.28 1.28 0 0 1-.391-.941V3H0V1.667h3.333V1h4v.667h3.334V3H10v7.667q0 .55-.392.941a1.28 1.28 0 0 1-.941.392zm6.667-9H2v7.667h6.667zM3.333 9.333h1.334v-5H3.333zm2.667 0h1.333v-5H6z" class="fill-current"/>
+                </svg>
+                <span>Borrar</span>
+            </button>
+        </div>
+    </div>
+</div>

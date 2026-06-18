@@ -1,0 +1,209 @@
+ 
+<div class="p-4 font-space">
+ 
+  <div class="flex justify-between items-end mb-6">
+    <div>
+      <h1 class="text-white font-bold text-4xl pb-1">Historial de Ventas</h1>
+      <p class="text-[#71717A] text-sm">Todas las transacciones en tiempo real.</p>
+    </div>
+ 
+    <div class="flex items-center bg-[#18181B] border border-[#27272A] rounded-lg px-4 py-2 gap-2 hover:border-[#A78BFA] transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none" viewBox="0 0 11 11">
+        <path fill="#71717a" d="M9.683 10.5 6.008 6.825a3.56 3.56 0 0 1-2.217.758q-1.59 0-2.69-1.1Q0 5.38 0 3.791T1.101 1.1 3.791 0t2.691 1.101 1.101 2.69a3.56 3.56 0 0 1-.758 2.217L10.5 9.683zM3.792 6.417q1.094 0 1.859-.766.765-.765.766-1.86 0-1.092-.766-1.859a2.53 2.53 0 0 0-1.86-.765q-1.092 0-1.859.765-.765.765-.765 1.86 0 1.094.765 1.859t1.86.766"/>
+      </svg>
+      <input id="ventasSearch" type="text" placeholder="Buscar usuario o juego..."
+        class="bg-transparent text-sm text-white placeholder:text-[#71717A] focus:outline-none w-52"/>
+    </div>
+  </div>
+ 
+  <div class="grid grid-cols-3 gap-4 mb-6">
+    <div class="rounded-xl border border-[#27272A] bg-[#17171A] p-5 hover:border-[#A970FF] transition-colors">
+      <p class="text-[#71717A] text-xs uppercase tracking-wider mb-2">Total Recaudado</p>
+      <p id="v-total" class="text-white text-2xl font-bold">—</p>
+    </div>
+    <div class="rounded-xl border border-[#27272A] bg-[#17171A] p-5 hover:border-[#A970FF] transition-colors">
+      <p class="text-[#71717A] text-xs uppercase tracking-wider mb-2">Transacciones</p>
+      <p id="v-count" class="text-white text-2xl font-bold">—</p>
+    </div>
+    <div class="rounded-xl border border-[#27272A] bg-[#17171A] p-5 hover:border-[#A970FF] transition-colors">
+      <p class="text-[#71717A] text-xs uppercase tracking-wider mb-2">Ticket Promedio</p>
+      <p id="v-avg" class="text-white text-2xl font-bold">—</p>
+    </div>
+  </div>
+ 
+  <div class="rounded-2xl border border-[#262629] bg-[#17171A]/70 overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="border-b border-[#262629]">
+            <th class="px-6 py-4 text-left text-[11px] font-semibold uppercase text-[#A1A1AA]">Venta ID</th>
+            <th class="px-6 py-4 text-left text-[11px] font-semibold uppercase text-[#A1A1AA]">Fecha</th>
+            <th class="px-6 py-4 text-left text-[11px] font-semibold uppercase text-[#A1A1AA]">Usuario</th>
+            <th class="px-6 py-4 text-left text-[11px] font-semibold uppercase text-[#A1A1AA]">Correo</th>
+            <th class="px-6 py-4 text-left text-[11px] font-semibold uppercase text-[#A1A1AA]">Juego</th>
+            <th class="px-6 py-4 text-left text-[11px] font-semibold uppercase text-[#A1A1AA]">Precio</th>
+            <th class="px-6 py-4 text-left text-[11px] font-semibold uppercase text-[#A1A1AA]">Cant.</th>
+            <th class="px-6 py-4 text-right text-[11px] font-semibold uppercase text-[#A1A1AA]">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody id="ventasBody">
+          <tr>
+            <td colspan="8" class="px-6 py-12 text-center text-[#71717A] text-sm" id="ventasLoader">
+              Cargando ventas...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+ 
+    <div class="border-t border-[#262629] px-6 py-4 flex items-center justify-between">
+      <p id="ventasPaginaInfo" class="text-xs text-[#71717A]"></p>
+      <div class="flex gap-2">
+        <button id="ventasPrev"
+          class="px-3 py-1 rounded-lg text-xs text-[#71717A] border border-[#262629] hover:border-[#A78BFA] hover:text-white transition-colors disabled:opacity-40">
+          ← Anterior
+        </button>
+        <button id="ventasNext"
+          class="px-3 py-1 rounded-lg text-xs text-[#71717A] border border-[#262629] hover:border-[#A78BFA] hover:text-white transition-colors disabled:opacity-40">
+          Siguiente →
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<script>
+  const API = "http://localhost:8080";
+  const POR_PAGINA = 15;
+ 
+  let todasLasVentas: any[] = [];
+  let ventasFiltradas: any[] = [];
+  let paginaActual = 1;
+ 
+  function formatDate(str: string) {
+    if (!str) return "—";
+    const d = new Date(str);
+    if (isNaN(d.getTime())) return str;
+    return d.toLocaleDateString("es-PE", { day: "2-digit", month: "short", year: "numeric" })
+      + " " + d.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });
+  }
+ 
+  function shortId(id: string) {
+    return id ? id.substring(0, 8).toUpperCase() + "..." : "—";
+  }
+ 
+  function renderTabla() {
+    const tbody = document.getElementById("ventasBody")!;
+    const inicio = (paginaActual - 1) * POR_PAGINA;
+    const slice  = ventasFiltradas.slice(inicio, inicio + POR_PAGINA);
+ 
+    if (ventasFiltradas.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-12 text-center text-[#71717A] text-sm">Sin resultados.</td></tr>`;
+      return;
+    }
+ 
+    tbody.innerHTML = slice.map((v: any) => `
+      <tr class="border-b border-[#262629] hover:bg-white/2 transition-colors">
+        <td class="px-6 py-4">
+          <span class="text-xs font-mono text-[#A78BFA] bg-[#A78BFA]/10 px-2 py-1 rounded">
+            ${shortId(v.venta_id)}
+          </span>
+        </td>
+        <td class="px-6 py-4 text-xs text-[#A1A1AA]">${formatDate(v.fecha)}</td>
+        <td class="px-6 py-4 text-sm text-white font-medium">${v.usuario || "—"}</td>
+        <td class="px-6 py-4 text-xs text-[#71717A]">${v.correo || "—"}</td>
+        <td class="px-6 py-4 text-sm text-zinc-300">${v.titulo || "—"}</td>
+        <td class="px-6 py-4 text-sm text-zinc-300">S/ ${Number(v.precio).toFixed(2)}</td>
+        <td class="px-6 py-4 text-sm text-zinc-400">${v.cantidad}</td>
+        <td class="px-6 py-4 text-right text-sm font-semibold text-[#4ADE80]">
+          S/ ${Number(v.subtotal).toFixed(2)}
+        </td>
+      </tr>
+    `).join("");
+ 
+    const info = document.getElementById("ventasPaginaInfo");
+    if (info) {
+      const fin = Math.min(inicio + POR_PAGINA, ventasFiltradas.length);
+      info.textContent = `Mostrando ${inicio + 1}–${fin} de ${ventasFiltradas.length} registros`;
+    }
+ 
+    const prev = document.getElementById("ventasPrev") as HTMLButtonElement;
+    const next = document.getElementById("ventasNext") as HTMLButtonElement;
+    if (prev) prev.disabled = paginaActual === 1;
+    if (next) next.disabled = inicio + POR_PAGINA >= ventasFiltradas.length;
+  }
+ 
+  function actualizarTarjetas() {
+    const total = todasLasVentas.reduce((acc: number, v: any) => acc + Number(v.subtotal), 0);
+    const count = todasLasVentas.length;
+    const avg   = count > 0 ? total / count : 0;
+    const t = document.getElementById("v-total");
+    const c = document.getElementById("v-count");
+    const a = document.getElementById("v-avg");
+    if (t) t.textContent = `S/ ${total.toFixed(2)}`;
+    if (c) c.textContent = `${count}`;
+    if (a) a.textContent = `S/ ${avg.toFixed(2)}`;
+  }
+ 
+  async function cargarVentas() {
+    const loader = document.getElementById("ventasLoader");
+    if (loader) loader.textContent = "Cargando ventas...";
+ 
+    try {
+      const res = await fetch(`${API}/api/admin.jsp?seccion=ventas`, {
+        credentials: "include",
+      });
+      const data = await res.json();
+ 
+      if (data.error) {
+        const tbody = document.getElementById("ventasBody")!;
+        tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-12 text-center text-red-400 text-sm">${data.error}</td></tr>`;
+        return;
+      }
+ 
+      todasLasVentas  = data;
+      ventasFiltradas = data;
+      actualizarTarjetas();
+      renderTabla();
+    } catch (e) {
+      const tbody = document.getElementById("ventasBody")!;
+      tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-12 text-center text-red-400 text-sm">Error al conectar con el servidor.</td></tr>`;
+    }
+  }
+ 
+  document.addEventListener("DOMContentLoaded", () => {
+    cargarVentas();
+ 
+    document.getElementById("ventasPrev")?.addEventListener("click", () => {
+      if (paginaActual > 1) { paginaActual--; renderTabla(); }
+    });
+    document.getElementById("ventasNext")?.addEventListener("click", () => {
+      paginaActual++; renderTabla();
+    });
+ 
+    document.getElementById("ventasSearch")?.addEventListener("input", (e) => {
+      const q = (e.target as HTMLInputElement).value.toLowerCase();
+      ventasFiltradas = todasLasVentas.filter(
+        (v: any) =>
+          (v.usuario || "").toLowerCase().includes(q) ||
+          (v.titulo  || "").toLowerCase().includes(q) ||
+          (v.correo  || "").toLowerCase().includes(q)
+      );
+      paginaActual = 1;
+      renderTabla();
+    });
+
+    window.addEventListener("admin-search", (event: any) => {
+      const q = String(event.detail?.query || "").toLowerCase();
+      ventasFiltradas = todasLasVentas.filter(
+        (v: any) =>
+          (v.usuario || "").toLowerCase().includes(q) ||
+          (v.titulo  || "").toLowerCase().includes(q) ||
+          (v.correo  || "").toLowerCase().includes(q)
+      );
+      paginaActual = 1;
+      renderTabla();
+    });
+  });
+</script>
+ 

@@ -1,0 +1,319 @@
+---
+export const prerender = false;
+import Layout from "../../layouts/Layout.astro";
+import Navbar from "../../components/Navbar.astro";
+import Footer from "../../components/Footer.astro";
+import LoginCard from "../../components/login/LoginCard.astro";
+
+const { id } = Astro.params;
+
+let juego: any = null;
+let descuento: any = null;
+
+try {
+    const [juegoRes, descRes] = await Promise.all([
+        fetch(`http://localhost:8080/api/juegos.jsp?id=${id}`),
+        fetch(`http://localhost:8080/api/descuentos.jsp?juego_id=${id}`),
+    ]);
+    const juegoData = await juegoRes.json();
+    const descData = await descRes.json();
+    if (!juegoData.error) juego = juegoData;
+    if (descData && !descData.error) {
+        const lista = Array.isArray(descData) ? descData : descData.descuentos || [];
+        descuento = lista.find((d: any) => String(d.juego_id) === String(id)) || null;
+    }
+} catch (e) { juego = null; }
+
+const discount: number | null = descuento?.porcentaje ?? descuento?.descuento_porcentaje ?? null;
+const originalPrice: number = juego?.precio ?? 0;
+const discountedPrice: number = discount && discount > 0
+    ? Number((originalPrice * (1 - discount / 100)).toFixed(2))
+    : originalPrice;
+
+const categorias: string[] = juego?.categorias
+    ? juego.categorias.map((c: any) => typeof c === "string" ? c : c.nombre)
+    : (juego?.categoria ? [juego.categoria] : []);
+
+const getEmbedUrl = (url: string) => {
+    if (!url) return null;
+    const match = url.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+    const vid = match && match[2].length === 11 ? match[2] : null;
+    return vid ? `https://www.youtube.com/embed/${vid}?rel=0&modestbranding=1` : null;
+};
+const embedUrl = getEmbedUrl(juego?.video_url ?? "");
+const hasDiscount = discount != null && discount > 0;
+---
+
+<Layout>
+    <LoginCard />
+    {!juego ? (
+        <div class="min-h-screen bg-[#09090B] flex items-center justify-center font-space">
+            <div class="text-center">
+                <p class="text-zinc-500 text-lg mb-4">Juego no encontrado.</p>
+                <a href="/" class="text-[#A78BFA] hover:underline text-sm">← Volver al inicio</a>
+            </div>
+        </div>
+    ) : (
+        <div class="min-h-screen bg-[#0D0D10] font-space">
+
+            <!-- Navbar original con prop transparente -->
+            <Navbar transparent={true} />
+
+            <!-- HERO: imagen sin blur, gradiente solo abajo -->
+            <div class="relative w-full h-[420px] overflow-hidden">
+                <img src={juego.imagen_url} alt={juego.titulo} class="absolute inset-0 w-full h-full object-cover" />
+                <div class="absolute inset-0 bg-gradient-to-t from-[#0D0D10] via-[#0D0D10]/20 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-[#0D0D10]/50 to-transparent"></div>
+
+                <div class="absolute bottom-0 left-0 right-0 max-w-7xl mx-auto px-6 pb-10">
+                    <!-- Categorías + badge descuento juntos -->
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        {hasDiscount && (
+                            <span class="text-[10px] font-bold uppercase tracking-widest bg-[#f4710a] text-black px-3 py-1 rounded-full">
+                                -{discount}% SALE
+                            </span>
+                        )}
+                        {categorias.map((cat) => (
+                            <span class="text-[10px] font-bold uppercase tracking-widest border border-zinc-500/60 text-zinc-200 bg-black/40 px-3 py-1 rounded-full backdrop-blur-sm">
+                                {cat}
+                            </span>
+                        ))}
+                    </div>
+                    <h1 class="text-white text-5xl font-bold tracking-tight drop-shadow-2xl">{juego.titulo}</h1>
+                </div>
+            </div>
+
+            <!-- CONTENIDO PRINCIPAL -->
+            <main class="max-w-7xl mx-auto px-6 py-10">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+
+                    <!-- IZQUIERDA -->
+                    <div class="lg:col-span-8 space-y-6">
+
+                        <!-- Video -->
+                        {embedUrl ? (
+                            <div class="relative overflow-hidden rounded-xl border border-white/10 aspect-video bg-black shadow-2xl">
+                                <iframe src={embedUrl} class="absolute top-0 left-0 w-full h-full" title="YouTube" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen />
+                                <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-md border border-white/10 pointer-events-none">
+                                    TRÁILER OFICIAL
+                                </div>
+                            </div>
+                        ) : (
+                            <div class="relative overflow-hidden rounded-xl border border-white/10 aspect-video bg-zinc-900 shadow-2xl">
+                                <img src={juego.imagen_url} alt={juego.titulo} class="w-full h-full object-cover opacity-50" />
+                            </div>
+                        )}
+
+                        <!-- Galería thumbnails -->
+                        <div class="grid grid-cols-4 gap-3">
+                            {[0,1,2,3].map((i) => (
+                                <div class="gallery-thumb aspect-video rounded-lg overflow-hidden border border-white/5 hover:border-[#f4710a]/70 cursor-pointer transition-all duration-200 group relative" data-src={juego.imagen_url}>
+                                    <img src={juego.imagen_url} alt={`Screenshot ${i+1}`} class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-200" />
+                                </div>
+                            ))}
+                        </div>
+
+                        <!-- Descripción -->
+                        <section class="border border-zinc-800/60 bg-zinc-900/20 p-8 rounded-2xl">
+                            <div class="flex flex-col items-center text-center mb-6">
+                                <h2 class="text-white text-xl font-bold tracking-[0.35em] uppercase mb-2">{juego.titulo}</h2>
+                                <div class="w-20 h-[2px] bg-[#f4710a] rounded-full"></div>
+                            </div>
+                            <p class="text-zinc-400 text-sm leading-relaxed">{juego.descripcion || "Sin descripción disponible."}</p>
+                        </section>
+
+                        <!-- Info: fecha / publisher / developer -->
+                        <div class="grid grid-cols-3 gap-px bg-zinc-800/40 rounded-xl overflow-hidden border border-zinc-800/40">
+                            <div class="bg-[#0D0D10] px-4 py-5 text-center">
+                                <p class="text-zinc-500 text-[10px] uppercase tracking-widest font-semibold mb-1">Fecha de lanzamiento</p>
+                                <p class="text-white text-sm font-semibold">{juego.fecha_lanzamiento || "—"}</p>
+                            </div>
+                            <div class="bg-[#0D0D10] px-4 py-5 text-center">
+                                <p class="text-zinc-500 text-[10px] uppercase tracking-widest font-semibold mb-1">Publisher</p>
+                                <p class="text-white text-sm font-semibold">XDG Studio</p>
+                            </div>
+                            <div class="bg-[#0D0D10] px-4 py-5 text-center">
+                                <p class="text-zinc-500 text-[10px] uppercase tracking-widest font-semibold mb-1">Developer</p>
+                                <p class="text-white text-sm font-semibold">XDG Studio</p>
+                            </div>
+                        </div>
+
+                        <!-- COMENTARIOS -->
+                        <section class="border border-zinc-800/60 bg-zinc-900/20 rounded-2xl overflow-hidden">
+                            <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-800/60">
+                                <h3 class="text-white font-semibold text-base tracking-wide">Community Transmission</h3>
+                                <span id="comment-count" class="text-[#A78BFA] text-xs font-semibold">0 Comentarios</span>
+                            </div>
+                            <div class="p-6 border-b border-zinc-800/40">
+                                <textarea id="comment-input" rows="3" placeholder="Escribe tu opinión sobre este juego..."
+                                    class="w-full bg-[#111115] border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#A78BFA] resize-none transition-colors">
+                                </textarea>
+                                <div class="flex justify-end mt-3">
+                                    <button id="post-comment-btn"
+                                        class="bg-[#A78BFA] hover:bg-[#c4a7ff] text-black font-bold text-xs uppercase tracking-widest px-5 py-2.5 rounded-lg transition-colors">
+                                        Post Comment
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="comments-list" class="divide-y divide-zinc-800/40">
+                                <p class="text-zinc-600 text-sm text-center py-8">Sé el primero en comentar.</p>
+                            </div>
+                        </section>
+
+                    </div>
+
+                    <!-- DERECHA: tarjeta sin imagen arriba -->
+                    <aside class="lg:col-span-4">
+                        <div class="sticky top-20">
+                            <div class="bg-[#121216] border border-zinc-800/50 rounded-2xl overflow-hidden shadow-2xl">
+                                <div class="p-5">
+                                    <div class="text-[10px] text-zinc-500 font-semibold uppercase tracking-widest mb-1">EDICIÓN ESTÁNDAR</div>
+                                    <div class="flex justify-between items-start mb-4">
+                                        <h2 class="text-white text-lg font-bold leading-tight max-w-[155px]">{juego.titulo}</h2>
+                                        <div class="text-right shrink-0 ml-2">
+                                            {hasDiscount && (
+                                                <span class="text-zinc-500 line-through text-xs block mb-0.5">${originalPrice.toFixed(2)}</span>
+                                            )}
+                                            <span class="text-white text-2xl font-bold">${discountedPrice.toFixed(2)}</span>
+                                        </div>
+                                    </div>
+
+                                    {hasDiscount && (
+                                        <div class="mb-4 flex items-center gap-2 bg-[#f4710a]/10 border border-[#f4710a]/30 rounded-lg px-3 py-2">
+                                            <span class="bg-[#f4710a] text-black text-[10px] font-bold px-2 py-0.5 rounded">-{discount}%</span>
+                                            <span class="text-[#f4710a] text-[11px]">¡Oferta por tiempo limitado!</span>
+                                        </div>
+                                    )}
+
+                                    {categorias.length > 0 && (
+                                        <div class="flex flex-wrap gap-1.5 mb-4">
+                                            {categorias.map((cat) => (
+                                                <span class="text-[9px] font-bold uppercase tracking-widest border border-zinc-700 text-zinc-400 px-2 py-0.5 rounded">{cat}</span>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    <div class="flex flex-col gap-3 mb-5">
+                                        <button class="w-full flex items-center justify-center gap-2 bg-[#f4710a] hover:bg-[#ff8a2b] text-black font-bold py-3.5 rounded-lg transition-colors uppercase tracking-widest text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="18" fill="none" viewBox="0 0 16 20"><path fill="#000" d="m6.55 16.2 5.175-6.2h-4l.725-5.675L3.825 11H7.3zM4 20l1-7H0L9 0h2l-1 8h6L6 20z"/></svg>
+                                            COMPRA AHORA
+                                        </button>
+                                        <button id="addToCartBtn" data-juego-id={juego.id}
+                                            class="w-full flex items-center justify-center gap-2 bg-[#a078ff] hover:bg-[#b794ff] text-[#2d0066] font-bold py-3.5 rounded-lg transition-colors uppercase tracking-widest text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 20 20"><path fill="#340080" d="M6 20q-.824 0-1.412-.587A1.93 1.93 0 0 1 4 18q0-.824.588-1.413A1.93 1.93 0 0 1 6 16q.824 0 1.412.587Q8 17.176 8 18t-.588 1.413A1.93 1.93 0 0 1 6 20m10 0q-.825 0-1.412-.587A1.93 1.93 0 0 1 14 18q0-.824.588-1.413A1.93 1.93 0 0 1 16 16q.824 0 1.413.587Q18 17.176 18 18t-.587 1.413A1.93 1.93 0 0 1 16 20M5.15 4l2.4 5h7l2.75-5zM4.2 2h14.75q.575 0 .875.513.3.512.025 1.037l-3.55 6.4q-.275.5-.738.775A1.95 1.95 0 0 1 14.55 11H7.1L6 13h12v2H6q-1.125 0-1.7-.988-.575-.987-.05-1.962L5.6 9.6 2 2H0V0h3.25zm3.35 7h7z"/></svg>
+                                            <span id="addToCartText">AÑADIR A CARRITO</span>
+                                        </button>
+                                        <button class="w-full flex items-center justify-center gap-2 bg-transparent hover:bg-white/5 border border-zinc-800 text-zinc-300 font-bold py-3.5 rounded-lg transition-colors uppercase tracking-widest text-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                                            AÑADIR A LISTA DE DESEOS
+                                        </button>
+                                    </div>
+
+                                    <div class="pt-4 border-t border-zinc-800/50 flex items-center gap-2 opacity-40">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="14" fill="none" viewBox="0 0 12 15"><path fill="#a078ff" d="M5.213 10.163 9.45 5.924 8.381 4.856 5.213 8.025 3.638 6.45l-1.07 1.069zM6 15q-2.606-.656-4.303-2.99T0 6.824V2.25L6 0l6 2.25v4.575q0 2.85-1.697 5.184T6 15m0-1.575q1.95-.62 3.225-2.475A7.1 7.1 0 0 0 10.5 6.825V3.281L6 1.594 1.5 3.28v3.544q0 2.27 1.275 4.125Q4.05 12.807 6 13.425"/></svg>
+                                        <span class="text-[10px] text-white font-bold uppercase tracking-tight">XDG Guard Protected</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                </div>
+            </main>
+            <Footer />
+        </div>
+    )}
+</Layout>
+
+<!-- Lightbox -->
+<div id="lightbox" class="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-sm hidden items-center justify-center">
+    <button id="lightboxClose" class="absolute top-6 right-6 text-white/70 hover:text-white z-10">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+    <img id="lightboxImg" src="" alt="" class="max-w-[90vw] max-h-[85vh] rounded-xl border border-white/10 object-contain" />
+</div>
+
+<script>
+    // Lightbox
+    document.querySelectorAll(".gallery-thumb").forEach((thumb) => {
+        thumb.addEventListener("click", () => {
+            const src = (thumb as HTMLElement).dataset.src || "";
+            (document.getElementById("lightboxImg") as HTMLImageElement).src = src;
+            const lb = document.getElementById("lightbox")!;
+            lb.classList.remove("hidden"); lb.classList.add("flex");
+        });
+    });
+    const lb = document.getElementById("lightbox")!;
+    document.getElementById("lightboxClose")!.addEventListener("click", () => { lb.classList.add("hidden"); lb.classList.remove("flex"); });
+    lb.addEventListener("click", (e) => { if (e.target === lb) { lb.classList.add("hidden"); lb.classList.remove("flex"); } });
+
+    // Carrito
+    const btn = document.getElementById("addToCartBtn") as HTMLButtonElement;
+    const btnText = document.getElementById("addToCartText")!;
+    btn.addEventListener("click", async () => {
+        const session = await fetch("http://localhost:8080/api/session.jsp", { credentials: "include" }).then(r => r.json());
+        if (!session.logged) { window.dispatchEvent(new CustomEvent("open-login-modal")); return; }
+        btn.disabled = true; btnText.textContent = "Agregando...";
+        try {
+            const res = await fetch("http://localhost:8080/api/carrito.jsp", {
+                method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include",
+                body: JSON.stringify({ user_id: session.id, juego_id: btn.dataset.juegoId, cantidad: 1 }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                btnText.textContent = "¡AGREGADO!";
+                btn.classList.replace("bg-[#a078ff]", "bg-green-600");
+                setTimeout(() => { btnText.textContent = "AÑADIR A CARRITO"; btn.classList.replace("bg-green-600", "bg-[#a078ff]"); btn.disabled = false; }, 2000);
+            } else { btnText.textContent = "Error"; btn.disabled = false; }
+        } catch { btnText.textContent = "Error"; btn.disabled = false; }
+    });
+
+    // Comentarios
+    const COMMENTS_KEY = `xdg-comments-${window.location.pathname}`;
+    const commentInput = document.getElementById("comment-input") as HTMLTextAreaElement;
+    const postBtn = document.getElementById("post-comment-btn")!;
+    const commentsList = document.getElementById("comments-list")!;
+    const commentCount = document.getElementById("comment-count")!;
+
+    type Comment = { author: string; text: string; date: string };
+
+    function loadComments(): Comment[] {
+        try { return JSON.parse(localStorage.getItem(COMMENTS_KEY) || "[]"); } catch { return []; }
+    }
+    function saveComments(c: Comment[]) { localStorage.setItem(COMMENTS_KEY, JSON.stringify(c)); }
+    function renderComments() {
+        const comments = loadComments();
+        commentCount.textContent = `${comments.length} Comentario${comments.length !== 1 ? "s" : ""}`;
+        if (!comments.length) {
+            commentsList.innerHTML = `<p class="text-zinc-600 text-sm text-center py-8">Sé el primero en comentar.</p>`;
+            return;
+        }
+        commentsList.innerHTML = comments.map((c) => `
+            <div class="flex gap-3 px-6 py-4">
+                <div class="w-8 h-8 rounded-full bg-[#A78BFA]/20 border border-[#A78BFA]/40 flex items-center justify-center shrink-0 text-[#A78BFA] font-bold text-xs uppercase">${c.author[0]}</div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-white text-sm font-semibold">${c.author}</span>
+                        <span class="text-zinc-600 text-xs">${c.date}</span>
+                    </div>
+                    <p class="text-zinc-400 text-sm leading-relaxed">${c.text}</p>
+                </div>
+            </div>
+        `).join("");
+    }
+    postBtn.addEventListener("click", async () => {
+        const text = commentInput.value.trim();
+        if (!text) return;
+        let author = "Invitado";
+        try {
+            const session = await fetch("http://localhost:8080/api/session.jsp", { credentials: "include" }).then(r => r.json());
+            if (session.logged && session.username) author = session.username;
+        } catch {}
+        const comments = loadComments();
+        comments.unshift({ author, text, date: new Date().toLocaleDateString("es-PE", { year: "numeric", month: "short", day: "numeric" }) });
+        saveComments(comments);
+        commentInput.value = "";
+        renderComments();
+    });
+    renderComments();
+</script>

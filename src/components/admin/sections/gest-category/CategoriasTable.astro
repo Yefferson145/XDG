@@ -1,0 +1,346 @@
+<div class="px-4 pb-4">
+  <div class="rounded-2xl border border-[#262629] bg-[#17171A]/70 overflow-hidden">
+
+    <div class="px-6 py-4 border-b border-[#262629] flex items-center gap-4">
+      <div class="relative flex-1 max-w-sm">
+        <input id="cat-search" type="text" placeholder="Buscar categoría..."
+          class="w-full bg-[#1A1A1D] border border-[#262629] rounded-lg pl-10 pr-4 py-3 text-base text-white placeholder-[#71717A] focus:outline-none focus:border-[#A970FF] transition-colors" />
+      </div>
+
+      <span id="cat-count" class="ml-auto text-sm text-[#71717A] whitespace-nowrap">Cargando...</span>
+    </div>
+
+    <div class="grid grid-cols-[3fr_100px] gap-4 px-6 py-4 border-b border-[#262629]">
+      <span class="text-[#71717A] text-xs font-semibold uppercase">Categoría</span>
+      <span class="text-[#71717A] text-xs font-semibold uppercase">Acciones</span>
+    </div>
+
+    <div id="cat-table-body"></div>
+
+    <div class="px-6 py-4 border-t border-[#262629] flex items-center justify-between">
+      <button id="cat-prev" disabled
+        class="text-sm text-[#71717A] hover:text-white transition-colors disabled:opacity-30 flex items-center gap-1">
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+        </svg>
+        Anterior
+      </button>
+      <span id="cat-page-info" class="text-sm text-[#71717A]">Página 1 de 1</span>
+      <button id="cat-next"
+        class="text-sm text-[#71717A] hover:text-white transition-colors disabled:opacity-30 flex items-center gap-1">
+        Siguiente
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL AGREGAR / EDITAR -->
+  <div id="cat-modal-overlay"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="w-full max-w-md rounded-2xl border border-[#262629] bg-[#17171A] shadow-2xl overflow-hidden">
+
+      <div class="px-6 py-5 border-b border-[#262629] flex items-center justify-between">
+        <h2 id="cat-modal-title" class="text-sm font-semibold uppercase tracking-wider text-white">Agregar Categoría</h2>
+        <button id="cat-modal-close" class="text-[#71717A] hover:text-white transition text-2xl leading-none">✕</button>
+      </div>
+
+      <div class="p-6 space-y-5">
+        <div class="flex items-center gap-4">
+          <div id="cat-modal-avatar"
+            class="w-16 h-16 rounded-full bg-[#A970FF]/20 flex items-center justify-center text-[#A970FF] text-2xl font-bold">
+            --
+          </div>
+          <p class="text-sm text-[#71717A]">Las iniciales se generan automáticamente</p>
+        </div>
+
+        <input id="cat-modal-name" type="text" placeholder="Nombre de la categoría"
+          class="w-full bg-[#1A1A1D] border border-[#262629] rounded-lg px-5 py-3 text-base text-white placeholder-[#71717A] focus:outline-none focus:border-[#A970FF] transition-colors" />
+
+        <button id="cat-modal-save"
+          class="w-full h-14 rounded-xl bg-[#A970FF] text-[#1D0D3B] text-base font-semibold hover:brightness-110 active:scale-95 transition-all">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL ELIMINAR -->
+  <div id="cat-delete-modal-overlay"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="w-full max-w-sm rounded-2xl border border-[#262629] bg-[#17171A] shadow-2xl overflow-hidden">
+      <div class="p-6 text-center space-y-4">
+
+        <div class="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
+          <svg width="24" height="24" fill="#f87171" viewBox="0 0 16 16">
+            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zM14 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1z"/>
+          </svg>
+        </div>
+
+        <h3 class="text-white font-semibold">¿Eliminar categoría?</h3>
+        <p class="text-[#71717A] text-sm">
+          Esta acción no se puede deshacer.<br>
+          <strong id="cat-delete-cat-name" class="text-white"></strong>
+        </p>
+
+        <div class="flex gap-3 pt-2">
+          <button id="cat-delete-cancel"
+            class="flex-1 h-11 rounded-xl border border-[#262629] text-[#71717A] hover:text-white transition-colors text-sm">
+            Cancelar
+          </button>
+          <button id="cat-delete-confirm"
+            class="flex-1 h-11 rounded-xl bg-red-500 hover:bg-red-600 text-white transition-colors text-sm font-semibold">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="cat-toast"
+    class="hidden fixed bottom-6 right-6 z-50 bg-[#1A1A1D] border border-[#262629] rounded-xl px-5 py-3 text-white text-sm">
+    ✓ Operación completada
+  </div>
+</div>
+
+<script>
+  const API_URL = "http://localhost:8080/api/categorias.jsp";
+
+  let categories = [];
+  let nextId = 1;
+  let editId = null;
+  let deleteId = null;
+  let page = 1;
+  const PER_PAGE = 5;
+
+  const tbody       = document.getElementById('cat-table-body');
+  const countEl     = document.getElementById('cat-count');
+  const pageInfoEl  = document.getElementById('cat-page-info');
+  const btnPrev     = document.getElementById('cat-prev');
+  const btnNext     = document.getElementById('cat-next');
+  const searchInput = document.getElementById('cat-search');
+
+  const modalOverlay = document.getElementById('cat-modal-overlay');
+  const modalTitle   = document.getElementById('cat-modal-title');
+  const modalAvatar  = document.getElementById('cat-modal-avatar');
+  const modalName    = document.getElementById('cat-modal-name');
+
+  const delOverlay   = document.getElementById('cat-delete-modal-overlay');
+  const delName      = document.getElementById('cat-delete-cat-name');
+  const toast        = document.getElementById('cat-toast');
+
+  const addButton    = document.getElementById('cat-add-btn');
+
+  async function loadCategories() {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+
+    categories = data;
+
+    nextId = categories.length
+      ? Math.max(...categories.map(c => c.id)) + 1
+      : 1;
+
+    render();
+  }
+
+  async function createCategory(nombre) {
+    await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nombre })
+    });
+  }
+
+  async function updateCategory(id, nombre) {
+    await fetch(API_URL, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, nombre })
+    });
+  }
+
+  async function deleteCategory(id) {
+    await fetch(API_URL, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id })
+    });
+  }
+
+  function initials(name) {
+    return name.trim()
+      .split(' ')
+      .map(w => w[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase() || '--';
+  }
+
+  function showToast() {
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 2500);
+  }
+
+  function openModal(el) {
+    el.classList.remove('hidden');
+  }
+
+  function closeModal(el) {
+    el.classList.add('hidden');
+  }
+
+  function getFiltered() {
+    const q = searchInput.value.toLowerCase();
+    return categories.filter(c =>
+      !q || c.nombre.toLowerCase().includes(q)
+    );
+  }
+
+  function render() {
+    const data = getFiltered();
+    const total = Math.max(1, Math.ceil(data.length / PER_PAGE));
+    page = Math.min(page, total);
+
+    const slice = data.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+
+    countEl.textContent = `${data.length} categoría${data.length !== 1 ? 's' : ''}`;
+    pageInfoEl.textContent = `Página ${page} de ${total}`;
+
+    btnPrev.disabled = page <= 1;
+    btnNext.disabled = page >= total;
+
+    if (!slice.length) {
+      tbody.innerHTML = `
+        <div class="flex flex-col items-center justify-center py-20 text-[#71717A]">
+          <p>No hay categorías</p>
+        </div>`;
+      return;
+    }
+
+    tbody.innerHTML = slice.map(c => `
+      <div class="grid grid-cols-[3fr_100px] gap-4 px-6 py-5 border-b border-[#1E1E21] items-center">
+
+        <div class="flex items-center gap-4">
+          <div class="w-11 h-11 rounded-full bg-[#A970FF]/20 flex items-center justify-center text-[#A970FF] text-sm font-bold">
+            ${initials(c.nombre)}
+          </div>
+          <span class="text-base text-white truncate">${c.nombre}</span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button data-edit="${c.id}"
+            class="p-2.5 rounded-xl border border-[#262629] text-[#71717A] hover:text-white hover:border-[#A970FF] transition-colors">
+
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Z"/>
+            </svg>
+
+          </button>
+
+          <button data-del="${c.id}"
+            class="p-2.5 rounded-xl border border-[#262629] text-[#71717A] hover:text-red-400 hover:border-red-500/40 transition-colors">
+
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21q.512.078 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48 48 0 0 0-3.478-.397m-12 .562q.51-.089 1.022-.165m0 0a48 48 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a52 52 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a49 49 0 0 0-7.5 0"/>
+            </svg>
+
+          </button>
+        </div>
+      </div>
+    `).join('');
+
+    tbody.querySelectorAll('[data-edit]').forEach(btn =>
+      btn.addEventListener('click', () => openEdit(+btn.dataset.edit))
+    );
+
+    tbody.querySelectorAll('[data-del]').forEach(btn =>
+      btn.addEventListener('click', () => openDelete(+btn.dataset.del))
+    );
+  }
+
+  function openAdd() {
+    editId = null;
+    modalTitle.textContent = "Agregar Categoría";
+    modalName.value = "";
+    modalAvatar.textContent = "--";
+    openModal(modalOverlay);
+  }
+
+  function openEdit(id) {
+    const c = categories.find(x => x.id === id);
+    if (!c) return;
+
+    editId = id;
+    modalTitle.textContent = "Editar Categoría";
+    modalName.value = c.nombre;
+    modalAvatar.textContent = initials(c.nombre);
+
+    openModal(modalOverlay);
+  }
+
+  function openDelete(id) {
+    const c = categories.find(x => x.id === id);
+    if (!c) return;
+
+    deleteId = id;
+    delName.textContent = c.nombre;
+    openModal(delOverlay);
+  }
+
+  document.getElementById('cat-modal-save').addEventListener('click', async () => {
+    const nombre = modalName.value.trim();
+    if (!nombre) return;
+
+    if (editId !== null) {
+      await updateCategory(editId, nombre);
+    } else {
+      await createCategory(nombre);
+    }
+
+    closeModal(modalOverlay);
+    showToast();
+    await loadCategories();
+  });
+
+  document.getElementById('cat-delete-confirm').addEventListener('click', async () => {
+    if (!deleteId) return;
+
+    await deleteCategory(deleteId);
+
+    closeModal(delOverlay);
+    showToast();
+    await loadCategories();
+  });
+
+  document.getElementById('cat-modal-close').addEventListener('click', () =>
+    closeModal(modalOverlay)
+  );
+
+  document.getElementById('cat-delete-cancel').addEventListener('click', () =>
+    closeModal(delOverlay)
+  );
+
+  modalOverlay.addEventListener('click', e => {
+    if (e.target === modalOverlay) closeModal(modalOverlay);
+  });
+
+  delOverlay.addEventListener('click', e => {
+    if (e.target === delOverlay) closeModal(delOverlay);
+  });
+
+  modalName.addEventListener('input', () => {
+    modalAvatar.textContent = initials(modalName.value);
+  });
+
+  btnPrev.addEventListener('click', () => { page--; render(); });
+  btnNext.addEventListener('click', () => { page++; render(); });
+  searchInput.addEventListener('input', () => { page = 1; render(); });
+
+  addButton?.addEventListener('click', openAdd);
+
+  loadCategories();
+</script>

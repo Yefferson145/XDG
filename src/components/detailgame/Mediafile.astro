@@ -1,0 +1,73 @@
+---
+interface Props {
+  videoUrl?: string;
+  descriptionTitle?: string;
+  description?: string;
+  imageUrl?: string;
+  discount?: number | null;
+  originalPrice?: number | null;
+  price?: number;
+}
+
+const {
+  videoUrl = "",
+  descriptionTitle = "DESCRIPCION",
+  description = "",
+  imageUrl = "",
+  discount = null,
+  originalPrice = null,
+  price,
+} = Astro.props;
+
+const getEmbedUrl = (url: string) => {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+  const match = url.match(regExp);
+  const id = match && match[2].length === 11 ? match[2] : null;
+  return id ? `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1` : null;
+};
+
+const embedUrl = getEmbedUrl(videoUrl);
+const galleryImages = [imageUrl, imageUrl, imageUrl, imageUrl];
+const hasDiscount = discount != null && discount > 0;
+---
+
+<div class="flex flex-col gap-6 w-full max-w-[800px]">
+  {embedUrl ? (
+    <div class="relative overflow-hidden rounded-xl border border-white/10 aspect-video bg-black shadow-2xl">
+      <iframe src={embedUrl} class="absolute top-0 left-0 w-full h-full" title="YouTube Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen />
+    </div>
+  ) : (
+    <div class="relative overflow-hidden rounded-xl border border-white/10 aspect-video bg-zinc-900 shadow-2xl flex items-center justify-center">
+      <span class="text-zinc-600 text-sm">Sin video disponible</span>
+    </div>
+  )}
+
+  <div class="grid grid-cols-4 gap-3">
+    {galleryImages.map((img) => (
+      <div class="aspect-video rounded-lg overflow-hidden border border-white/5 hover:border-white/20 cursor-pointer transition-all duration-300 group">
+        <img src={img} alt="Game screenshot" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all" />
+      </div>
+    ))}
+  </div>
+
+  {hasDiscount && (
+    <div class="flex items-center gap-4 bg-[#A78BFA]/10 border border-[#A78BFA]/30 rounded-xl px-6 py-4">
+      <span class="bg-[#A78BFA] text-[#09090B] text-sm font-bold px-3 py-1 rounded-md">-{discount}%</span>
+      <div class="flex items-center gap-3">
+        <span class="text-zinc-500 line-through text-sm">${originalPrice?.toFixed(2)}</span>
+        <span class="text-white font-bold text-lg">${price?.toFixed(2)}</span>
+      </div>
+      <span class="text-[#A78BFA] text-xs ml-auto">¡Oferta por tiempo limitado!</span>
+    </div>
+  )}
+
+  <section class="mt-4 border border-zinc-800/50 bg-zinc-900/10 p-8 rounded-2xl relative">
+    <div class="flex flex-col items-center text-center mb-6">
+      <h2 class="text-white text-xl font-bold tracking-[0.4em] uppercase mb-1">{descriptionTitle}</h2>
+      <div class="w-24 h-[2px] bg-[#f4710a]"></div>
+    </div>
+    <div class="space-y-4 text-zinc-400 text-sm leading-relaxed font-light">
+      <p>{description || "Sin descripción disponible."}</p>
+    </div>
+  </section>
+</div>

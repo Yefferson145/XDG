@@ -1,0 +1,74 @@
+---
+import Navbar from '../../components/Navbar.astro';
+import CartShop from '../../components/shop/CartShop.astro';
+import Data from '../../components/shop/Data.astro';
+import PaymentMethod from '../../components/shop/PaymentMethod.astro';
+import Footer from "../../components/Footer.astro";
+import LoginCard from '../../components/login/LoginCard.astro';
+---
+
+<div class="fixed top-0 left-0 w-full z-50">
+  <Navbar />
+</div>
+
+<LoginCard />
+
+<div id="noSession" class="hidden min-h-screen bg-[#09090B] flex flex-col items-center justify-center gap-6">
+  <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" stroke="#a78bfa" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7M18 8l5 5m0-5-5 5"/></svg>
+  <h2 class="text-white text-2xl font-bold font-space">Acceso restringido</h2>
+  <p class="text-[#71717A] text-sm">Debes iniciar sesión para ver tu carrito.</p>
+  <button
+    id="goLoginBtn"
+    class="text-white px-6 py-2.5 bg-[#211E27] border-2 border-[#494454] hover:border-[#A78BFA] rounded-2xl transition-colors font-space"
+  >
+    Iniciar sesión
+  </button>
+</div>
+
+<main id="mainContent" class="hidden max-w-7xl mx-auto px-6 pt-32 pb-10">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+    <div class="lg:col-span-8 space-y-10">
+      <CartShop />
+      <Data />
+    </div>
+    <aside class="lg:col-span-4">
+      <PaymentMethod />
+    </aside>
+  </div>
+</main>
+
+<Footer />
+
+<script>
+  async function checkSession() {
+    try {
+      const res = await fetch("http://localhost:8080/api/session.jsp", {
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.logged) {
+        document.getElementById("mainContent")!.classList.remove("hidden");
+      } else {
+        document.getElementById("noSession")!.classList.remove("hidden");
+      }
+    } catch (err) {
+      document.getElementById("noSession")!.classList.remove("hidden");
+    }
+  }
+
+  document.getElementById("goLoginBtn")?.addEventListener("click", () => {
+    window.dispatchEvent(new CustomEvent("open-login-modal"));
+  });
+
+  window.addEventListener("user-logged-in", () => {
+    document.getElementById("noSession")!.classList.add("hidden");
+    document.getElementById("mainContent")!.classList.remove("hidden");
+  });
+
+  window.addEventListener("user-logged-out", () => {
+    document.getElementById("mainContent")!.classList.add("hidden");
+    document.getElementById("noSession")!.classList.remove("hidden");
+  });
+
+  checkSession();
+</script>

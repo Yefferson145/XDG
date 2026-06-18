@@ -1,0 +1,204 @@
+---
+import TextField from "../../components/TextField.astro";
+import PaymentOption from "../../components/shop/PaymentOption.astro";
+---
+
+<aside class="flex flex-col gap-6">
+  <div class="bg-zinc-900/40 border border-zinc-800 p-6 rounded-sm">
+    <h3
+      class="text-white font-bold text-[11px] uppercase tracking-[0.2em] mb-6 font-space"
+    >
+      Metodo de Pago
+    </h3>
+
+    <div class="grid grid-cols-3 gap-3 mb-8">
+      <PaymentOption label="Tarjeta">
+        <div slot="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="27" height="22" fill="none" viewBox="0 0 27 22">
+            <path fill="currentColor" d="M26.667 2.667v16q0 1.099-.784 1.883a2.57 2.57 0 0 1-1.883.783H2.667a2.57 2.57 0 0 1-1.884-.783A2.57 2.57 0 0 1 0 18.667v-16q0-1.1.783-1.884A2.57 2.57 0 0 1 2.667 0H24q1.1 0 1.883.783.784.784.784 1.884m-24 2.666H24V2.667H2.667zm0 5.334v8H24v-8zm0 8v-16z"></path>
+          </svg>
+        </div>
+      </PaymentOption>
+
+      <PaymentOption label="Paypal">
+        <div slot="icon">
+          <svg width="30" height="22" viewBox="0 0 30 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17.3333 12C16.2222 12 15.2778 11.6111 14.5 10.8333C13.7222 10.0556 13.3333 9.11111 13.3333 8C13.3333 6.88889 13.7222 5.94444 14.5 5.16667C15.2778 4.38889 16.2222 4 17.3333 4C18.4444 4 19.3889 4.38889 20.1667 5.16667C20.9444 5.94444 21.3333 6.88889 21.3333 8C21.3333 9.11111 20.9444 10.0556 20.1667 10.8333C19.3889 11.6111 18.4444 12 17.3333 12ZM8 16C7.26667 16 6.63889 15.7389 6.11667 15.2167C5.59444 14.6944 5.33333 14.0667 5.33333 13.3333V2.66667C5.33333 1.93333 5.59444 1.30556 6.11667 0.783333C6.63889 0.261111 7.26667 0 8 0H26.6667C27.4 0 28.0278 0.261111 28.55 0.783333C29.0722 1.30556 29.3333 1.93333 29.3333 2.66667V13.3333C29.3333 14.0667 29.0722 14.6944 28.55 15.2167C28.0278 15.7389 27.4 16 26.6667 16H8ZM10.6667 13.3333H24C24 12.6 24.2611 11.9722 24.7833 11.45C25.3056 10.9278 25.9333 10.6667 26.6667 10.6667V5.33333C25.9333 5.33333 25.3056 5.07222 24.7833 4.55C24.2611 4.02778 24 3.4 24 2.66667H10.6667C10.6667 3.4 10.4056 4.02778 9.88333 4.55C9.36111 5.07222 8.73333 5.33333 8 5.33333V10.6667C8.73333 10.6667 9.36111 10.9278 9.88333 11.45C10.4056 11.9722 10.6667 12.6 10.6667 13.3333ZM25.3333 21.3333H2.66667C1.93333 21.3333 1.30556 21.0722 0.783333 20.55C0.261111 20.0278 0 19.4 0 18.6667V4H2.66667V18.6667H25.3333V21.3333ZM8 13.3333V2.66667V13.3333Z" fill="currentColor"></path>
+          </svg>
+        </div>
+      </PaymentOption>
+
+      <PaymentOption label="Criptomoneda">
+        <div slot="icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="24" fill="none" viewBox="0 0 18 24">
+            <path fill="currentColor" d="M4 24v-2.667H0v-2.666h2.667V5.333H0V2.667h4V0h2.667v2.667h2.666V0H12v2.833a5.38 5.38 0 0 1 2.867 1.884Q16 6.134 16 8q0 .966-.333 1.85a5.3 5.3 0 0 1-.934 1.583 5.4 5.4 0 0 1 1.884 1.9q.716 1.2.716 2.667 0 2.2-1.566 3.767T12 21.333V24H9.333v-2.667H6.667V24zm1.333-13.333h5.334q1.099 0 1.883-.784.783-.783.783-1.883t-.783-1.883a2.57 2.57 0 0 0-1.883-.784H5.333zm0 8H12q1.1 0 1.883-.784.784-.783.784-1.883t-.784-1.883A2.57 2.57 0 0 0 12 13.333H5.333z"></path>
+          </svg>
+        </div>
+      </PaymentOption>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4">
+      <TextField label="Expiracion" name="expiry" placeholder="MM/YY" />
+      <TextField label="CVV" name="cvv" placeholder="***" />
+    </div>
+  </div>
+</aside>
+
+<div class="bg-zinc-900/40 border border-zinc-800 p-6 rounded-sm">
+  <h3
+    class="text-white font-bold text-[14px] uppercase tracking-wider mb-6 font-space"
+  >
+    Resumen
+  </h3>
+
+  <div class="space-y-4 mb-6 border-b border-zinc-800 pb-6">
+    <div class="flex justify-between text-zinc-400 text-base font-space">
+      <span>Subtotal</span>
+      <span class="text-white font-medium" id="summary-subtotal">$0.00</span>
+    </div>
+    <div class="flex justify-between text-zinc-400 text-base font-space">
+      <span>IGV (18%)</span>
+      <span class="text-white font-medium" id="summary-igv">$0.00</span>
+    </div>
+
+    <span
+      class="text-[#a078ff] font-black text-3xl leading-none font-space tracking-tight"
+      id="summary-total"
+    >
+      $0.00
+    </span>
+
+    <button
+      id="btn-checkout"
+      class="w-full flex items-center justify-center gap-2 bg-[#a078ff] hover:bg-[#b794ff] text-[#2d0066] font-bold py-3.5 rounded-lg transition-colors uppercase tracking-widest text-sm"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="20"
+        fill="none"
+        viewBox="0 0 16 20"
+      >
+        <path fill="#340080" d="m6.55 16.2 5.175-6.2h-4l.725-5.675L3.825 11H7.3zM4 20l1-7H0L9 0h2l-1 8h6L6 20z"/>
+      </svg>
+      <span id="btn-checkout-text">Completar Compra</span>
+    </button>
+
+    <p
+      class="text-[10px] text-zinc-500 mt-5 text-center leading-relaxed uppercase font-bold font-space tracking-wide"
+    >
+      By clicking "Complete Purchase", you agree to the XDG Storefront <br />
+      <span class="text-zinc-400">Terms of Service and Refund Policy.</span>
+    </p>
+  </div>
+
+  <div class="px-2 space-y-4 mt-8">
+    <div
+      class="flex items-center gap-2 text-zinc-500 text-[10px] font-black uppercase tracking-[0.15em] font-space"
+    >
+      <svg width="12" height="15" viewBox="0 0 12 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5.2125 10.1625L9.45 5.925L8.38125 4.85625L5.2125 8.025L3.6375 6.45L2.56875 7.51875L5.2125 10.1625ZM6 15C4.2625 14.5625 2.82812 13.5656 1.69687 12.0094C0.565625 10.4531 0 8.725 0 6.825V2.25L6 0L12 2.25V6.825C12 8.725 11.4344 10.4531 10.3031 12.0094C9.17188 13.5656 7.7375 14.5625 6 15ZM6 13.425C7.3 13.0125 8.375 12.1875 9.225 10.95C10.075 9.7125 10.5 8.3375 10.5 6.825V3.28125L6 1.59375L1.5 3.28125V6.825C1.5 8.3375 1.925 9.7125 2.775 10.95C3.625 12.1875 4.7 13.0125 6 13.425Z" fill="#A078FF"></path>
+      </svg>
+      Secure Encrypted Transaction
+    </div>
+
+    <div
+      class="flex items-center gap-2 text-zinc-500 text-[10px] font-black uppercase tracking-[0.15em] font-space"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="16" fill="none" viewBox="0 0 14 16">
+        <path fill="#a078ff" d="M6.75 15.75a6.5 6.5 0 0 1-2.634-.534 6.9 6.9 0 0 1-2.138-1.444 6.9 6.9 0 0 1-1.444-2.138A6.5 6.5 0 0 1 0 9h1.5q0 2.194 1.528 3.722T6.75 14.25t3.722-1.528T12 9t-1.528-3.722T6.75 3.75h-.112L7.8 4.912 6.75 6l-3-3 3-3L7.8 1.088 6.638 2.25h.112a6.5 6.5 0 0 1 2.634.534 6.9 6.9 0 0 1 2.138 1.444 6.9 6.9 0 0 1 1.444 2.138A6.5 6.5 0 0 1 13.5 9a6.5 6.5 0 0 1-.534 2.634 6.9 6.9 0 0 1-1.444 2.138 6.9 6.9 0 0 1-2.138 1.444 6.5 6.5 0 0 1-2.634.534"></path>
+      </svg>
+      14-Day Refund Guarantee
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = "http://localhost:8080";
+
+  document.getElementById("btn-checkout")?.addEventListener("click", async () => {
+    const btn = document.getElementById("btn-checkout") as HTMLButtonElement;
+    const btnText = document.getElementById("btn-checkout-text")!;
+
+    btn.disabled = true;
+    btnText.textContent = "Procesando...";
+    btn.style.opacity = "0.7";
+
+    try {
+      const sessionRes = await fetch(`${API}/api/session.jsp`, { credentials: "include" });
+      const session = await sessionRes.json();
+      if (!session.logged) return;
+
+      const res = await fetch(`${API}/api/checkout.jsp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ user_id: session.id }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+     
+        const cartItems = document.getElementById("cartItems");
+        const cartCount = document.getElementById("cartCount");
+
+        if (cartItems) {
+          cartItems.innerHTML = `<p class="text-zinc-500 py-12 text-center">Tu carrito está vacío.</p>`;
+        }
+        if (cartCount) {
+          cartCount.textContent = "Tu carrito está vacío";
+        }
+
+    
+        const elSub   = document.getElementById("summary-subtotal");
+        const elIgv   = document.getElementById("summary-igv");
+        const elTotal = document.getElementById("summary-total");
+        if (elSub)   elSub.textContent   = "$0.00";
+        if (elIgv)   elIgv.textContent   = "$0.00";
+        if (elTotal) elTotal.textContent = "$0.00";
+
+    
+        btn.style.opacity = "1";
+        btn.style.transition = "background-color 0.2s, transform 0.35s cubic-bezier(0.34,1.56,0.64,1)";
+        btn.style.backgroundColor = "#16a34a";
+        btn.style.color = "#fff";
+        btn.style.transform = "scale(0.94)";
+
+        btn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+               fill="none" stroke="#fff" stroke-width="3"
+               stroke-linecap="round" stroke-linejoin="round"
+               style="stroke-dasharray:30;stroke-dashoffset:30;transition:stroke-dashoffset 0.4s ease 0.1s">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>¡Compra completada!</span>
+        `;
+
+        requestAnimationFrame(() => {
+          btn.style.transform = "scale(1.03)";
+          const icon = btn.querySelector("svg");
+          if (icon) icon.setAttribute("style", "stroke-dasharray:30;stroke-dashoffset:0;transition:stroke-dashoffset 0.4s ease 0.1s");
+          setTimeout(() => { btn.style.transform = "scale(1)"; }, 150);
+        });
+
+      } else {
+        throw new Error(data.message ?? "Error desconocido");
+      }
+
+    } catch (err) {
+      alert("Error al procesar la compra.");
+      btn.style.opacity = "1";
+      btn.style.backgroundColor = "";
+      btn.style.color = "";
+      btn.style.transform = "";
+      btn.disabled = false;
+      btn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="none" viewBox="0 0 16 20">
+          <path fill="#340080" d="m6.55 16.2 5.175-6.2h-4l.725-5.675L3.825 11H7.3zM4 20l1-7H0L9 0h2l-1 8h6L6 20z"/>
+        </svg>
+        <span id="btn-checkout-text">Completar Compra</span>
+      `;
+    }
+  });
+</script>

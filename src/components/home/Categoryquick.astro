@@ -1,0 +1,178 @@
+---
+---
+
+<style>
+  .cat-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid #27272A;
+    background: #1A1A1D;
+    color: #A78BFA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    font-size: 18px;
+    line-height: 1;
+    user-select: none;
+  }
+  .cat-arrow:hover { background: #2C2832; border-color: #A78BFA; }
+  .cat-arrow.left { left: 0; }
+  .cat-arrow.right { right: 0; }
+
+  #cat-clip {
+    overflow: clip;
+  }
+
+  #categoria-buttons {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: transform 300ms;
+    cursor: grab;
+    user-select: none;
+    padding: 4px 0;
+  }
+  #categoria-buttons.dragging {
+    cursor: grabbing;
+    transition: none !important;
+  }
+</style>
+
+<section class="py-4 font-space mt-4">
+  <div class="relative" style="padding: 0 40px;">
+    <button class="cat-arrow left" id="cat-prev">&#8249;</button>
+    <button class="cat-arrow right" id="cat-next">&#8250;</button>
+    <div id="cat-clip">
+      <div id="categoria-buttons">
+        <div class="h-12 w-20 bg-[#2C2832] rounded-full animate-pulse flex-shrink-0"></div>
+        <div class="h-12 w-28 bg-[#2C2832] rounded-full animate-pulse flex-shrink-0"></div>
+        <div class="h-12 w-24 bg-[#2C2832] rounded-full animate-pulse flex-shrink-0"></div>
+        <div class="h-12 w-24 bg-[#2C2832] rounded-full animate-pulse flex-shrink-0"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const API = "http://localhost:8080";
+
+  let catOffset = 0;
+  const CAT_STEP = 220;
+
+  function getCatMax(): number {
+    const track = document.getElementById("categoria-buttons");
+    const clip  = document.getElementById("cat-clip");
+    if (!track || !clip) return 0;
+    return Math.max(0, track.scrollWidth - clip.clientWidth);
+  }
+
+  function applyCat(px: number): void {
+    const track = document.getElementById("categoria-buttons");
+    if (track) track.style.transform = `translateX(${-px}px)`;
+  }
+
+  function initCatControls(): void {
+    const track = document.getElementById("categoria-buttons");
+    if (!track) return;
+
+    let startX = 0, startOff = 0, isDragging = false;
+
+    track.addEventListener("mousedown", (e: MouseEvent) => {
+      isDragging = true;
+      startX = e.clientX;
+      startOff = catOffset;
+      track.classList.add("dragging");
+      track.style.transition = "none";
+    });
+    window.addEventListener("mousemove", (e: MouseEvent) => {
+      if (!isDragging) return;
+      catOffset = Math.max(0, Math.min(getCatMax(), startOff + (startX - e.clientX)));
+      applyCat(catOffset);
+    });
+    window.addEventListener("mouseup", () => {
+      if (!isDragging) return;
+      isDragging = false;
+      track.classList.remove("dragging");
+      track.style.transition = "transform 300ms";
+    });
+    track.addEventListener("touchstart", (e: TouchEvent) => {
+      startX = e.touches[0].clientX;
+      startOff = catOffset;
+      track.style.transition = "none";
+    }, { passive: true });
+    track.addEventListener("touchmove", (e: TouchEvent) => {
+      catOffset = Math.max(0, Math.min(getCatMax(), startOff + (startX - e.touches[0].clientX)));
+      applyCat(catOffset);
+    }, { passive: true });
+    track.addEventListener("touchend", () => {
+      track.style.transition = "transform 300ms";
+    });
+
+    document.getElementById("cat-prev")?.addEventListener("click", () => {
+      track.style.transition = "transform 300ms";
+      catOffset = Math.max(0, catOffset - CAT_STEP);
+      applyCat(catOffset);
+    });
+    document.getElementById("cat-next")?.addEventListener("click", () => {
+      track.style.transition = "transform 300ms";
+      catOffset = Math.min(getCatMax(), catOffset + CAT_STEP);
+      applyCat(catOffset);
+    });
+  }
+
+  async function loadCategorias() {
+    const container = document.getElementById("categoria-buttons");
+    if (!container) return;
+
+    try {
+      const res = await fetch(`${API}/api/categorias.jsp`, { credentials: "include" });
+      const cats = await res.json() as { id: number; nombre: string }[];
+
+      const todosBtn = `
+        <button data-categoria-id="" data-categoria-nombre=""
+          class="categoria-btn active flex items-center gap-3 bg-[#2C2832] border border-[#A78BFA] px-6 py-3 rounded-full hover:border-[#A78BFA] transition-all whitespace-nowrap flex-shrink-0">
+          <span class="text-sm text-[#E7E0ED]">TODOS</span>
+        </button>`;
+
+      const btns = cats.map(c => `
+        <button data-categoria-id="${c.id}" data-categoria-nombre="${c.nombre.toLowerCase()}"
+          class="categoria-btn flex items-center gap-3 bg-[#2C2832] border border-[#27272A] px-6 py-3 rounded-full hover:border-[#A78BFA] transition-all whitespace-nowrap flex-shrink-0">
+          <span class="text-sm text-[#E7E0ED]">${c.nombre.toUpperCase()}</span>
+        </button>`).join("");
+
+      container.innerHTML = todosBtn + btns;
+
+      container.querySelectorAll<HTMLElement>(".categoria-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          container.querySelectorAll<HTMLElement>(".categoria-btn").forEach((b) => {
+            b.classList.remove("active", "border-[#A78BFA]");
+            b.classList.add("border-[#27272A]");
+          });
+          btn.classList.add("active", "border-[#A78BFA]");
+          btn.classList.remove("border-[#27272A]");
+
+          const categoriaId = btn.dataset.categoriaId ?? "";
+          const categoriaNombre = btn.dataset.categoriaNombre ?? "";
+          window.dispatchEvent(new CustomEvent("filtrar-categoria", {
+            detail: { categoriaId, categoriaNombre }
+          }));
+        });
+      });
+
+      initCatControls();
+
+    } catch (e) {
+      console.error("Error cargando categorías", e);
+      initCatControls();
+    }
+  }
+
+  loadCategorias();
+</script>

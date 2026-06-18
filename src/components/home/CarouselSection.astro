@@ -1,0 +1,39 @@
+---
+interface Props {
+  id: string;
+  title: string;
+  subtitle?: string;
+  color: string;
+}
+
+const { id, title, subtitle, color } = Astro.props;
+---
+
+<section class="mb-16">
+  <div class="flex max-w-360 mx-auto justify-between items-end mb-6">
+    <div>
+      <h2 class="text-2xl text-white pb-1">{title}</h2>
+      {subtitle && <p class="text-xs text-[#71717A]">{subtitle}</p>}
+    </div>
+  </div>
+
+  <div class="relative max-w-360 mx-auto">
+    <button id={`btn-prev-${id}`} class="absolute left-[-20px] top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-[#27272A] bg-[#1A1A1D] text-[20px] leading-none select-none cursor-pointer transition-all hover:bg-[#2C2832]" style={`color:${color}`}>
+      &#8249;
+    </button>
+
+    <button id={`btn-next-${id}`} class="absolute right-[-20px] top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-[#27272A] bg-[#1A1A1D] text-[20px] leading-none select-none cursor-pointer transition-all hover:bg-[#2C2832]" style={`color:${color}`}>
+      &#8250;
+    </button>
+
+    <div class="overflow-hidden">
+      <div id={`track-${id}`} class="flex gap-5 cursor-grab select-none transition-transform duration-500">
+        {
+          Array.from({ length: 4 }).map(() => (
+            <div class="aspect-[3/4] w-[calc(25%-15px)] flex-shrink-0 rounded-xl bg-[#1A1A1D] animate-pulse" />
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
