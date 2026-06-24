@@ -10,17 +10,28 @@ const { id } = Astro.params;
 let juego: any = null;
 let descuento: any = null;
 
+let sugeridos: any[] = [];
+
 try {
-    const [juegoRes, descRes] = await Promise.all([
+    const [juegoRes, descRes, allGamesRes] = await Promise.all([
         fetch(`http://localhost:8080/api/juegos.jsp?id=${id}`),
         fetch(`http://localhost:8080/api/descuentos.jsp?juego_id=${id}`),
+        fetch(`http://localhost:8080/api/juegos.jsp`)
     ]);
     const juegoData = await juegoRes.json();
     const descData = await descRes.json();
+    const allGames = await allGamesRes.json();
+
     if (!juegoData.error) juego = juegoData;
     if (descData && !descData.error) {
         const lista = Array.isArray(descData) ? descData : descData.descuentos || [];
         descuento = lista.find((d: any) => String(d.juego_id) === String(id)) || null;
+    }
+    if (Array.isArray(allGames)) {
+        sugeridos = allGames
+            .filter((g: any) => String(g.id) !== String(id))
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 10);
     }
 } catch (e) { juego = null; }
 
@@ -79,7 +90,7 @@ const hasDiscount = discount != null && discount > 0;
                             </span>
                         ))}
                     </div>
-                    <h1 class="text-white text-5xl font-bold tracking-tight drop-shadow-2xl">{juego.titulo}</h1>
+                    <h1 id="game-title" class="text-white text-5xl font-bold tracking-tight drop-shadow-2xl">{juego.titulo}</h1>
                 </div>
             </div>
 
@@ -145,13 +156,22 @@ const hasDiscount = discount != null && discount > 0;
                                 <span id="comment-count" class="text-[#A78BFA] text-xs font-semibold">0 Comentarios</span>
                             </div>
                             <div class="p-6 border-b border-zinc-800/40">
+                                <div class="flex items-center gap-2 mb-3" id="star-rating-container">
+                                    <span class="text-xs text-zinc-500 uppercase tracking-widest mr-2">Valoración:</span>
+                                    <div class="flex gap-1" id="star-rating">
+                                        {[1,2,3,4,5].map(s => (
+                                            <button class="star-btn text-zinc-600 hover:text-yellow-400 transition-colors text-xl leading-none" data-value={s}>★</button>
+                                        ))}
+                                    </div>
+                                    <span id="star-selected" class="text-xs text-[#A78BFA] font-bold ml-2 hidden">5/5</span>
+                                </div>
                                 <textarea id="comment-input" rows="3" placeholder="Escribe tu opinión sobre este juego..."
                                     class="w-full bg-[#111115] border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#A78BFA] resize-none transition-colors">
                                 </textarea>
                                 <div class="flex justify-end mt-3">
-                                    <button id="post-comment-btn"
+                                    <button id="post-comment-btn" data-juego-id={juego.id}
                                         class="bg-[#A78BFA] hover:bg-[#c4a7ff] text-black font-bold text-xs uppercase tracking-widest px-5 py-2.5 rounded-lg transition-colors">
-                                        Post Comment
+                                        Publicar
                                     </button>
                                 </div>
                             </div>
@@ -203,9 +223,9 @@ const hasDiscount = discount != null && discount > 0;
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 20 20"><path fill="#340080" d="M6 20q-.824 0-1.412-.587A1.93 1.93 0 0 1 4 18q0-.824.588-1.413A1.93 1.93 0 0 1 6 16q.824 0 1.412.587Q8 17.176 8 18t-.588 1.413A1.93 1.93 0 0 1 6 20m10 0q-.825 0-1.412-.587A1.93 1.93 0 0 1 14 18q0-.824.588-1.413A1.93 1.93 0 0 1 16 16q.824 0 1.413.587Q18 17.176 18 18t-.587 1.413A1.93 1.93 0 0 1 16 20M5.15 4l2.4 5h7l2.75-5zM4.2 2h14.75q.575 0 .875.513.3.512.025 1.037l-3.55 6.4q-.275.5-.738.775A1.95 1.95 0 0 1 14.55 11H7.1L6 13h12v2H6q-1.125 0-1.7-.988-.575-.987-.05-1.962L5.6 9.6 2 2H0V0h3.25zm3.35 7h7z"/></svg>
                                             <span id="addToCartText">AÑADIR A CARRITO</span>
                                         </button>
-                                        <button class="w-full flex items-center justify-center gap-2 bg-transparent hover:bg-white/5 border border-zinc-800 text-zinc-300 font-bold py-3.5 rounded-lg transition-colors uppercase tracking-widest text-sm">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                                            AÑADIR A LISTA DE DESEOS
+                                        <button id="addToWishlistBtn" data-juego-id={juego.id} class="w-full flex items-center justify-center gap-2 bg-transparent hover:bg-white/5 border border-zinc-800 text-zinc-300 font-bold py-3.5 rounded-lg transition-colors uppercase tracking-widest text-sm">
+                                            <svg class="wishlist-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                                            <span id="addToWishlistText">AÑADIR A LISTA DE DESEOS</span>
                                         </button>
                                     </div>
 
@@ -219,6 +239,32 @@ const hasDiscount = discount != null && discount > 0;
                     </aside>
 
                 </div>
+
+                <!-- JUEGOS SUGERIDOS -->
+                {sugeridos.length > 0 && (
+                    <section class="mt-20">
+                        <div class="flex items-center gap-4 mb-8">
+                            <h2 class="text-white text-2xl font-bold tracking-wide">Juegos Sugeridos</h2>
+                            <div class="h-px bg-zinc-800/80 flex-1"></div>
+                        </div>
+                        <div class="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory" style="scrollbar-width: thin; scrollbar-color: #A78BFA #1A1A1D;">
+                            {sugeridos.map(g => (
+                                <a href={`/detail/${g.id}`} class="snap-start shrink-0 w-[240px] group flex flex-col bg-[#13101A] border border-[#2A2633] rounded-2xl overflow-hidden hover:border-[#A78BFA]/50 transition-all shadow-lg">
+                                    <figure class="relative aspect-[3/4] overflow-hidden bg-[#1A1625]">
+                                        <img src={g.imagen_url || 'https://placehold.co/300x400/1A1A1D/A78BFA?text=XDG'} alt={g.titulo} class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+                                        <div class="absolute inset-0 bg-gradient-to-t from-[#09090B]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    </figure>
+                                    <div class="p-4 flex flex-col grow justify-between">
+                                        <div class="mb-2">
+                                            <h3 class="text-white font-bold text-lg truncate">{g.titulo}</h3>
+                                            <p class="text-[#A78BFA] text-sm font-semibold mt-1">S/ {Number(g.precio).toFixed(2)}</p>
+                                        </div>
+                                    </div>
+                                </a>
+                            ))}
+                        </div>
+                    </section>
+                )}
             </main>
             <Footer />
         </div>
@@ -263,57 +309,154 @@ const hasDiscount = discount != null && discount > 0;
             if (data.success) {
                 btnText.textContent = "¡AGREGADO!";
                 btn.classList.replace("bg-[#a078ff]", "bg-green-600");
+                const gameTitle = document.getElementById("game-title")?.textContent || "el juego";
+                window.dispatchEvent(new CustomEvent("add-notification", { detail: { message: `Se agregó exitosamente ${gameTitle} al carrito.`, type: 'cart' } }));
                 setTimeout(() => { btnText.textContent = "AÑADIR A CARRITO"; btn.classList.replace("bg-green-600", "bg-[#a078ff]"); btn.disabled = false; }, 2000);
             } else { btnText.textContent = "Error"; btn.disabled = false; }
         } catch { btnText.textContent = "Error"; btn.disabled = false; }
     });
 
-    // Comentarios
-    const COMMENTS_KEY = `xdg-comments-${window.location.pathname}`;
+    // Wishlist
+    const wishBtn = document.getElementById("addToWishlistBtn") as HTMLButtonElement;
+    const wishText = document.getElementById("addToWishlistText");
+    const wishIcon = wishBtn?.querySelector(".wishlist-icon");
+    
+    wishBtn?.addEventListener("click", async () => {
+        const session = await fetch("http://localhost:8080/api/session.jsp", { credentials: "include" }).then(r => r.json());
+        if (!session.logged) { window.dispatchEvent(new CustomEvent("open-login-modal")); return; }
+        wishBtn.disabled = true; 
+        if (wishText) wishText.textContent = "Agregando...";
+        try {
+            const res = await fetch("http://localhost:8080/api/wishlist.jsp", {
+                method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include",
+                body: JSON.stringify({ user_id: session.id, juego_id: wishBtn.dataset.juegoId }),
+            });
+            const data = await res.json();
+            if (data.success || !data.error) {
+                if (wishText) wishText.textContent = "¡EN TU LISTA!";
+                wishBtn.classList.replace("text-zinc-300", "text-[#A78BFA]");
+                wishBtn.classList.replace("border-zinc-800", "border-[#A78BFA]/50");
+                if (wishIcon) {
+                    wishIcon.setAttribute("fill", "#A78BFA");
+                    wishIcon.setAttribute("stroke", "#A78BFA");
+                }
+                const gameTitle = document.getElementById("game-title")?.textContent || "el juego";
+                window.dispatchEvent(new CustomEvent("add-notification", { detail: { message: `Se agregó exitosamente ${gameTitle} a tu lista de deseos.`, type: 'wishlist' } }));
+                setTimeout(() => { 
+                    if (wishText) wishText.textContent = "AÑADIDO A LISTA DE DESEOS"; 
+                    wishBtn.disabled = false; 
+                }, 2000);
+            } else { 
+                if (wishText) wishText.textContent = data.error || "Error"; 
+                wishBtn.disabled = false; 
+            }
+        } catch { 
+            if (wishText) wishText.textContent = "Error"; 
+            wishBtn.disabled = false; 
+        }
+    });
+
+    // Comentarios y Valoración
     const commentInput = document.getElementById("comment-input") as HTMLTextAreaElement;
-    const postBtn = document.getElementById("post-comment-btn")!;
+    const postBtn = document.getElementById("post-comment-btn") as HTMLButtonElement;
     const commentsList = document.getElementById("comments-list")!;
     const commentCount = document.getElementById("comment-count")!;
+    const starBtns = document.querySelectorAll(".star-btn");
+    const starSelected = document.getElementById("star-selected")!;
+    let currentRating = 5;
 
-    type Comment = { author: string; text: string; date: string };
-
-    function loadComments(): Comment[] {
-        try { return JSON.parse(localStorage.getItem(COMMENTS_KEY) || "[]"); } catch { return []; }
+    // Lógica de estrellas
+    function setStars(rating: number) {
+        currentRating = rating;
+        starBtns.forEach(btn => {
+            const val = parseInt((btn as HTMLButtonElement).dataset.value || "0");
+            if (val <= rating) {
+                btn.classList.add("text-yellow-400");
+                btn.classList.remove("text-zinc-600");
+            } else {
+                btn.classList.remove("text-yellow-400");
+                btn.classList.add("text-zinc-600");
+            }
+        });
+        starSelected.textContent = `${rating}/5`;
+        starSelected.classList.remove("hidden");
     }
-    function saveComments(c: Comment[]) { localStorage.setItem(COMMENTS_KEY, JSON.stringify(c)); }
-    function renderComments() {
-        const comments = loadComments();
-        commentCount.textContent = `${comments.length} Comentario${comments.length !== 1 ? "s" : ""}`;
-        if (!comments.length) {
-            commentsList.innerHTML = `<p class="text-zinc-600 text-sm text-center py-8">Sé el primero en comentar.</p>`;
-            return;
-        }
-        commentsList.innerHTML = comments.map((c) => `
-            <div class="flex gap-3 px-6 py-4">
-                <div class="w-8 h-8 rounded-full bg-[#A78BFA]/20 border border-[#A78BFA]/40 flex items-center justify-center shrink-0 text-[#A78BFA] font-bold text-xs uppercase">${c.author[0]}</div>
-                <div class="flex-1">
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="text-white text-sm font-semibold">${c.author}</span>
-                        <span class="text-zinc-600 text-xs">${c.date}</span>
+    starBtns.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const val = parseInt((e.currentTarget as HTMLButtonElement).dataset.value || "5");
+            setStars(val);
+        });
+    });
+    setStars(5); // Default
+
+    async function renderComments() {
+        if (!postBtn) return;
+        const juego_id = postBtn.dataset.juegoId;
+        try {
+            const res = await fetch(`http://localhost:8080/api/comentarios.jsp?juego_id=${juego_id}`);
+            const comments = await res.json();
+            
+            commentCount.textContent = `${comments.length || 0} Comentario${comments.length !== 1 ? "s" : ""}`;
+            if (!comments.length) {
+                commentsList.innerHTML = `<p class="text-zinc-600 text-sm text-center py-8">Sé el primero en comentar.</p>`;
+                return;
+            }
+            commentsList.innerHTML = comments.map((c: any) => {
+                const starsHtml = Array.from({length: 5}).map((_, i) => 
+                    `<span class="text-sm leading-none ${i < (c.estrellas || 5) ? 'text-yellow-400' : 'text-zinc-700'}">★</span>`
+                ).join('');
+                
+                return `
+                <div class="flex gap-3 px-6 py-4">
+                    <div class="w-8 h-8 rounded-full bg-[#A78BFA]/20 border border-[#A78BFA]/40 flex items-center justify-center shrink-0 text-[#A78BFA] font-bold text-xs uppercase">${c.usuario ? c.usuario[0] : '?'}</div>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-white text-sm font-semibold">${c.usuario || 'Usuario'}</span>
+                            <div class="flex gap-0.5 ml-1">${starsHtml}</div>
+                            <span class="text-zinc-600 text-xs ml-auto">${c.fecha ? c.fecha.substring(0,10) : ''}</span>
+                        </div>
+                        <p class="text-zinc-400 text-sm leading-relaxed">${c.comentario}</p>
                     </div>
-                    <p class="text-zinc-400 text-sm leading-relaxed">${c.text}</p>
-                </div>
-            </div>
-        `).join("");
+                </div>`;
+            }).join("");
+        } catch {
+            commentsList.innerHTML = `<p class="text-red-400 text-sm text-center py-8">Error al cargar comentarios.</p>`;
+        }
     }
-    postBtn.addEventListener("click", async () => {
+
+    postBtn?.addEventListener("click", async () => {
         const text = commentInput.value.trim();
         if (!text) return;
-        let author = "Invitado";
+        postBtn.disabled = true;
+        
         try {
             const session = await fetch("http://localhost:8080/api/session.jsp", { credentials: "include" }).then(r => r.json());
-            if (session.logged && session.username) author = session.username;
-        } catch {}
-        const comments = loadComments();
-        comments.unshift({ author, text, date: new Date().toLocaleDateString("es-PE", { year: "numeric", month: "short", day: "numeric" }) });
-        saveComments(comments);
-        commentInput.value = "";
-        renderComments();
+            if (!session.logged) {
+                window.dispatchEvent(new CustomEvent("open-login-modal"));
+                postBtn.disabled = false;
+                return;
+            }
+            
+            const juego_id = postBtn.dataset.juegoId;
+            const res = await fetch("http://localhost:8080/api/comentarios.jsp", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ user_id: session.id, juego_id: juego_id, comentario: text, estrellas: currentRating }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                commentInput.value = "";
+                setStars(5);
+                renderComments();
+            } else {
+                alert("Error al publicar: " + (data.error || "Desconocido"));
+            }
+        } catch {
+            alert("Error de conexión");
+        }
+        postBtn.disabled = false;
     });
+
     renderComments();
 </script>

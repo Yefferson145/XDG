@@ -24,8 +24,7 @@ import LoginCard from '../../components/login/LoginCard.astro';
         <a href="/detail/${juego.id}" class="flex flex-col bg-[#1A1A1D] rounded-xl overflow-hidden border border-[#27272A] hover:border-[#A78BFA] transition-all duration-300 group cursor-pointer">
             <figure class="relative aspect-[3/4] overflow-hidden">
                 ${hasDiscount ? `<span class="absolute top-2 left-2 z-10 bg-[#A78BFA] text-[#09090B] text-xs font-bold px-2 py-0.5 rounded-md">-${Math.round(juego.porcentaje)}%</span>` : ""}
-                <img src="${juego.imagen_url || "https://placehold.co/300x400/1A1A1D/A78BFA?text=XDG"}" alt="Portada de ${juego.titulo}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-            </figure>
+<img src="${juego.imagen_url || "https://placehold.co/300x400/1A1A1D/A78BFA?text=XDG"}" alt="Portada de ${juego.titulo}" loading="lazy" decoding="async" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />            </figure>
             <div class="p-4 flex flex-col grow justify-between">
                 <div>
                     <h3 class="text-white font-bold text-lg truncate">${juego.titulo}</h3>

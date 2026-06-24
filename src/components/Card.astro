@@ -21,11 +21,13 @@ const hasDiscount = discount != null && discount > 0;
                 -{discount}%
             </span>
         )}
-        <img
-            src={imageUrl}
-            alt={`Portada de ${title}`}
-            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
+       <img
+    src={imageUrl}
+    alt={`Portada de ${title}`}
+    loading="lazy"
+    decoding="async"
+    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+/>
     </figure>
 
     <div class="p-4 flex flex-col grow justify-between">

@@ -1,0 +1,457 @@
+---
+import "../styles/global.css";
+---
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Centro de Comando XDG</title>
+</head>
+<body class="font-space bg-[#0E0B14] text-white flex h-screen overflow-hidden antialiased">
+
+  <aside class="w-72 bg-[#13101A] border-r border-[#2A2633] flex flex-col h-full shrink-0 relative overflow-hidden z-10">
+    
+    <div class="px-8 py-10 flex flex-col items-center border-b border-[#2A2633]">
+      <div class="relative w-24 h-24 mb-5">
+        <div class="absolute inset-0 rounded-full border-2 border-[#A78BFA] opacity-30"></div>
+        <div class="w-full h-full rounded-full bg-[#1F1B2A] flex items-center justify-center text-[#A78BFA] text-4xl font-bold border-[6px] border-[#13101A] shadow-[0_0_20px_rgba(167,139,250,0.15)] relative z-10">
+          <span id="profileAvatarLetter">?</span>
+        </div>
+      </div>
+      <p id="profileDisplayName" class="text-white font-bold text-lg tracking-wide">—</p>
+      <p class="text-[#A78BFA] text-[10px] font-bold uppercase tracking-widest mt-1.5 bg-[#A78BFA]/10 px-3 py-1 rounded-full border border-[#A78BFA]/20">Miembro Elite</p>
+      <p id="profileDisplayEmail" class="text-[#71717A] text-[10px] tracking-wider mt-3">—</p>
+    </div>
+
+    <nav class="flex-1 px-4 py-8 space-y-1.5 overflow-y-auto custom-scrollbar">
+      {[
+        { id: "games",     icon: "M2.535 14Q1.26 14 .56 13.113q-.7-.888-.525-2.163l1.05-7.5Q1.31 1.95 2.423.975A3.84 3.84 0 0 1 5.034 0h9.9q1.5 0 2.612.975t1.338 2.475l1.05 7.5q.176 1.274-.525 2.163-.7.887-1.975.887a2.5 2.5 0 0 1-.975-.187 2.6 2.6 0 0 1-.825-.563L13.385 11h-6.8l-2.25 2.25q-.375.375-.825.563a2.5 2.5 0 0 1-.975.187", label: "Mis Juegos" },
+        { id: "wishlist",  icon: "M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z", label: "Lista de Deseos" },
+        { id: "purchases", icon: "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0", label: "Mis Compras" },
+        { id: "info",      icon: "M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z", label: "Info Personal" },
+        { id: "password",  icon: "M12 1L3 5v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V5l-9-4zm0 10.9h6c-.5 2.8-2.8 5.1-6 5.7V12H6V7.3L12 4.5V11.9z", label: "Seguridad y Accesos" }
+      ].map((tab) => (
+        <button
+          data-tab={tab.id}
+          class="profile-tab-btn flex items-center gap-4 px-5 py-3.5 w-full rounded-xl text-left text-xs font-bold tracking-widest uppercase text-[#71717A] hover:text-white hover:bg-[#2A2633]/50 transition-all border border-transparent"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d={tab.icon}/></svg>
+          {tab.label}
+        </button>
+      ))}
+    </nav>
+
+    <div class="px-4 py-6 border-t border-[#2A2633] space-y-2">
+      <a href="/user" class="flex items-center gap-3 px-5 py-3 w-full rounded-xl text-left text-xs font-bold tracking-widest uppercase text-white bg-[#A78BFA] hover:bg-[#8B5CF6] text-black transition-all shadow-[0_0_15px_rgba(167,139,250,0.3)]">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"/></svg>
+        Volver a la Tienda
+      </a>
+      <button id="logoutBtn" class="flex items-center gap-3 px-5 py-3.5 w-full rounded-xl text-left text-xs font-bold tracking-widest uppercase text-[#71717A] hover:text-white hover:bg-[#2A2633]/50 transition-all">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/><path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/></svg>
+        Cerrar Sesión
+      </button>
+    </div>
+  </aside>
+
+  
+  <main class="flex-1 h-full overflow-y-auto bg-[#0E0B14] relative">
+    <div class="absolute top-0 left-1/4 w-[800px] h-[300px] bg-[#A78BFA]/5 blur-[120px] rounded-full pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-10 py-12 relative z-10">
+      
+      <header class="flex items-end justify-between mb-12 border-b border-[#2A2633] pb-8">
+        <div>
+          <h1 class="text-[44px] font-bold text-white tracking-tight mb-2 leading-none">Centro de Comando</h1>
+          <p class="text-[#71717A] text-sm tracking-wide">Gestiona tu imperio digital y tus próximas aventuras.</p>
+        </div>
+        <a href="/user" class="group px-8 py-3.5 rounded-xl bg-[#A78BFA] text-black text-xs font-bold uppercase tracking-widest hover:bg-[#8B5CF6] transition-all shadow-[0_0_20px_rgba(167,139,250,0.2)] flex items-center gap-2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:-translate-x-1 transition-transform"><path d="m15 18-6-6 6-6"/></svg>
+          Explorar Tienda
+        </a>
+      </header>
+
+      <div id="profileMessage" class="hidden mb-8 px-6 py-4 rounded-xl text-sm font-bold tracking-wide border"></div>
+
+      <div id="panel-games" class="profile-panel">
+        <h2 class="text-3xl font-bold text-white mb-8 flex items-center gap-4">
+          <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.535 14Q1.26 14 .56 13.113q-.7-.888-.525-2.163l1.05-7.5Q1.31 1.95 2.423.975A3.84 3.84 0 0 1 5.034 0h9.9q1.5 0 2.612.975t1.338 2.475l1.05 7.5q.176 1.274-.525 2.163-.7.887-1.975.887a2.5 2.5 0 0 1-.975-.187 2.6 2.6 0 0 1-.825-.563L13.385 11h-6.8l-2.25 2.25q-.375.375-.825.563a2.5 2.5 0 0 1-.975.187"/></svg>
+          Mis Juegos
+        </h2>
+        <div id="gamesList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <p class="text-[#71717A] text-sm col-span-full py-8 text-center">Cargando biblioteca...</p>
+        </div>
+      </div>
+
+      <div id="panel-wishlist" class="profile-panel hidden">
+        <h2 class="text-3xl font-bold text-white mb-8 flex items-center gap-4">
+          <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Lista de Deseos
+        </h2>
+        <div id="wishlistList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <p class="text-[#71717A] text-sm col-span-full py-8 text-center">Cargando lista...</p>
+        </div>
+      </div>
+
+      <div id="panel-purchases" class="profile-panel hidden">
+        <h2 class="text-3xl font-bold text-white mb-8 flex items-center gap-4">
+          <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4zM3 6h18M16 10a4 4 0 0 1-8 0"/></svg>
+          Historial de Compras
+        </h2>
+        
+        <div class="bg-[#13101A] border border-[#2A2633] rounded-2xl overflow-hidden shadow-2xl">
+          <div class="grid grid-cols-[1.5fr_2fr_1fr_1fr] gap-4 px-8 py-5 border-b border-[#2A2633] bg-[#1A1625]">
+            <span class="text-[#71717A] text-[10px] font-bold uppercase tracking-widest">Fecha</span>
+            <span class="text-[#71717A] text-[10px] font-bold uppercase tracking-widest">Artículo</span>
+            <span class="text-[#71717A] text-[10px] font-bold uppercase tracking-widest">Total</span>
+            <span class="text-[#71717A] text-[10px] font-bold uppercase tracking-widest">Estado</span>
+          </div>
+          <div id="purchasesList" class="divide-y divide-[#2A2633]">
+            <p class="text-[#71717A] text-sm text-center py-8">Cargando compras...</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="panel-info" class="profile-panel hidden">
+        <div class="grid lg:grid-cols-[1fr_400px] gap-12">
+          <div>
+            <h2 class="text-3xl font-bold text-white mb-2 flex items-center gap-4">
+              <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+              Información Personal
+            </h2>
+            <p class="text-[#71717A] text-sm mb-8 tracking-wide">Actualiza tus credenciales e identidad digital.</p>
+            
+            <div class="space-y-6 bg-[#13101A] border border-[#2A2633] rounded-2xl p-10 shadow-2xl">
+              <div>
+                <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#71717A]">Nombre Completo</label>
+                <input id="profileNombre" type="text" class="mt-3 w-full bg-[#0E0B14] border border-[#2A2633] rounded-xl px-5 py-4 text-white placeholder:text-[#3F3F46] focus:outline-none focus:border-[#A78BFA] transition-colors text-sm" />
+                <p id="profileNombre-error" class="hidden mt-2 text-xs text-red-400 pl-1"></p>
+              </div>
+              <div>
+                <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#71717A]">Usuario</label>
+                <input id="profileUsuario" type="text" class="mt-3 w-full bg-[#0E0B14] border border-[#2A2633] rounded-xl px-5 py-4 text-white placeholder:text-[#3F3F46] focus:outline-none focus:border-[#A78BFA] transition-colors text-sm" />
+                <p id="profileUsuario-error" class="hidden mt-2 text-xs text-red-400 pl-1"></p>
+              </div>
+              <div>
+                <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#71717A]">Correo Electrónico</label>
+                <input id="profileCorreo" type="email" class="mt-3 w-full bg-[#0E0B14] border border-[#2A2633] rounded-xl px-5 py-4 text-white placeholder:text-[#3F3F46] focus:outline-none focus:border-[#A78BFA] transition-colors text-sm" />
+                <p id="profileCorreo-error" class="hidden mt-2 text-xs text-red-400 pl-1"></p>
+              </div>
+              <button id="saveInfoBtn" class="w-full bg-[#2A2633] hover:bg-[#A78BFA] text-white hover:text-black font-bold py-5 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all mt-6 border border-[#3F3F46] hover:border-transparent">
+                <span id="saveInfoText">Actualizar Datos</span>
+                <svg id="saveInfoSpinner" class="hidden animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+              </button>
+            </div>
+          </div>
+          
+          <div class="hidden lg:block pt-20">
+             <div class="bg-[#13101A] border border-[#2A2633] rounded-2xl p-8 sticky top-10">
+               <h3 class="text-white font-bold mb-4 uppercase tracking-widest text-xs">Nota de Seguridad</h3>
+               <p class="text-[#71717A] text-xs leading-relaxed">Tus credenciales te dan acceso a todo el ecosistema de XDG. Por favor asegúrate de que tu correo esté actualizado y no compartas tu contraseña con nadie. El equipo de XDG jamás te solicitará tu clave.</p>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="panel-password" class="profile-panel hidden">
+        <div class="grid lg:grid-cols-[1fr_400px] gap-12">
+          <div>
+            <h2 class="text-3xl font-bold text-white mb-2 flex items-center gap-4">
+              <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 1L3 5v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V5l-9-4zm0 10.9h6c-.5 2.8-2.8 5.1-6 5.7V12H6V7.3L12 4.5V11.9z"/></svg>
+              Seguridad y Accesos
+            </h2>
+            <p class="text-[#71717A] text-sm mb-8 tracking-wide">Asegúrate de que tu bóveda se mantenga impenetrable.</p>
+            
+            <div class="space-y-6 bg-[#13101A] border border-[#2A2633] rounded-2xl p-10 shadow-2xl">
+              {[
+                { id: "currentPwd", label: "Contraseña Actual", ph: "••••••••" },
+                { id: "newPwd", label: "Nueva Contraseña", ph: "Mínimo 6 caracteres" },
+                { id: "confirmPwd", label: "Confirmar Nueva Contraseña", ph: "Repite tu nueva contraseña" },
+              ].map((f) => (
+                <div>
+                  <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#71717A]">{f.label}</label>
+                  <input id={f.id} type="password" placeholder={f.ph} class="mt-3 w-full bg-[#0E0B14] border border-[#2A2633] rounded-xl px-5 py-4 text-white placeholder:text-[#3F3F46] focus:outline-none focus:border-[#A78BFA] transition-colors text-sm" />
+                  <p id={`${f.id}-error`} class="hidden mt-2 text-xs text-red-400 pl-1"></p>
+                </div>
+              ))}
+              <button id="savePwdBtn" class="w-full bg-[#2A2633] hover:bg-[#A78BFA] text-white hover:text-black font-bold py-5 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all mt-6 border border-[#3F3F46] hover:border-transparent">
+                <span id="savePwdText">Aplicar Cambios</span>
+                <svg id="savePwdSpinner" class="hidden animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</body>
+</html>
+
+<style is:global>
+  .profile-tab-btn.active {
+    background: rgba(42, 38, 51, 0.4);
+    color: white;
+    border-color: #3F3F46;
+  }
+  .profile-tab-btn.active svg {
+    color: #A78BFA;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #2A2633;
+    border-radius: 10px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #3F3F46;
+  }
+</style>
+
+<script>
+  const API = "http://localhost:8080";
+  const tabs = document.querySelectorAll<HTMLButtonElement>(".profile-tab-btn");
+
+  function showMsg(text: string, ok = true) {
+    const el = document.getElementById("profileMessage")!;
+    el.textContent = text;
+    el.className = `mb-8 px-6 py-4 rounded-xl text-sm font-bold tracking-wide border ${ok
+      ? "bg-[#13101A] text-[#A78BFA] border-[#A78BFA]/30"
+      : "bg-red-500/10 text-red-400 border-red-500/30"}`;
+    el.classList.remove("hidden");
+    setTimeout(() => el.classList.add("hidden"), 4000);
+  }
+  function showErr(id: string, msg: string) {
+    const el = document.getElementById(id + "-error");
+    const inp = document.getElementById(id) as HTMLInputElement | null;
+    if (el) { el.textContent = msg; el.classList.remove("hidden"); }
+    if (inp) inp.classList.add("border-red-500/70");
+  }
+  function clearErr(id: string) {
+    const el = document.getElementById(id + "-error");
+    const inp = document.getElementById(id) as HTMLInputElement | null;
+    if (el) el.classList.add("hidden");
+    if (inp) inp.classList.remove("border-red-500/70");
+  }
+
+  function activateTab(tabId: string) {
+    tabs.forEach(b => b.classList.toggle("active", b.dataset.tab === tabId));
+    document.querySelectorAll(".profile-panel").forEach(p => p.classList.add("hidden"));
+    document.getElementById(`panel-${tabId}`)?.classList.remove("hidden");
+
+    if (tabId === "purchases") loadPurchases();
+    if (tabId === "games")    loadGames();
+    if (tabId === "wishlist") loadWishlist();
+  }
+
+  tabs.forEach(btn => btn.addEventListener("click", () => activateTab(btn.dataset.tab!)));
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    activateTab("games"); 
+    try {
+      const data = await fetch(`${API}/api/session.jsp`, { credentials: "include" }).then(r => r.json());
+      if (data.logged) {
+        document.getElementById("profileAvatarLetter")!.textContent = (data.name || "?")[0].toUpperCase();
+        document.getElementById("profileDisplayName")!.textContent  = data.name || "—";
+        document.getElementById("profileDisplayEmail")!.textContent = data.email || "—";
+        (document.getElementById("profileNombre")  as HTMLInputElement).value = data.name     || "";
+        (document.getElementById("profileUsuario") as HTMLInputElement).value = data.username || data.name || "";
+        (document.getElementById("profileCorreo")  as HTMLInputElement).value = data.email    || "";
+      } else {
+        window.location.href = "/";
+      }
+    } catch {
+        window.location.href = "/";
+    }
+  });
+
+  document.getElementById("logoutBtn")?.addEventListener("click", async () => {
+      try {
+          await fetch(`${API}/api/auth.jsp`, {
+              method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include",
+              body: JSON.stringify({ action: "logout" })
+          });
+      } finally {
+          window.location.href = "/";
+      }
+  });
+
+  document.getElementById("saveInfoBtn")!.addEventListener("click", async () => {
+    const nombre  = (document.getElementById("profileNombre")  as HTMLInputElement).value.trim();
+    const usuario = (document.getElementById("profileUsuario") as HTMLInputElement).value.trim();
+    const correo  = (document.getElementById("profileCorreo")  as HTMLInputElement).value.trim();
+    ["profileNombre","profileUsuario","profileCorreo"].forEach(clearErr);
+
+    let ok = true;
+    if (nombre.length  < 2) { showErr("profileNombre",  "Mínimo 2 caracteres."); ok = false; }
+    if (usuario.length < 3) { showErr("profileUsuario", "Mínimo 3 caracteres."); ok = false; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) { showErr("profileCorreo", "Correo inválido."); ok = false; }
+    if (!ok) return;
+
+    const btn = document.getElementById("saveInfoBtn")!;
+    const txt = document.getElementById("saveInfoText")!;
+    const sp  = document.getElementById("saveInfoSpinner")!;
+    btn.setAttribute("disabled","true"); txt.textContent = "Actualizando..."; sp.classList.remove("hidden");
+    try {
+      const res  = await fetch(`${API}/api/auth.jsp`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include",
+        body: JSON.stringify({ action: "updateInfo", nombre, usuario, correo }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showMsg("Datos actualizados correctamente.");
+        document.getElementById("profileAvatarLetter")!.textContent = nombre[0].toUpperCase();
+        document.getElementById("profileDisplayName")!.textContent  = nombre;
+      } else { showMsg(data.message || "Error al actualizar.", false); }
+    } catch { showMsg("Error de conexión.", false); }
+    finally { btn.removeAttribute("disabled"); txt.textContent = "Actualizar Datos"; sp.classList.add("hidden"); }
+  });
+
+  document.getElementById("savePwdBtn")!.addEventListener("click", async () => {
+    const current = (document.getElementById("currentPwd") as HTMLInputElement).value;
+    const newP    = (document.getElementById("newPwd")     as HTMLInputElement).value;
+    const confirm = (document.getElementById("confirmPwd") as HTMLInputElement).value;
+    ["currentPwd","newPwd","confirmPwd"].forEach(clearErr);
+
+    let ok = true;
+    if (!current) { showErr("currentPwd", "Ingresa tu contraseña actual."); ok = false; }
+    if (newP.length < 6) { showErr("newPwd", "Mínimo 6 caracteres."); ok = false; }
+    if (newP !== confirm) { showErr("confirmPwd", "Las contraseñas no coinciden."); ok = false; }
+    if (!ok) return;
+
+    const btn = document.getElementById("savePwdBtn")!;
+    const txt = document.getElementById("savePwdText")!;
+    const sp  = document.getElementById("savePwdSpinner")!;
+    btn.setAttribute("disabled","true"); txt.textContent = "Aplicando..."; sp.classList.remove("hidden");
+    try {
+      const res  = await fetch(`${API}/api/auth.jsp`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include",
+        body: JSON.stringify({ action: "changePassword", currentPassword: current, newPassword: newP }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showMsg("Contraseña actualizada con éxito.");
+        ["currentPwd","newPwd","confirmPwd"].forEach(id => (document.getElementById(id) as HTMLInputElement).value = "");
+      } else { showMsg(data.message || "No se pudo cambiar.", false); }
+    } catch { showMsg("Error de conexión.", false); }
+    finally { btn.removeAttribute("disabled"); txt.textContent = "Aplicar Cambios"; sp.classList.add("hidden"); }
+  });
+
+  async function loadPurchases() {
+    const el = document.getElementById("purchasesList")!;
+    el.innerHTML = `<p class="text-[#71717A] text-sm text-center py-8">Cargando historial...</p>`;
+    try {
+      const sess = await fetch(`${API}/api/session.jsp`, { credentials: "include" }).then(r => r.json());
+      if (!sess.logged) { el.innerHTML = `<p class="text-[#71717A] text-sm text-center py-8">Inicia sesión.</p>`; return; }
+
+      const data: any[] = await fetch(`${API}/api/ventas.jsp?user_id=${sess.id}`, { credentials: "include" }).then(r => r.json());
+
+      if (!data.length) { el.innerHTML = `<p class="text-[#71717A] text-sm text-center py-8">Aún no tienes compras en tu historial.</p>`; return; }
+
+      el.innerHTML = data.map(v => `
+        <div class="grid grid-cols-[1.5fr_2fr_1fr_1fr] items-center gap-4 px-8 py-5 hover:bg-[#1A1625] transition-colors">
+          <span class="text-[#A1A1AA] text-xs font-medium tracking-wide">${v.fecha?.substring(0,10) || "—"}</span>
+          <div class="flex items-center gap-4 min-w-0">
+            <img src="${v.imagen_url || 'https://placehold.co/48x64/1A1A1D/A78BFA?text=XDG'}"
+                 class="w-10 h-12 object-cover object-center rounded shadow-md shrink-0" alt="${v.titulo}" />
+            <span class="text-white text-sm font-semibold truncate tracking-wide">${v.titulo}</span>
+          </div>
+          <span class="text-white font-bold text-sm">S/ ${Number(v.precio).toFixed(2)}</span>
+          <div><span class="inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold tracking-widest uppercase rounded">Adquirido</span></div>
+        </div>`).join("");
+    } catch { el.innerHTML = `<p class="text-red-400 text-sm text-center py-8">Error al cargar historial.</p>`; }
+  }
+
+  async function loadGames() {
+    const el = document.getElementById("gamesList")!;
+    el.innerHTML = `<p class="text-[#71717A] text-sm col-span-full py-8 text-center">Cargando biblioteca...</p>`;
+    try {
+      const sess = await fetch(`${API}/api/session.jsp`, { credentials: "include" }).then(r => r.json());
+      if (!sess.logged) { el.innerHTML = `<p class="text-[#71717A] text-sm col-span-full py-8 text-center">Inicia sesión.</p>`; return; }
+
+      const ventas: any[] = await fetch(`${API}/api/ventas.jsp?user_id=${sess.id}`, { credentials: "include" }).then(r => r.json());
+      const seen = new Set<string>();
+      const unique = ventas.filter(v => { const k = String(v.juego_id || v.titulo); if(seen.has(k)) return false; seen.add(k); return true; });
+
+      if (!unique.length) { el.innerHTML = `<p class="text-[#71717A] text-sm col-span-full py-8 text-center">No tienes juegos en tu biblioteca aún.</p>`; return; }
+
+      const allGames: any[] = await fetch(`${API}/api/juegos.jsp`, { credentials: "include" }).then(r => r.json());
+      const gamesMap: Record<string,any> = {};
+      allGames.forEach(g => gamesMap[String(g.id)] = g);
+
+      el.innerHTML = unique.map(v => {
+        const g = gamesMap[String(v.juego_id)] || {};
+        const img = g.imagen_url || `https://placehold.co/400x200/1A1A1D/A78BFA?text=XDG`;
+        return `
+        <div class="group bg-[#13101A] border border-[#2A2633] rounded-2xl overflow-hidden hover:border-[#A78BFA]/50 transition-all shadow-xl flex flex-col justify-between">
+          <figure class="relative aspect-[3/4] overflow-hidden bg-[#1A1625]">
+            <img src="${img}" alt="${v.titulo}" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" />
+          </figure>
+          <div class="p-4 flex flex-col grow justify-between bg-[#13101A]">
+            <div class="mb-4">
+              <h3 class="text-white text-lg font-bold truncate">${v.titulo}</h3>
+              <p class="text-[#71717A] text-xs mt-1">Instalado</p>
+            </div>
+            <div class="flex gap-2">
+              <button class="flex-1 bg-[#A78BFA]/10 hover:bg-[#A78BFA] text-[#A78BFA] hover:text-black border border-[#A78BFA]/20 hover:border-transparent font-bold py-2 rounded-xl text-[10px] tracking-widest uppercase transition-all">Jugar Ahora</button>
+              <a href="/detail/${v.juego_id}" class="w-10 flex items-center justify-center bg-[#2A2633] hover:bg-[#3F3F46] text-[#A1A1AA] hover:text-white rounded-xl transition-colors border border-transparent">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-1 0V14.5a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-10a.5.5 0 0 1 .5-.5h6.636a.5.5 0 0 0 .5-.5z"/><path fill-rule="evenodd" d="M16 .5a.5.5 0 0 0-.5-.5h-5a.5.5 0 0 0 0 1h3.793L6.146 9.146a.5.5 0 1 0 .708.708L15 1.207V5a.5.5 0 0 0 1 0v-4.5z"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>`;
+      }).join("");
+    } catch { el.innerHTML = `<p class="text-red-400 text-sm col-span-full py-8 text-center">Error al cargar biblioteca.</p>`; }
+  }
+
+  async function loadWishlist() {
+    const el = document.getElementById("wishlistList")!;
+    el.innerHTML = `<p class="text-[#71717A] text-sm col-span-full py-8 text-center">Cargando lista de deseos...</p>`;
+    try {
+      const sess = await fetch(`${API}/api/session.jsp`, { credentials: "include" }).then(r => r.json());
+      if (!sess.logged) { el.innerHTML = `<p class="text-[#71717A] text-sm col-span-full py-8 text-center">Inicia sesión.</p>`; return; }
+
+      const items: any[] = await fetch(`${API}/api/wishlist.jsp?user_id=${sess.id}`, { credentials: "include" }).then(r => r.json());
+
+      if (!items.length) { el.innerHTML = `<p class="text-[#71717A] text-sm col-span-full py-8 text-center">Tu lista de deseos está vacía.</p>`; return; }
+
+      el.innerHTML = items.map(item => `
+        <div class="group flex flex-col bg-[#13101A] border border-[#2A2633] rounded-2xl overflow-hidden hover:border-[#A78BFA]/50 transition-all shadow-lg">
+          <figure class="relative aspect-[3/4] overflow-hidden bg-[#1A1625]">
+            <img src="${item.imagen_url || 'https://placehold.co/300x400/1A1A1D/A78BFA?text=XDG'}"
+                 class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" alt="${item.titulo}" />
+          </figure>
+          <div class="p-4 flex flex-col grow justify-between">
+            <div class="mb-4">
+              <h3 class="text-white font-bold text-lg truncate">${item.titulo}</h3>
+              <p class="text-[#A78BFA] text-sm font-semibold mt-1">S/ ${Number(item.precio).toFixed(2)}</p>
+            </div>
+            <div class="flex gap-2 shrink-0">
+              <a href="/detail/${item.juego_id}" class="flex-1 flex items-center justify-center bg-[#A78BFA] hover:bg-[#8B5CF6] text-black font-bold py-2 rounded-xl text-[10px] tracking-widest uppercase transition-all shadow-[0_0_10px_rgba(167,139,250,0.2)]">
+                 Ver
+              </a>
+              <button data-wid="${item.wishlist_id}" class="remove-wish w-10 h-10 flex items-center justify-center bg-[#2A2633] hover:bg-red-500/20 text-[#71717A] hover:text-red-400 rounded-xl transition-all border border-transparent hover:border-red-500/20">
+                 <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>`).join("");
+
+      el.querySelectorAll<HTMLButtonElement>(".remove-wish").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          await fetch(`${API}/api/wishlist.jsp`, {
+            method: "DELETE", credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: btn.dataset.wid }),
+          });
+          loadWishlist();
+        });
+      });
+    } catch { el.innerHTML = `<p class="text-red-400 text-sm col-span-full py-8 text-center">Error al cargar wishlist.</p>`; }
+  }
+</script>

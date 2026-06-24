@@ -30,10 +30,8 @@
             </div>
         </div>
 
-        <!-- Panel derecho -->
         <div class="bg-[#1D1A23] p-14 flex flex-col justify-between overflow-y-auto max-h-[90vh]">
             <div>
-                <!-- Tabs -->
                 <div class="bg-[#211E27] border border-[#2A2633] rounded-2xl p-2 flex mb-10">
                     <button id="infoTab" class="flex-1 bg-[#A78BFA] text-black py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all shadow-lg shadow-[#A78BFA]/40">Mi Info</button>
                     <button id="passwordTab" class="flex-1 text-[#A1A1AA] py-4 rounded-lg text-xs font-bold tracking-widest uppercase transition-all">Contraseña</button>
@@ -41,7 +39,6 @@
 
                 <div id="profileMessage" class="hidden mb-4 px-4 py-3 rounded-xl text-sm font-medium"></div>
 
-                <!-- INFO PANEL -->
                 <div id="infoPanel">
                     <div class="pb-6">
                         <span class="text-[#E7E0ED] font-bold text-2xl">Información Personal</span>
@@ -73,7 +70,6 @@
                     </div>
                 </div>
 
-                <!-- PASSWORD PANEL -->
                 <div id="passwordPanel" class="hidden">
                     <div class="pb-6">
                         <span class="text-[#E7E0ED] font-bold text-2xl">Cambiar Contraseña</span>
@@ -148,7 +144,6 @@
         if (inp) inp.classList.remove("border-red-500/70");
     }
 
-    // Abrir modal y precargar datos
     window.addEventListener("open-profile-modal", async () => {
         overlay.classList.remove("hidden"); overlay.classList.add("flex");
         try {
@@ -165,7 +160,6 @@
     document.getElementById("closeProfile")!.addEventListener("click", () => { overlay.classList.add("hidden"); overlay.classList.remove("flex"); });
     overlay.addEventListener("click", (e) => { if (e.target === overlay) { overlay.classList.add("hidden"); overlay.classList.remove("flex"); } });
 
-    // Tabs
     const infoTab = document.getElementById("infoTab")!;
     const pwdTab  = document.getElementById("passwordTab")!;
     infoTab.addEventListener("click", () => {
@@ -181,7 +175,6 @@
         infoTab.classList.remove("bg-[#A78BFA]","text-black","shadow-lg"); infoTab.classList.add("text-[#A1A1AA]");
     });
 
-    // Toggle passwords
     [["toggleCurrentPwd","currentPwd","eyeC1","eyeC2"],["toggleNewPwd","newPwd","eyeN1","eyeN2"]].forEach(([b,i,e1,e2]) => {
         document.getElementById(b)?.addEventListener("click", () => {
             const inp = document.getElementById(i) as HTMLInputElement;
@@ -191,7 +184,6 @@
         });
     });
 
-    // Guardar info
     document.getElementById("saveInfoBtn")!.addEventListener("click", async () => {
         const nombre  = (document.getElementById("profileNombre") as HTMLInputElement).value.trim();
         const usuario = (document.getElementById("profileUsuario") as HTMLInputElement).value.trim();
@@ -208,11 +200,9 @@
         const sp  = document.getElementById("saveInfoSpinner")!;
         btn.setAttribute("disabled","true"); txt.textContent = "Guardando..."; sp.classList.remove("hidden");
         try {
-            // Obtener id y rol_id de la sesión actual
             const sess = await fetch(`${API}/api/session.jsp`, { credentials: "include" }).then(r => r.json());
             const res  = await fetch(`${API}/api/auth.jsp`, { method:"POST", headers:{"Content-Type":"application/json"}, credentials:"include",
                 body: JSON.stringify({ action: "updateInfo", nombre, usuario, correo }) });
-            // FIX: backend auth.jsp solo acepta POST para updateInfo
             const data = await res.json();
             if (data.success) {
                 showMsg("¡Información actualizada!");
@@ -223,7 +213,6 @@
         finally { btn.removeAttribute("disabled"); txt.textContent = "Guardar Cambios"; sp.classList.add("hidden"); }
     });
 
-    // Cambiar contraseña
     document.getElementById("savePwdBtn")!.addEventListener("click", async () => {
         const current = (document.getElementById("currentPwd") as HTMLInputElement).value;
         const newP    = (document.getElementById("newPwd") as HTMLInputElement).value;

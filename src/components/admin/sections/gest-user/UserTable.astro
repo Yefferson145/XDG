@@ -248,10 +248,12 @@
   async function loadUsers() {
     tbody.innerHTML = `<div class="flex justify-center py-12 text-[#71717A] text-sm">Cargando...</div>`;
     try {
-      const sess = await fetch(API_SESSION, { credentials: "include" }).then(r => r.json());
+      const [sess, res] = await Promise.all([
+        fetch(API_SESSION, { credentials: "include" }).then(r => r.json()),
+        fetch(API_USERS, { credentials: "include" }),
+      ]);
       currentSubRole = sess.sub_role || "";
 
-      const res  = await fetch(API_USERS, { credentials: "include" });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       users = data;
@@ -259,7 +261,7 @@
     } catch (e: any) {
       tbody.innerHTML = `<div class="flex justify-center py-12 text-red-400 text-sm">${e.message}</div>`;
     }
-  }
+}
 
   function openDelete(id: string, name: string) {
     deleteId = id;

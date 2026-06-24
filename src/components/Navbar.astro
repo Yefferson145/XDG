@@ -133,23 +133,34 @@ const { transparent = false } = Astro.props;
         </div>
 
         <div class="flex gap-5 items-center">
-            <a href="/shopping">
-                <button class="group">
+            <a href="/shopping" class="flex items-center justify-center">
+                <button class="group flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" class="text-[#a1a1aa] group-hover:text-[#A78BFA] transition-colors">
                         <path fill="currentColor" d="M6 20q-.824 0-1.412-.587A1.93 1.93 0 0 1 4 18q0-.824.588-1.413A1.93 1.93 0 0 1 6 16q.824 0 1.412.587Q8 17.176 8 18t-.588 1.413A1.93 1.93 0 0 1 6 20m10 0q-.825 0-1.412-.587A1.93 1.93 0 0 1 14 18q0-.824.588-1.413A1.93 1.93 0 0 1 16 16q.824 0 1.413.587Q18 17.176 18 18t-.587 1.413A1.93 1.93 0 0 1 16 20M5.15 4l2.4 5h7l2.75-5zM4.2 2h14.75q.575 0 .875.513.3.512.025 1.037l-3.55 6.4q-.275.5-.738.775A1.95 1.95 0 0 1 14.55 11H7.1L6 13h12v2H6q-1.125 0-1.7-.988-.575-.987-.05-1.962L5.6 9.6 2 2H0V0h3.25zm3.35 7h7z"/>
                     </svg>
                 </button>
             </a>
-            <a href="#">
-                <button class="group">
+            <div class="relative flex items-center justify-center">
+                <button id="notif-btn" class="group relative flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" viewBox="0 0 16 20" class="text-[#a1a1aa] group-hover:text-[#A78BFA] transition-colors">
                         <path fill="currentColor" d="M0 17v-2h2V8q0-2.075 1.25-3.687Q4.5 2.7 6.5 2.2v-.7q0-.625.438-1.062A1.45 1.45 0 0 1 8 0q.624 0 1.063.438Q9.5.874 9.5 1.5v.7q2 .5 3.25 2.113T14 8v7h2v2zm8 3q-.824 0-1.412-.587A1.93 1.93 0 0 1 6 18h4q0 .824-.588 1.413A1.93 1.93 0 0 1 8 20m-4-5h8V8q0-1.65-1.175-2.825T8 4 5.175 5.175 4 8z"/>
                     </svg>
+                    <span id="notif-dot" class="hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border border-[#09090B]"></span>
                 </button>
-            </a>
+                <div id="notif-dropdown" class="hidden absolute top-[calc(100%+15px)] right-0 w-72 bg-[#111113] border border-[#27272A] rounded-xl shadow-2xl z-50 overflow-hidden">
+                    <div class="px-4 py-3 border-b border-[#27272A] flex justify-between items-center bg-[#09090B]">
+                        <h3 class="text-white font-bold text-sm uppercase tracking-widest">Notificaciones</h3>
+                        <button id="clear-notifs-btn" class="text-[10px] text-zinc-500 hover:text-white uppercase tracking-widest transition-colors" title="Limpiar todas las notificaciones">Limpiar</button>
+                    </div>
+                    <div id="notif-list" class="max-h-80 overflow-y-auto" style="scrollbar-width: none;">
+                        <div class="p-4 text-center text-xs text-zinc-500">Cargando...</div>
+                    </div>
+                </div>
+            </div>
             <div class="flex items-center gap-3">
-                <button id="openModal" class="text-white p-2 w-40 bg-[#211E27] border-2 border-[#494454] hover:border-[#A78BFA] rounded-2xl">
-                    Iniciar sesión
+                <button id="openModal" class="text-white px-4 py-1.5 min-w-[160px] bg-[#211E27] border-2 border-[#494454] hover:border-[#A78BFA] rounded-2xl flex flex-col items-center justify-center transition-colors">
+                    <span id="nav-user-name" class="font-semibold text-sm">Iniciar sesión</span>
+                    <span id="nav-user-role" class="text-[10px] text-[#A78BFA] hidden font-bold tracking-widest mt-0.5"></span>
                 </button>
                 <button id="logoutBtn" class="hidden text-[#A78BFA] text-xs hover:text-white transition-colors">
                     Cerrar sesión
@@ -159,195 +170,4 @@ const { transparent = false } = Astro.props;
     </div>
 </nav>
 
-<script>
-    const API = "http://localhost:8080";
-
-    const btn       = document.getElementById("openModal") as HTMLButtonElement;
-    const logoutBtn = document.getElementById("logoutBtn") as HTMLButtonElement;
-
-    btn?.addEventListener("click", () => {
-        if (btn.dataset.logged === "true") {
-            window.dispatchEvent(new CustomEvent("open-profile-modal"));
-        } else {
-            window.dispatchEvent(new CustomEvent("open-login-modal"));
-        }
-    });
-
-    window.addEventListener("user-logged-in", (e: any) => {
-        const userName = e.detail?.role === "admin" ? "Admin" : e.detail?.nombre || "Usuario";
-        btn.textContent = `Hola, ${userName}`;
-        btn.dataset.logged = "true";
-        btn.classList.remove("hover:border-[#A78BFA]");
-        logoutBtn.classList.remove("hidden");
-    });
-
-    window.addEventListener("profile-updated", (e: any) => {
-        if (e.detail?.nombre) btn.textContent = `Hola, ${e.detail.nombre}`;
-    });
-
-    logoutBtn?.addEventListener("click", async () => {
-        await fetch(`${API}/api/auth.jsp`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ action: "logout" }),
-        });
-        btn.textContent = "Iniciar sesión";
-        btn.dataset.logged = "false";
-        btn.classList.add("hover:border-[#A78BFA]");
-        logoutBtn.classList.add("hidden");
-        window.dispatchEvent(new CustomEvent("user-logged-out"));
-    });
-
-    async function checkSession() {
-        try {
-            const res  = await fetch(`${API}/api/session.jsp`, { credentials: "include" });
-            const data = await res.json();
-            if (data.logged) {
-                btn.textContent = `Hola, ${data.name}`;
-                btn.dataset.logged = "true";
-                btn.classList.remove("hover:border-[#A78BFA]");
-                logoutBtn.classList.remove("hidden");
-            }
-        } catch (err) { console.error("Error al verificar sesión:", err); }
-    }
-    checkSession();
-
-    const searchInput    = document.getElementById("search-input")    as HTMLInputElement;
-    const searchDropdown = document.getElementById("search-dropdown") as HTMLDivElement;
-    const searchClear    = document.getElementById("search-clear")    as HTMLButtonElement;
-    const searchWrapper  = document.getElementById("search-wrapper")  as HTMLDivElement;
-
-    interface Juego {
-        id: number;
-        titulo: string;
-        descripcion: string;
-        precio: number;
-        imagen_url?: string;
-        categoria?: string;
-        fecha_lanzamiento?: string;
-    }
-    interface Descuento {
-        juego_id: number;
-        precio_con_descuento: number;
-        porcentaje: number;
-    }
-
-    let allGames: Juego[]     = [];
-    let discountMap: Map<number, Descuento> = new Map();
-    let dataLoaded            = false;
-    let debounceTimer: ReturnType<typeof setTimeout>;
-
-    async function ensureData() {
-        if (dataLoaded) return;
-        dataLoaded = true;
-        try {
-            const [gRes, dRes] = await Promise.all([
-                fetch(`${API}/api/juegos.jsp`,     { credentials: "include" }),
-                fetch(`${API}/api/descuentos.jsp`, { credentials: "include" }),
-            ]);
-            allGames    = await gRes.json() as Juego[];
-            const discs = await dRes.json() as Descuento[];
-            discountMap = new Map(discs.map(d => [d.juego_id, d]));
-        } catch {}
-    }
-
-    function renderResults(query: string) {
-        const q = query.trim().toLowerCase();
-
-        if (!q) {
-            closeDropdown();
-            return;
-        }
-
-        const matches = allGames.filter(g =>
-            g.titulo.toLowerCase().includes(q) ||
-            (g.categoria ?? "").toLowerCase().includes(q) ||
-            (g.descripcion ?? "").toLowerCase().includes(q)
-        ).filter((g, i, arr) => arr.findIndex(x => x.id === g.id) === i).slice(0, 8);
-
-        searchDropdown.classList.remove("hidden");
-
-        if (!matches.length) {
-            searchDropdown.innerHTML = `<div id="search-empty">No se encontraron resultados para "<strong style="color:#fff">${query}</strong>"</div>`;
-            return;
-        }
-
-        const html = matches.map(g => {
-            const disc = discountMap.get(g.id);
-            const priceHtml = disc
-                ? `<span class="search-item-price discounted">$${disc.precio_con_descuento} <span style="text-decoration:line-through;color:#52525B;font-size:10px">$${g.precio}</span></span>`
-                : `<span class="search-item-price">$${g.precio}</span>`;
-            const img = g.imagen_url || `https://placehold.co/36x48/1A1A1D/A78BFA?text=XDG`;
-            const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-            const title = g.titulo.replace(re, '<mark style="background:transparent;color:#A78BFA;font-weight:700">$1</mark>');
-
-            return `<a href="/detail/${g.id}" class="search-item"><img src="${img}" width="36" height="48" style="width:36px!important;min-width:36px!important;max-width:36px!important;height:48px!important;object-fit:cover;border-radius:5px;flex-shrink:0;display:block" /><div class="search-item-info"><span class="search-item-title">${title}</span><span class="search-item-meta">${g.categoria ?? ''}</span></div>${priceHtml}</a>`;
-        }).join("");
-
-        searchDropdown.innerHTML = `
-            <div class="search-section-label">${matches.length} resultado${matches.length !== 1 ? 's' : ''}</div>
-            ${html}`;
-    }
-
-    function closeDropdown() {
-        searchDropdown.classList.add("hidden");
-        searchDropdown.innerHTML = "";
-    }
-
-    searchInput.addEventListener("focus", () => {
-        ensureData();
-    });
-
-    searchInput.addEventListener("input", () => {
-        const val = searchInput.value;
-        searchClear.classList.toggle("hidden", !val);
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => renderResults(val), 180);
-    });
-
-    searchClear.addEventListener("click", () => {
-        searchInput.value = "";
-        searchClear.classList.add("hidden");
-        closeDropdown();
-        searchInput.focus();
-    });
-
-    document.addEventListener("click", (e) => {
-        if (!searchWrapper.contains(e.target as Node)) closeDropdown();
-    });
-
-    searchInput.addEventListener("keydown", (e: KeyboardEvent) => {
-        const items = searchDropdown.querySelectorAll<HTMLAnchorElement>(".search-item");
-        if (!items.length) return;
-        const active = searchDropdown.querySelector<HTMLAnchorElement>(".search-item:focus");
-        if (e.key === "ArrowDown") {
-            e.preventDefault();
-            (active ? (active.nextElementSibling as HTMLAnchorElement) : items[0])?.focus();
-        } else if (e.key === "ArrowUp") {
-            e.preventDefault();
-            if (active) (active.previousElementSibling as HTMLAnchorElement)?.focus() ?? searchInput.focus();
-        } else if (e.key === "Escape") {
-            closeDropdown();
-            searchInput.blur();
-        }
-    });
-
-    // Transparente → sólido al scroll
-    const nav = document.getElementById("main-nav");
-    if (nav && nav.dataset.transparent === "true") {
-        const onScroll = () => {
-            if (window.scrollY > 60) {
-                nav.style.background = "rgba(9,9,11,0.97)";
-                nav.style.borderColor = "rgba(39,39,42,0.6)";
-                nav.style.backdropFilter = "blur(12px)";
-            } else {
-                nav.style.background = "transparent";
-                nav.style.borderColor = "transparent";
-                nav.style.backdropFilter = "none";
-            }
-        };
-        window.addEventListener("scroll", onScroll, { passive: true });
-    }
-
-</script>
+<script src="../scripts/navbar.ts"></script>

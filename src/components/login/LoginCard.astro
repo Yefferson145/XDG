@@ -2,6 +2,13 @@
 
 ---
 
+<style is:global>
+    input[type="password"]::-ms-reveal,
+    input[type="password"]::-ms-clear {
+        display: none;
+    }
+</style>
+
 <div
     id="modalOverlay"
     class="font-space fixed hidden inset-0 bg-black/70 backdrop-blur-md z-50 items-center justify-center px-6 py-10"

@@ -46,13 +46,14 @@
           <input id="video_url" class="mt-2 w-full rounded-xl border border-[#27272A] bg-[#0F0F14] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#A78BFA]" placeholder="https://..." />
         </label>
 
-        <label class="block text-sm text-[#A1A1AA]">
-          <span class="text-white text-sm">Categoría</span>
-          <select id="categoria" class="mt-2 w-full rounded-xl border border-[#27272A] bg-[#0F0F14] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#A78BFA]">
-            <option value="">Selecciona categoría</option>
-          </select>
-          <div id="categoriaTags" class="mt-3 hidden flex flex-wrap gap-2"></div>
-        </label>
+        <div class="block text-sm text-[#A1A1AA] relative">
+          <span class="text-white text-sm">Categorías</span>
+          <div class="relative">
+            <input type="text" id="categoriaSearch" class="mt-2 w-full rounded-xl border border-[#27272A] bg-[#0F0F14] px-4 py-3 text-sm text-white focus:outline-none focus:border-[#A78BFA]" placeholder="Escribe para buscar o selecciona..." autocomplete="off" />
+            <div id="categoriaDropdown" class="absolute z-10 w-full mt-1 bg-[#17171A] border border-[#27272A] rounded-xl shadow-lg max-h-48 overflow-y-auto hidden custom-scrollbar"></div>
+          </div>
+          <div id="categoriaTags" class="mt-3 flex flex-wrap gap-2"></div>
+        </div>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -120,14 +121,71 @@
   const saveBtn = document.getElementById("saveGameBtn") as HTMLButtonElement;
   const cancelBtn = document.getElementById("cancelGameBtn") as HTMLButtonElement;
   const newGameBtn = document.getElementById("newGameBtn") as HTMLButtonElement;
-  const categorySelect = document.getElementById("categoria") as HTMLSelectElement | null;
+  const categorySearch = document.getElementById("categoriaSearch") as HTMLInputElement | null;
+  const categoryDropdown = document.getElementById("categoriaDropdown") as HTMLElement | null;
   const categoriaTags = document.getElementById("categoriaTags") as HTMLElement | null;
   const discountStartInput = document.getElementById("descuento_inicio") as HTMLInputElement | null;
   const discountEndInput = document.getElementById("descuento_fin") as HTMLInputElement | null;
   const discountPercentInput = document.getElementById("descuento_porcentaje") as HTMLInputElement | null;
   let categorias: any[] = [];
+  let selectedCategories: {id: string, nombre: string}[] = [];
   let recentGames: any[] = [];
   let lastEditedId: string | null = null;
+
+  function renderCategoryTags() {
+    if (!categoriaTags) return;
+    categoriaTags.innerHTML = selectedCategories.length
+      ? selectedCategories.map((cat, idx) => `
+          <span class="inline-flex items-center gap-1 rounded-full bg-[#A78BFA]/20 border border-[#A78BFA]/30 px-3 py-1 text-xs text-[#E5E7EB]">
+            ${cat.nombre}
+            <button type="button" class="text-[#A78BFA] hover:text-white remove-cat-btn" data-id="${cat.id}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+            </button>
+          </span>`).join("")
+      : `<span class="inline-flex items-center rounded-full bg-[#27272A] px-3 py-1 text-xs text-[#E5E7EB]">Sin categoría</span>`;
+
+    const removeBtns = categoriaTags.querySelectorAll('.remove-cat-btn');
+    removeBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLButtonElement;
+        const idToRemove = target.dataset.id;
+        selectedCategories = selectedCategories.filter(c => String(c.id) !== String(idToRemove));
+        renderCategoryTags();
+      });
+    });
+  }
+
+  function updateCategoryDropdown(filterText = "") {
+    if (!categoryDropdown) return;
+    const lowerFilter = filterText.toLowerCase();
+    const available = categorias.filter(c => 
+      !selectedCategories.some(sc => String(sc.id) === String(c.id)) &&
+      c.nombre.toLowerCase().includes(lowerFilter)
+    );
+
+    if (available.length === 0) {
+      categoryDropdown.innerHTML = `<div class="p-3 text-sm text-[#71717A] text-center">No hay categorías disponibles</div>`;
+    } else {
+      categoryDropdown.innerHTML = available.map(c => `
+        <div class="px-4 py-2 cursor-pointer text-sm text-[#E5E7EB] hover:bg-[#A78BFA]/20 hover:text-white transition-colors" data-id="${c.id}" data-nombre="${c.nombre}">
+          ${c.nombre}
+        </div>
+      `).join("");
+
+      categoryDropdown.querySelectorAll('div[data-id]').forEach(el => {
+        el.addEventListener('click', (e) => {
+          const target = e.currentTarget as HTMLElement;
+          selectedCategories.push({
+            id: target.dataset.id as string,
+            nombre: target.dataset.nombre as string
+          });
+          if (categorySearch) categorySearch.value = "";
+          categoryDropdown.classList.add("hidden");
+          renderCategoryTags();
+        });
+      });
+    }
+  }
 
   function getRecentGamesList() {
     return document.getElementById("recentGamesList") as HTMLElement | null;
@@ -163,12 +221,10 @@
     if (discountStartInput) discountStartInput.value = "";
     if (discountEndInput) discountEndInput.value = "";
     if (discountPercentInput) discountPercentInput.value = "";
-    if (categorySelect) categorySelect.value = "";
-    if (categoriaTags) {
-      categoriaTags.innerHTML = "";
-      categoriaTags.classList.add("hidden");
-    }
-    if (categorySelect) categorySelect.classList.remove("hidden");
+    selectedCategories = [];
+    if (categorySearch) categorySearch.value = "";
+    if (categoryDropdown) categoryDropdown.classList.add("hidden");
+    renderCategoryTags();
   }
 
   function fillForm(game: any) {
@@ -196,16 +252,12 @@
     if (!categories.length && game.categoria_id) {
       categories.push({ id: String(game.categoria_id), nombre: game.categoria_nombre || game.categoria || "" });
     }
-
-    if (categoriaTags) {
-      categoriaTags.innerHTML = categories.length
-        ? categories.map((cat: any) => `<span class="inline-flex items-center rounded-full bg-[#27272A] px-3 py-1 text-xs text-[#E5E7EB]">${cat.nombre || 'Sin categoría'}</span>`).join("")
-        : `<span class="inline-flex items-center rounded-full bg-[#27272A] px-3 py-1 text-xs text-[#E5E7EB]">Sin categoría</span>`;
-      categoriaTags.classList.remove("hidden");
-    }
-    if (categorySelect) {
-      categorySelect.classList.add("hidden");
-    }
+    
+    selectedCategories = categories.map((c: any) => ({
+      id: String(c.id),
+      nombre: c.nombre || "Sin categoría"
+    }));
+    renderCategoryTags();
 
     if (discountStartInput) discountStartInput.value = game.descuento_inicio || game.fecha_inicio || "";
     if (discountEndInput) discountEndInput.value = game.descuento_fin || game.fecha_fin || "";
@@ -217,8 +269,8 @@
   }
 
   function getFormData() {
-    const selectedCategory = categorySelect ? categorySelect.value : "";
-    const selectedCategoryName = categorySelect ? categorySelect.options[categorySelect.selectedIndex]?.textContent?.trim() : "";
+    const selectedCategoryIds = selectedCategories.map(c => c.id);
+    const selectedCategoryNames = selectedCategories.map(c => c.nombre);
     const rawId = (document.getElementById("juegoId") as HTMLInputElement).value;
     const normalizedId = rawId === "false" ? "" : rawId;
 
@@ -231,8 +283,8 @@
       video_url: (document.getElementById("video_url") as HTMLInputElement).value.trim(),
       fecha_lanzamiento: (document.getElementById("fecha_lanzamiento") as HTMLInputElement).value,
       precio: (document.getElementById("precio") as HTMLInputElement).value.trim(),
-      categoria_id: selectedCategory,
-      categoria: selectedCategoryName !== "Selecciona categoría" ? selectedCategoryName : "",
+      categoria_ids: selectedCategoryIds,
+      categorias: selectedCategoryNames,
       descuento_inicio: discountStartInput ? discountStartInput.value : "",
       descuento_fin: discountEndInput ? discountEndInput.value : "",
       descuento_porcentaje: discountPercentInput ? discountPercentInput.value.trim() : "",
@@ -243,6 +295,7 @@
     if (!data.titulo) return "El título es obligatorio.";
     if (!data.precio || Number(data.precio) <= 0) return "El precio debe ser mayor a cero.";
     if (!data.descripcion) return "La descripción es obligatoria.";
+    if (data.descuento_porcentaje && !data.descuento_fin) return "Debe ingresar una fecha de 'Fin de descuento' para aplicar el descuento.";
     return "";
   }
 
@@ -267,11 +320,13 @@
       descuento_fin: data.descuento_fin || undefined,
       descuento_porcentaje: data.descuento_porcentaje ? Number(data.descuento_porcentaje) : null,
     };
-    if (!data.id && data.categoria_id) {
-      payload.categoria_id = Number(data.categoria_id);
+    const isEditing = data.id !== "";
+    if (!data.id && data.categoria_ids && data.categoria_ids.length > 0) {
+      payload.categoria_ids = data.categoria_ids;
+    } else if (isEditing && data.categoria_ids) {
+      payload.categoria_ids = data.categoria_ids;
     }
 
-    const isEditing = data.id !== "";
     const url = `${API}/api/juegos.jsp${isEditing ? `?id=${data.id}` : ""}`;
     const method = isEditing ? "PUT" : "POST";
 
@@ -329,7 +384,20 @@
           } else {
             console.warn("No se obtuvo el ID del juego creado; no se pudo crear descuento automáticamente.");
           }
+        } else if (isEditing && (!payload.descuento_porcentaje || payload.descuento_porcentaje <= 0)) {
+           // Si está editando y el porcentaje es 0 o vacío, intentar eliminar cualquier descuento activo
+           try {
+              await fetch(`${API}/api/descuentos.jsp`, {
+                 method: "DELETE",
+                 headers: { "Content-Type": "application/json" },
+                 credentials: "include",
+                 body: JSON.stringify({ juego_id: Number(data.id) }),
+              });
+           } catch (e) {
+              console.error("Error eliminando descuento:", e);
+           }
         }
+
         console.log('[registro-juegos] dispatching inventory-updated, lastEditedId=', lastEditedId);
         window.dispatchEvent(new CustomEvent("inventory-updated"));
       } else {
@@ -345,7 +413,7 @@
   }
 
   async function cargarCategorias() {
-    if (!categorySelect) return;
+    if (!categorySearch) return;
 
     try {
       const res = await fetch(`${API}/api/categorias.jsp`, {
@@ -353,13 +421,8 @@
       });
       const data = await parseJsonResponse(res);
       categorias = Array.isArray(data) ? data : data.categorias || [];
-
-      categorySelect.innerHTML = `<option value="">Selecciona categoría</option>` + categorias
-        .map((cat) => `<option value="${cat.id}">${cat.nombre}</option>`)
-        .join("");
     } catch (error) {
       console.error("Error cargando categorías:", error);
-      categorySelect.innerHTML = `<option value="">No se pudieron cargar categorías</option>`;
     }
   }
 
@@ -393,7 +456,11 @@
             <div class="flex items-center justify-between gap-3">
               <div>
                 <p class="text-sm text-white font-semibold">${juego.titulo || 'Sin título'}</p>
-                <p class="text-xs text-[#71717A]">${juego.categoria || juego.categoria_nombre || 'Sin categoría'}</p>
+                <p class="text-xs text-[#71717A]">
+                  ${juego.categorias && juego.categorias.length > 0 
+                    ? juego.categorias.map((c: any) => c.nombre).join(', ') 
+                    : 'Sin categoría'}
+                </p>
               </div>
               <p class="text-xs text-zinc-400">S/ ${Number(discountedPrice).toFixed(2)}</p>
             </div>
@@ -459,9 +526,10 @@ async function cargarRecentGames() {
       if (!uniqueGamesMap[id]) {
         uniqueGamesMap[id] = { ...game, categorias: [] };
       }
-      const cat = game.categoria || game.categoria_nombre;
-      if (cat && !uniqueGamesMap[id].categorias.includes(cat)) {
-        uniqueGamesMap[id].categorias.push(cat);
+      const catId = game.categoria_id;
+      const catNombre = game.categoria || game.categoria_nombre;
+      if (catId && !uniqueGamesMap[id].categorias.some((c: any) => c.id === catId)) {
+        uniqueGamesMap[id].categorias.push({ id: catId, nombre: catNombre });
       }
     });
 
@@ -494,6 +562,23 @@ async function cargarRecentGames() {
     }
 
     cargarCategorias();
+    if (categorySearch) {
+      categorySearch.addEventListener("focus", () => {
+        updateCategoryDropdown(categorySearch.value);
+        categoryDropdown?.classList.remove("hidden");
+      });
+      categorySearch.addEventListener("input", (e) => {
+        const target = e.target as HTMLInputElement;
+        updateCategoryDropdown(target.value);
+        categoryDropdown?.classList.remove("hidden");
+      });
+      document.addEventListener("click", (e) => {
+        if (!categorySearch.contains(e.target as Node) && !categoryDropdown?.contains(e.target as Node)) {
+          categoryDropdown?.classList.add("hidden");
+        }
+      });
+    }
+
     form.addEventListener("submit", submitGame);
     cancelBtn.addEventListener("click", resetForm);
     newGameBtn.addEventListener("click", () => {

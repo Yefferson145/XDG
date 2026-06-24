@@ -30,8 +30,9 @@
     </div>
 
     <div>
-        <div class="flex-col items-center text-white text-sm mr-8 w-50 h-10 border-l-2 border-[#3F3F46] pl-4">
-            <p class="text-center border-b border-[#A78BFA] w-35">Administrador</p>
+        <div class="flex flex-col items-center text-white text-sm mr-8 w-50 h-10 border-l-2 border-[#3F3F46] pl-4 justify-center">
+            <p id="topNavName" class="text-center text-xs text-[#A1A1AA] mb-0.5">Hola, ...</p>
+            <p id="topNavRole" class="text-center border-b border-[#A78BFA] w-35 font-semibold text-[#A78BFA] uppercase">Administrador</p>
         </div>
     </div>
 </div>
@@ -39,12 +40,30 @@
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     const searchInput = document.getElementById("adminGlobalSearch");
-    if (!searchInput) return;
+    if (searchInput) {
+      searchInput.addEventListener("input", (event) => {
+        const query = (event.target as HTMLInputElement).value.trim();
+        window.dispatchEvent(new CustomEvent("admin-search", { detail: { query } }));
+      });
+    }
 
-    searchInput.addEventListener("input", (event) => {
-      const query = (event.target as HTMLInputElement).value.trim();
-      window.dispatchEvent(new CustomEvent("admin-search", { detail: { query } }));
-    });
+    fetch("http://localhost:8080/api/session.jsp", { credentials: "include" })
+      .then(res => res.json())
+      .then(data => {
+        if (data.logged) {
+          const topNavName = document.getElementById("topNavName");
+          const topNavRole = document.getElementById("topNavRole");
+          
+          if (topNavName) {
+            topNavName.textContent = `Hola, ${data.name || data.email?.split('@')[0] || 'Usuario'}`;
+          }
+          if (topNavRole) {
+            const actualRole = data.sub_role || data.role || "ADMINISTRADOR";
+            topNavRole.textContent = actualRole.toUpperCase() === "SOPORTE" ? "SOPORTE" : "ADMINISTRADOR";
+          }
+        }
+      })
+      .catch(err => console.error("Error cargando sesión en cabecera:", err));
   });
 </script>
 
