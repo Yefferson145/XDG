@@ -5,8 +5,10 @@ import DashboardSection from "../components/admin/sections/dashboard/DashboardSe
 import RegistroJuegosSection from "../components/admin/sections/register-game/RegistroJuegosSection.astro";
 import RegistroVentasSection from "../components/admin/sections/sales-history/RegistroVentasSection.astro";
 import RegistroAdminSection from "../components/admin/sections/register-admi/RegistroAdmiSection.astro";
+import ReportesSection from "../components/admin/sections/ReportesSection.astro";
 import CategoriasSection from "../components/admin/sections/gest-category/CategoryPanel.astro";
 import UserSection from "../components/admin/sections/gest-user/UserPanel.astro";
+import AuditoriaSection from "../components/admin/sections/AuditoriaSection.astro";
 import "../styles/global.css";
 ---
 
@@ -44,12 +46,20 @@ import "../styles/global.css";
                         <RegistroAdminSection />
                     </div>
 
+                    <div data-admin-section="reportes" class="hidden">
+                        <ReportesSection />
+                    </div>
+
                     <div data-admin-section="categorias" class="hidden">
                         <CategoriasSection />
                     </div>
 
                     <div data-admin-section="usuarios" class="hidden">
                         <UserSection />
+                    </div>
+
+                    <div data-admin-section="auditoria" class="hidden">
+                        <AuditoriaSection />
                     </div>
                 </div>
             </div>

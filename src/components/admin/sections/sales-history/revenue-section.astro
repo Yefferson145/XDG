@@ -1,40 +1,39 @@
 ---
 ---
-<div class="rounded-[24px] border border-[#262629] bg-[#17171A]/70 p-8 overflow-hidden transition-colors duration-300 hover:border-[#A970FF]">
+<div class="rounded-[24px] border border-[#262629] bg-[#17171A]/70 p-8 overflow-hidden transition-colors duration-300">
   <div class="flex items-start justify-between mb-8">
     <div>
       <h2 class="text-[28px] font-medium text-white">RENDIMIENTO DE VENTAS</h2>
-      <p class="text-[15px] text-[#757584] mt-1">Datos históricos para el año fiscal actual</p>
+      <p class="text-[15px] text-[#757584] mt-1">Evolución de los ingresos en el tiempo</p>
     </div>
-    <div class="flex gap-2">
-      <button id="btn-daily"   class="px-5 py-2 rounded-md bg-white/10 text-[#c6c6cf] text-sm transition-colors duration-200">DIARIO</button>
-      <button id="btn-monthly" class="px-5 py-2 rounded-md bg-[#8b5cf6] text-white   text-sm transition-colors duration-200">MENSUAL</button>
+    <div class="flex gap-2 items-center">
+      <select id="select-days" class="px-3 py-2 rounded-md bg-[#262629] text-white text-sm outline-none border border-transparent focus:border-[#8b5cf6] transition-colors cursor-pointer">
+          <option value="7">Últimos 7 días</option>
+          <option value="15">Últimos 15 días</option>
+          <option value="30">Últimos 30 días</option>
+      </select>
+      <button id="btn-daily"   class="px-5 py-2 rounded-md bg-[#8b5cf6] text-white text-sm transition-colors duration-200">DIARIO</button>
+      <button id="btn-monthly" class="px-5 py-2 rounded-md bg-white/10 text-[#c6c6cf] text-sm transition-colors duration-200">MENSUAL</button>
     </div>
   </div>
 
-  <div class="relative h-80">
-    <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
-      <div class="border-b border-white/5"></div>
-      <div class="border-b border-white/5"></div>
-      <div class="border-b border-white/5"></div>
-      <div></div>
-    </div>
-    <div id="bars-container" class="absolute inset-0 flex items-end pb-8">
-      <p class="text-zinc-500 text-sm m-auto">Cargando...</p>
-    </div>
+  <div class="relative h-80 w-full">
+    <canvas id="revenueLineChart"></canvas>
   </div>
 </div>
 
+<script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
   const API = "http://localhost:8080";
-  const BASE = "bar w-5/6 rounded-t-md transition-all duration-500 ease-out";
-
   const btnDaily   = document.getElementById("btn-daily")!;
   const btnMonthly = document.getElementById("btn-monthly")!;
-  const container  = document.getElementById("bars-container")!;
-
+  const selectDays = document.getElementById("select-days") as HTMLSelectElement;
+  
   let monthlyData: any[] = [];
   let dailyData:   any[] = [];
+  let revChartInstance: any = null;
+  let currentMode = 'daily';
 
   function activate(active: Element, inactive: Element) {
     active.classList.remove("bg-white/10", "text-[#c6c6cf]");
@@ -43,42 +42,85 @@
     inactive.classList.add("bg-white/10", "text-[#c6c6cf]");
   }
 
-  function renderBars(data: any[]) {
-    if (!data.length) {
-      container.innerHTML = `<p class="text-zinc-500 text-sm m-auto">Sin datos</p>`;
-      return;
+  function renderChart(data: any[]) {
+    const ctx = document.getElementById('revenueLineChart') as HTMLCanvasElement;
+    
+    if (revChartInstance) {
+        revChartInstance.destroy();
     }
 
-    const max = Math.max(...data.map((d: any) => d.value));
+    const labels = data.map(d => {
+        const engToSpa: any = {
+            'MON': 'LUN', 'TUE': 'MAR', 'WED': 'MIÉ', 'THU': 'JUE', 'FRI': 'VIE', 'SAT': 'SÁB', 'SUN': 'DOM',
+            'JAN': 'ENE', 'FEB': 'FEB', 'MAR': 'MAR', 'APR': 'ABR', 'MAY': 'MAY', 'JUN': 'JUN',
+            'JUL': 'JUL', 'AUG': 'AGO', 'SEP': 'SEP', 'OCT': 'OCT', 'NOV': 'NOV', 'DEC': 'DIC'
+        };
+        const upper = String(d.label).toUpperCase();
+        return engToSpa[upper] || d.label;
+    });
+    const values = data.map(d => d.value);
 
-    container.innerHTML = data.map((d: any) => `
-      <div class="flex-1 flex flex-col items-center justify-end h-full">
-        <div class="${BASE} bg-[#22222c]"
-             style="height:0%"
-             data-value="${d.value}"
-             data-max="${max}">
-        </div>
-        <span class="bar-label mt-3 text-[13px] tracking-wide text-[#7a7a86]">${d.label}</span>
-      </div>
-    `).join("");
-
-    setTimeout(() => {
-      container.querySelectorAll<HTMLElement>(".bar").forEach(bar => {
-        const val = parseFloat(bar.dataset.value!);
-        const mx  = parseFloat(bar.dataset.max!);
-        const pct = mx > 0 ? (val / mx) * 100 : 0;
-        bar.style.height = `${pct}%`;
-        if (pct >= 99) {
-          bar.style.background = "#8b5cf6";
-          bar.style.boxShadow  = "0 0 30px rgba(139,92,246,.3)";
+    // @ts-ignore
+    revChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Ingresos (S/)',
+                data: values,
+                backgroundColor: '#A78BFA',
+                hoverBackgroundColor: '#8B5CF6',
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(23, 23, 26, 0.9)',
+                    titleColor: '#fff',
+                    bodyColor: '#A78BFA',
+                    borderColor: '#262629',
+                    borderWidth: 1,
+                    padding: 10,
+                    displayColors: false,
+                    callbacks: {
+                        label: function(context: any) {
+                            return 'S/ ' + context.parsed.y.toLocaleString();
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false, drawBorder: false },
+                    ticks: { color: '#71717A', font: { family: 'Inter', size: 12 } }
+                },
+                y: {
+                    grid: { color: '#262629', drawBorder: false },
+                    ticks: { 
+                        color: '#71717A',
+                        font: { family: 'Inter', size: 12 },
+                        callback: function(value: any) {
+                            return 'S/ ' + value.toLocaleString();
+                        }
+                    },
+                    beginAtZero: true
+                }
+            }
         }
-      });
-    }, 50);
+    });
   }
 
-  async function loadStats() {
+  async function loadStats(days: number = 7) {
     try {
-      const res  = await fetch(`${API}/api/ventas-stats.jsp`, { credentials: "include" });
+      const res  = await fetch(`${API}/api/ventas-stats.jsp?days=${days}`, { credentials: "include" });
       const text = await res.text();
       const match = text.match(/\{[\s\S]*\}/);
       if (!match) return;
@@ -87,14 +129,39 @@
       monthlyData = data.monthly || [];
       dailyData   = data.daily   || [];
 
-      renderBars(monthlyData);
+      if (currentMode === 'daily') renderChart(dailyData);
+      else renderChart(monthlyData);
     } catch(e) {
       console.error(e);
     }
   }
 
-  btnDaily.addEventListener("click",   () => { activate(btnDaily, btnMonthly); renderBars(dailyData); });
-  btnMonthly.addEventListener("click", () => { activate(btnMonthly, btnDaily); renderBars(monthlyData); });
+  btnDaily.addEventListener("click", () => { 
+      currentMode = 'daily';
+      selectDays.style.display = 'inline-block';
+      activate(btnDaily, btnMonthly); 
+      renderChart(dailyData); 
+  });
+  
+  btnMonthly.addEventListener("click", () => { 
+      currentMode = 'monthly';
+      selectDays.style.display = 'none';
+      activate(btnMonthly, btnDaily); 
+      renderChart(monthlyData); 
+  });
 
-  loadStats();
+  selectDays.addEventListener("change", (e: any) => {
+      loadStats(e.target.value);
+  });
+
+  window.addEventListener("section-opened", (e: any) => {
+      if (e.detail?.section === "registro-ventas" && !revChartInstance) {
+          loadStats(parseInt(selectDays.value));
+      } else if (e.detail?.section === "registro-ventas" && revChartInstance) {
+          revChartInstance.resize();
+      }
+  });
+
+  // Initial load
+  loadStats(7);
 </script>

@@ -1,5 +1,23 @@
 const API = "http://localhost:8080";
 
+(window as any).xdgStore = {
+    juegosPromise: null,
+    descuentosPromise: null,
+    sessionPromise: fetch(`${API}/api/session.jsp`, { credentials: "include" }).then(r => r.json()),
+    getJuegos: function() {
+        if (!this.juegosPromise) {
+            this.juegosPromise = fetch(`${API}/api/juegos.jsp`, { credentials: "include" }).then(r => r.json());
+        }
+        return this.juegosPromise;
+    },
+    getDescuentos: function() {
+        if (!this.descuentosPromise) {
+            this.descuentosPromise = fetch(`${API}/api/descuentos.jsp`, { credentials: "include" }).then(r => r.json());
+        }
+        return this.descuentosPromise;
+    }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
     const btn = document.getElementById("openModal") as HTMLButtonElement;
     const logoutBtn = document.getElementById("logoutBtn") as HTMLButtonElement;
@@ -69,8 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let checkSession = async () => {
         try {
-            const res = await fetch(`${API}/api/session.jsp`, { credentials: "include" });
-            const data = await res.json();
+            const data = await (window as any).xdgStore.sessionPromise;
             if (data.logged) {
                 updateNavUI(data.name, data.role, data.sub_role);
             }
@@ -107,13 +124,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (dataLoaded) return;
         dataLoaded = true;
         try {
-            const [gRes, dRes] = await Promise.all([
-                fetch(`${API}/api/juegos.jsp`, { credentials: "include" }),
-                fetch(`${API}/api/descuentos.jsp`, { credentials: "include" }),
+            const [gData, dData] = await Promise.all([
+                (window as any).xdgStore.getJuegos(),
+                (window as any).xdgStore.getDescuentos()
             ]);
-            allGames = await gRes.json() as Juego[];
-            const discs = await dRes.json() as Descuento[];
-            discountMap = new Map(discs.map(d => [d.juego_id, d]));
+            allGames = gData as Juego[];
+            discountMap = new Map((dData as Descuento[]).map(d => [d.juego_id, d]));
         } catch {}
     }
 
@@ -321,8 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function checkDiscountsForNotifications() {
         if (!currentUserId) return;
         try {
-            const dRes = await fetch(`${API}/api/descuentos.jsp`);
-            const discs = await dRes.json();
+            const discs = await (window as any).xdgStore.getDescuentos();
             if (Array.isArray(discs)) {
                 const notifs = getNotifications();
                 let changed = false;
@@ -344,8 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const originalCheckSession = checkSession;
     checkSession = async () => {
         try {
-            const res = await fetch(`${API}/api/session.jsp`, { credentials: "include" });
-            const data = await res.json();
+            const data = await (window as any).xdgStore.sessionPromise;
             if (data.logged) {
                 currentUserId = data.id;
                 updateNavUI(data.name, data.role, data.sub_role);

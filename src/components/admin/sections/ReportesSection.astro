@@ -1,0 +1,431 @@
+---
+---
+<div class="p-6 font-space">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
+        <div>
+            <h1 class="text-white font-bold text-4xl pb-1">Reportes Financieros</h1>
+            <p class="text-[#71717A] text-sm">Visualiza los ingresos de la tienda y el ranking de juegos más vendidos.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+            <select id="rangoReporte" class="rounded-full border border-[#27272A] bg-[#0F0F14] px-4 py-2 text-sm text-white focus:outline-none focus:border-[#A78BFA] cursor-pointer transition-colors">
+                <option value="diario">Diario</option>
+                <option value="semanal">Semanal</option>
+                <option value="mensual">Mensual</option>
+            </select>
+            
+            <div class="relative inline-block" id="multiSelectContainer" style="display: none;">
+                <button id="multiSelectBtn" class="rounded-full border border-[#27272A] bg-[#0F0F14] px-4 py-2 text-sm text-white focus:outline-none focus:border-[#A78BFA] min-w-[140px] flex justify-between items-center gap-3 cursor-pointer transition-colors">
+                    <span id="multiSelectLabel">Elegir meses...</span>
+                    <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="#A1A1AA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <div id="multiSelectDropdown" class="absolute top-[calc(100%+8px)] left-0 w-48 bg-[#0F0F14] border border-[#27272A] rounded-xl shadow-lg shadow-black/50 z-50 hidden flex-col max-h-[300px] overflow-y-auto py-2 custom-scrollbar">
+                    <label class="flex items-center gap-3 px-4 py-2 hover:bg-[#17171A] cursor-pointer text-sm text-[#E4E4E7] transition-colors"><input type="checkbox" value="1" class="month-checkbox accent-[#A78BFA] w-4 h-4 rounded"> Enero</label>
+                    <label class="flex items-center gap-3 px-4 py-2 hover:bg-[#17171A] cursor-pointer text-sm text-[#E4E4E7] transition-colors"><input type="checkbox" value="2" class="month-checkbox accent-[#A78BFA] w-4 h-4 rounded"> Febrero</label>
+                    <label class="flex items-center gap-3 px-4 py-2 hover:bg-[#17171A] cursor-pointer text-sm text-[#E4E4E7] transition-colors"><input type="checkbox" value="3" class="month-checkbox accent-[#A78BFA] w-4 h-4 rounded"> Marzo</label>
+                    <label class="flex items-center gap-3 px-4 py-2 hover:bg-[#17171A] cursor-pointer text-sm text-[#E4E4E7] transition-colors"><input type="checkbox" value="4" class="month-checkbox accent-[#A78BFA] w-4 h-4 rounded"> Abril</label>
+                    <label class="flex items-center gap-3 px-4 py-2 hover:bg-[#17171A] cursor-pointer text-sm text-[#E4E4E7] transition-colors"><input type="checkbox" value="5" class="month-checkbox accent-[#A78BFA] w-4 h-4 rounded"> Mayo</label>
+                    <label class="flex items-center gap-3 px-4 py-2 hover:bg-[#17171A] cursor-pointer text-sm text-[#E4E4E7] transition-colors"><input type="checkbox" value="6" class="month-checkbox accent-[#A78BFA] w-4 h-4 rounded"> Junio</label>
+                    <label class="flex items-center gap-3 px-4 py-2 hover:bg-[#17171A] cursor-pointer text-sm text-[#E4E4E7] transition-colors"><input type="checkbox" value="7" class="month-checkbox accent-[#A78BFA] w-4 h-4 rounded"> Julio</label>
+                    <label class="flex items-center gap-3 px-4 py-2 hover:bg-[#17171A] cursor-pointer text-sm text-[#E4E4E7] transition-colors"><input type="checkbox" value="8" class="month-checkbox accent-[#A78BFA] w-4 h-4 rounded"> Agosto</label>
+                    <label class="flex items-center gap-3 px-4 py-2 hover:bg-[#17171A] cursor-pointer text-sm text-[#E4E4E7] transition-colors"><input type="checkbox" value="9" class="month-checkbox accent-[#A78BFA] w-4 h-4 rounded"> Septiembre</label>
+                    <label class="flex items-center gap-3 px-4 py-2 hover:bg-[#17171A] cursor-pointer text-sm text-[#E4E4E7] transition-colors"><input type="checkbox" value="10" class="month-checkbox accent-[#A78BFA] w-4 h-4 rounded"> Octubre</label>
+                    <label class="flex items-center gap-3 px-4 py-2 hover:bg-[#17171A] cursor-pointer text-sm text-[#E4E4E7] transition-colors"><input type="checkbox" value="11" class="month-checkbox accent-[#A78BFA] w-4 h-4 rounded"> Noviembre</label>
+                    <label class="flex items-center gap-3 px-4 py-2 hover:bg-[#17171A] cursor-pointer text-sm text-[#E4E4E7] transition-colors"><input type="checkbox" value="12" class="month-checkbox accent-[#A78BFA] w-4 h-4 rounded"> Diciembre</label>
+                </div>
+            </div>
+
+            <button id="exportExcelBtn" class="text-sm font-semibold text-black bg-[#A78BFA] rounded-full px-5 py-2 hover:bg-[#8B5CF6] transition-colors flex items-center gap-2 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                Exportar Excel
+            </button>
+        </div>
+    </div>
+
+    <div class="flex flex-col gap-6">
+        <div class="w-full rounded-[24px] border border-[#262629] bg-[#17171A]/70 p-8 flex flex-col">
+            <h2 class="text-white text-[22px] font-medium mb-8">Ingresos vs Comisiones</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white/[0.03] p-5 rounded-2xl border border-white/10 backdrop-blur-md">
+                    <p class="text-[#A1A1AA] text-xs font-semibold tracking-wider uppercase mb-2">Ingreso Bruto</p>
+                    <p id="totalIngreso" class="text-[#A78BFA] text-[28px] font-bold">S/ 0.00</p>
+                </div>
+                <div class="p-6 rounded-[20px] bg-[#111214] border border-[#262629]">
+                    <p class="text-[#A1A1AA] text-xs font-semibold tracking-wider uppercase mb-2">Comisiones</p>
+                    <p id="totalEgreso" class="text-[#EF4444] text-[28px] font-bold">S/ 0.00</p>
+                </div>
+                <div class="bg-white/[0.03] p-5 rounded-2xl border border-white/10 backdrop-blur-md">
+                    <p class="text-[#A1A1AA] text-xs font-semibold tracking-wider uppercase mb-2">Ganancia Neta</p>
+                    <p id="totalGanancia" class="text-[#10B981] text-[28px] font-bold">S/ 0.00</p>
+                </div>
+            </div>
+
+            <div class="w-full flex-1 min-h-[340px] relative">
+                <canvas id="financeChart"></canvas>
+            </div>
+        </div>
+
+        <div class="w-full rounded-[24px] border border-[#262629] bg-[#17171A]/70 p-8 flex flex-col">
+            <h2 class="text-white text-[22px] font-medium mb-6">Top 10 Más Vendidos</h2>
+            <div class="flex-1 overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-[#262629]">
+                            <th class="pb-3 text-[#A1A1AA] text-[12px] font-semibold tracking-wider uppercase pl-2">#</th>
+                            <th class="pb-3 text-[#A1A1AA] text-[12px] font-semibold tracking-wider uppercase">Juego</th>
+                            <th class="pb-3 text-[#A1A1AA] text-[12px] font-semibold tracking-wider uppercase text-center">Unidades</th>
+                            <th class="pb-3 text-[#A1A1AA] text-[12px] font-semibold tracking-wider uppercase text-right pr-2">Ingresos</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topJuegosList">
+                        <tr><td colspan="4" class="text-[#71717A] text-sm text-center py-10">Cargando ranking...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const API = "http://localhost:8080";
+    let chartInstance: any = null;
+    let currentReportData: any[] = [];
+    let selectedMonths: string[] = [];
+
+    const monthsNames = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    const compareColors = ['#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6'];
+
+    async function loadReport(rango: string, mesStr: string = "") {
+        try {
+            const url = `${API}/api/reportes.jsp?rango=${rango}` + (mesStr ? `&mes=${mesStr}` : "");
+            const res = await fetch(url, { credentials: "include" });
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+
+            currentReportData = data;
+            
+            const isComparison = rango === "mensual" && mesStr.includes(",");
+
+            let chartLabels: string[] = [];
+            let chartDatasets: any[] = [];
+
+            if (isComparison) {
+                chartLabels = Array.from({length: 31}, (_, i) => String(i + 1));
+                const datasetsMap: any = {};
+                const monthsArr = mesStr.split(",");
+                
+                monthsArr.forEach((mStr, idx) => {
+                    const m = parseInt(mStr);
+                    datasetsMap[m] = {
+                        label: `${monthsNames[m]} (Ganancia Neta)`,
+                        data: Array(31).fill(0),
+                        type: 'line',
+                        borderColor: compareColors[idx % compareColors.length],
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        pointBackgroundColor: '#17171A'
+                    };
+                });
+
+                data.forEach((d: any) => {
+                    const parts = d.fecha.split("-");
+                    if (parts.length === 3) {
+                        const m = parseInt(parts[1]);
+                        const day = parseInt(parts[2]);
+                        if (datasetsMap[m]) {
+                            datasetsMap[m].data[day - 1] = d.ganancia;
+                        }
+                    }
+                });
+
+                chartDatasets = Object.values(datasetsMap);
+            } else {
+                const isSingleMonth = rango === 'mensual' && mesStr !== "";
+                
+                if (isSingleMonth) {
+                    chartLabels = Array.from({length: 31}, (_, i) => String(i + 1));
+                    const gananciaData = Array(31).fill(0);
+                    const ingresoData = Array(31).fill(0);
+                    
+                    data.forEach((d: any) => {
+                        const parts = d.fecha.split("-");
+                        if (parts.length === 3) {
+                            const day = parseInt(parts[2]);
+                            gananciaData[day - 1] = d.ganancia;
+                            ingresoData[day - 1] = d.ingresos;
+                        }
+                    });
+
+                    chartDatasets = [
+                        {
+                            label: 'Ganancia Neta (S/)',
+                            data: gananciaData,
+                            type: 'bar',
+                            backgroundColor: '#10B981',
+                            borderRadius: 6,
+                            barPercentage: 0.6
+                        },
+                        {
+                            label: 'Ingreso Bruto (S/)',
+                            data: ingresoData,
+                            type: 'bar',
+                            backgroundColor: 'rgba(167, 139, 250, 0.4)',
+                            borderRadius: 6,
+                            barPercentage: 0.6
+                        }
+                    ];
+                } else {
+                    chartLabels = data.map((d: any) => d.fecha);
+                    
+                    chartDatasets = [
+                        {
+                            label: 'Ganancia Neta (S/)',
+                            data: data.map((d: any) => d.ganancia),
+                            type: 'bar',
+                            backgroundColor: '#10B981',
+                            borderRadius: 6,
+                            barPercentage: 0.6
+                        },
+                        {
+                            label: 'Ingreso Bruto (S/)',
+                            data: data.map((d: any) => d.ingresos),
+                            type: 'bar',
+                            backgroundColor: 'rgba(167, 139, 250, 0.4)',
+                            borderRadius: 6,
+                            barPercentage: 0.6
+                        }
+                    ];
+                }
+            }
+
+            const sumIngresos = data.map((d: any) => d.ingresos).reduce((a:number, b:number) => a + b, 0);
+            const sumEgresos = data.map((d: any) => d.egresos).reduce((a:number, b:number) => a + b, 0);
+            const sumGanancia = data.map((d: any) => d.ganancia).reduce((a:number, b:number) => a + b, 0);
+
+            document.getElementById("totalIngreso")!.textContent = `S/ ${sumIngresos.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById("totalEgreso")!.textContent = `S/ ${sumEgresos.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById("totalGanancia")!.textContent = `S/ ${sumGanancia.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            const ctx = document.getElementById('financeChart') as HTMLCanvasElement;
+            if (chartInstance) chartInstance.destroy();
+
+            // @ts-ignore
+            chartInstance = new Chart(ctx, {
+                data: {
+                    labels: chartLabels,
+                    datasets: chartDatasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                            ticks: { color: '#71717A', font: { family: 'Inter', size: 12 } }
+                        },
+                        x: {
+                            grid: { display: false, drawBorder: false },
+                            ticks: { color: '#71717A', font: { family: 'Inter', size: 12 } }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            labels: { color: '#A1A1AA', font: { family: 'Inter', size: 12 }, usePointStyle: true, padding: 20 }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(23, 23, 26, 0.95)',
+                            titleColor: '#fff',
+                            bodyColor: '#A78BFA',
+                            borderColor: '#3F3F46',
+                            borderWidth: 1,
+                            padding: 12,
+                            boxPadding: 6
+                        }
+                    }
+                }
+            });
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async function loadTopGames() {
+        try {
+            const list = document.getElementById("topJuegosList");
+            if (!list) return;
+
+            const res = await fetch(`${API}/api/top_juegos.jsp`, { credentials: "include" });
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+
+            if (data.length === 0) {
+                list.innerHTML = `<tr><td colspan="4" class="text-[#71717A] text-sm text-center py-10">No hay ventas registradas.</td></tr>`;
+                return;
+            }
+
+            list.innerHTML = data.map((j: any, idx: number) => `
+                <tr class="border-b border-white/5 hover:bg-white/[0.02] transition-colors group">
+                    <td class="py-3 pl-2">
+                        <div class="w-7 h-7 rounded-lg ${idx < 3 ? 'bg-[#A78BFA] text-[#111214]' : 'bg-[#262629] text-white'} flex items-center justify-center font-bold text-xs">
+                            ${idx + 1}
+                        </div>
+                    </td>
+                    <td class="py-3">
+                        <div class="flex items-center gap-3">
+                            <img src="${j.imagen_url}" alt="${j.titulo}" class="w-8 h-10 object-cover rounded shadow-sm opacity-90 group-hover:opacity-100 transition-opacity" />
+                            <h3 class="text-[#E4E4E7] text-sm font-medium truncate max-w-[250px]">${j.titulo}</h3>
+                        </div>
+                    </td>
+                    <td class="py-3 text-center text-[#A1A1AA] text-sm">${j.total_vendido}</td>
+                    <td class="py-3 text-right pr-2">
+                        <p class="text-[#10B981] text-[15px] font-bold">S/ ${j.ingresos_totales.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    </td>
+                </tr>
+            `).join('');
+
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    function exportToExcel() {
+        if (!currentReportData || currentReportData.length === 0) {
+            alert("No hay datos para exportar.");
+            return;
+        }
+
+        const headers = ["Fecha", "Ingreso Bruto (S/)", "Comisi\u00f3n de Juegos (S/)", "Ganancia Neta (S/)"];
+        
+        let tableRows = "";
+        currentReportData.forEach(d => {
+            tableRows += `
+                <tr>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;">${d.fecha}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; color: #10B981;">S/ ${d.ingresos.toFixed(2)}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; color: #EF4444;">S/ ${d.egresos.toFixed(2)}</td>
+                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center; font-weight: bold; color: #8B5CF6;">S/ ${d.ganancia.toFixed(2)}</td>
+                </tr>
+            `;
+        });
+
+        const html = `
+            <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+            <head>
+                <meta charset="utf-8">
+                <style>
+                    table { border-collapse: collapse; font-family: Arial, sans-serif; width: 100%; }
+                    th { background-color: #8B5CF6; color: white; font-weight: bold; padding: 12px; border: 1px solid #ddd; text-align: center; }
+                </style>
+            </head>
+            <body>
+                <h2>Reporte Financiero</h2>
+                <table>
+                    <thead>
+                        <tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+            </body>
+            </html>
+        `;
+
+        const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `reporte_financiero_${Date.now()}.xls`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+        const rangoSelect = document.getElementById("rangoReporte") as HTMLSelectElement;
+        const multiContainer = document.getElementById("multiSelectContainer") as HTMLElement;
+        const multiBtn = document.getElementById("multiSelectBtn") as HTMLButtonElement;
+        const multiDropdown = document.getElementById("multiSelectDropdown") as HTMLElement;
+        const multiLabel = document.getElementById("multiSelectLabel") as HTMLElement;
+        const checkboxes = document.querySelectorAll(".month-checkbox") as NodeListOf<HTMLInputElement>;
+        
+        rangoSelect?.addEventListener("change", (e: any) => {
+            if (e.target.value === "mensual") {
+                multiContainer.style.display = "inline-block";
+            } else {
+                multiContainer.style.display = "none";
+                multiDropdown.classList.add("hidden");
+                checkboxes.forEach(c => c.checked = false);
+                selectedMonths = [];
+                multiLabel.textContent = "Elegir meses...";
+            }
+            loadReport(e.target.value, selectedMonths.join(","));
+        });
+
+        multiBtn?.addEventListener("click", () => {
+            multiDropdown.classList.toggle("hidden");
+        });
+
+        document.addEventListener("click", (e: any) => {
+            if (!multiContainer.contains(e.target)) {
+                multiDropdown.classList.add("hidden");
+            }
+        });
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener("change", () => {
+                selectedMonths = Array.from(checkboxes)
+                                      .filter(c => c.checked)
+                                      .map(c => c.value);
+                
+                if (selectedMonths.length === 0) {
+                    multiLabel.textContent = "Todo el año";
+                } else if (selectedMonths.length === 1) {
+                    multiLabel.textContent = monthsNames[parseInt(selectedMonths[0])];
+                } else {
+                    multiLabel.textContent = `${selectedMonths.length} meses`;
+                }
+                
+                loadReport("mensual", selectedMonths.join(","));
+            });
+        });
+
+        document.getElementById("exportExcelBtn")?.addEventListener("click", exportToExcel);
+
+        window.addEventListener("section-opened", (e: any) => {
+            if (e.detail?.section === "reportes") {
+                loadReport(rangoSelect?.value || "diario", selectedMonths.join(","));
+                loadTopGames();
+            }
+        });
+        
+        loadReport("diario");
+        loadTopGames();
+    });
+</script>
+
+<style>
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #27272A;
+        border-radius: 10px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #3F3F46;
+    }
+</style>

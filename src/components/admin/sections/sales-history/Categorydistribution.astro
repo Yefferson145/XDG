@@ -1,24 +1,27 @@
 ---
 ---
-<div class="rounded-[24px] border border-[#262629] bg-[#17171A]/70 p-8 flex flex-col overflow-hidden transition-all duration-300 hover:border-[#A970FF]">
-  <h2 class="text-[28px] font-medium text-white mb-8">Distribucion por Categoría</h2>
+<div class="rounded-[24px] border border-[#262629] bg-[#17171A]/70 p-8 flex flex-col overflow-hidden transition-all duration-300">
+  <h2 class="text-[28px] font-medium text-white mb-8">Distribución por Categoría</h2>
 
-  <div id="cat-list" class="space-y-7">
-    <p class="text-zinc-500 text-sm">Cargando...</p>
+  <div class="relative w-full h-64 flex justify-center items-center mb-6">
+      <canvas id="categoryChart"></canvas>
   </div>
 
-  <div class="mt-10 rounded-2xl border border-[#35285d] bg-[#151022] p-5">
-    <div class="flex gap-3">
+  <div class="mt-auto rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-xl">
+    <div class="flex gap-3 items-center">
       <span class="text-[#8b5cf6] text-xl">✦</span>
-      <p id="cat-insight" class="text-[14px] text-[#a8a1bb] leading-relaxed">
+      <p id="cat-insight" class="text-[14px] text-[#A1A1AA] leading-relaxed">
         Analizando datos de ventas...
       </p>
     </div>
   </div>
 </div>
 
+<script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
   const API = "http://localhost:8080";
+  let catChartInstance: any = null;
 
   async function loadCategories() {
     try {
@@ -29,34 +32,64 @@
       const data = JSON.parse(match[0]);
       const cats = data.categories || [];
 
-      const list    = document.getElementById("cat-list")!;
       const insight = document.getElementById("cat-insight")!;
 
       if (!cats.length) {
-        list.innerHTML = `<p class="text-zinc-500 text-sm">Sin datos</p>`;
         return;
       }
 
-      list.innerHTML = cats.map((cat: any) => `
-        <div>
-          <div class="flex justify-between mb-3">
-            <span class="text-[13px] tracking-wide text-[#9b9ba8]">${cat.label}</span>
-            <span class="text-white text-[15px]">${cat.pct}%</span>
-          </div>
-          <div class="h-[8px] rounded-full bg-[#23232d] overflow-hidden">
-            <div class="h-full rounded-full transition-all duration-700 ease-out bar-fill"
-                 style="width:0%; background:${cat.color}"
-                 data-target="${cat.pct}%">
-            </div>
-          </div>
-        </div>
-      `).join("");
+      const labels = cats.map((c: any) => c.label);
+      const values = cats.map((c: any) => c.pct);
+      const colors = cats.map((c: any) => c.color);
 
-      setTimeout(() => {
-        document.querySelectorAll<HTMLElement>(".bar-fill").forEach(bar => {
-          bar.style.width = bar.dataset.target ?? "0%";
-        });
-      }, 300);
+      const ctx = document.getElementById('categoryChart') as HTMLCanvasElement;
+      
+      if (catChartInstance) {
+          catChartInstance.destroy();
+      }
+
+      // @ts-ignore
+      catChartInstance = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+              labels: labels,
+              datasets: [{
+                  data: values,
+                  backgroundColor: colors,
+                  borderWidth: 0,
+                  hoverOffset: 4
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              cutout: '75%',
+              plugins: {
+                  legend: {
+                      position: 'right',
+                      labels: {
+                          color: '#A1A1AA',
+                          font: { family: 'Inter', size: 12 },
+                          usePointStyle: true,
+                          padding: 20
+                      }
+                  },
+                  tooltip: {
+                      backgroundColor: 'rgba(23, 23, 26, 0.9)',
+                      titleColor: '#fff',
+                      bodyColor: '#A78BFA',
+                      borderColor: '#262629',
+                      borderWidth: 1,
+                      padding: 10,
+                      callbacks: {
+                          label: function(context: any) {
+                              return ' ' + context.parsed + '%';
+                          }
+                      }
+                  }
+              }
+          }
+      });
 
       if (cats.length > 0) {
         insight.innerHTML = `La categoría <span class="text-white font-medium">${cats[0].label}</span> lidera con el <span class="text-white font-medium">${cats[0].pct}%</span> de las ventas totales.`;
@@ -66,6 +99,14 @@
       console.error(e);
     }
   }
+
+  window.addEventListener("section-opened", (e: any) => {
+      if (e.detail?.section === "registro-ventas" && !catChartInstance) {
+          loadCategories();
+      } else if (e.detail?.section === "registro-ventas" && catChartInstance) {
+          catChartInstance.resize();
+      }
+  });
 
   loadCategories();
 </script>

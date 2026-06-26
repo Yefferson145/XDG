@@ -1,0 +1,181 @@
+
+<div class="px-6 py-4">
+    <div class="mb-6 flex justify-between items-end">
+        <div>
+            <h2 class="text-[32px] text-white font-space">Historial de Operaciones</h2>
+            <p class="text-[#71717A] text-sm mt-1">Registro de actividad administrativa en el sistema.</p>
+        </div>
+        <button id="btn-refresh-audit" class="px-4 py-2 bg-[#17171A] border border-[#27272A] rounded-lg text-white hover:bg-[#27272A] transition-colors flex items-center gap-2 text-sm font-space">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
+            </svg>
+            Refrescar
+        </button>
+    </div>
+
+    <div class="bg-[#17171A]/70 border border-[#262629] rounded-2xl overflow-hidden font-space">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="border-b border-[#262629] text-[#71717A] text-xs uppercase tracking-wider">
+                        <th class="p-4 font-semibold">Fecha</th>
+                        <th class="p-4 font-semibold">Admin</th>
+                        <th class="p-4 font-semibold">Rol</th>
+                        <th class="p-4 font-semibold">Acción</th>
+                        <th class="p-4 font-semibold">Entidad</th>
+                        <th class="p-4 font-semibold">Detalle</th>
+                    </tr>
+                </thead>
+                <tbody id="audit-table-body" class="text-sm">
+                    <tr><td colspan="6" class="p-8 text-center text-[#71717A]">Cargando historial...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="audit-pagination" class="flex justify-between items-center mt-4 font-space text-sm">
+    </div>
+</div>
+
+<script>
+    const API_URL = "http://localhost:8080";
+    
+    let allAuditData = [];
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 20;
+
+    function getActionColor(accion) {
+        switch(accion) {
+            case 'CREAR': return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20';
+            case 'EDITAR': return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
+            case 'ELIMINAR': return 'text-red-400 bg-red-400/10 border-red-400/20';
+            case 'OFERTA': return 'text-amber-400 bg-amber-400/10 border-amber-400/20';
+            case 'QUITAR OFERTA': return 'text-orange-400 bg-orange-400/10 border-orange-400/20';
+            default: return 'text-gray-400 bg-gray-400/10 border-gray-400/20';
+        }
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById("audit-table-body");
+        if(!tbody) return;
+
+        if (allAuditData.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-[#71717A]">No hay operaciones registradas.</td></tr>`;
+            return;
+        }
+
+        const start = (currentPage - 1) * ITEMS_PER_PAGE;
+        const end = start + ITEMS_PER_PAGE;
+        const pageData = allAuditData.slice(start, end);
+
+        tbody.innerHTML = pageData.map(row => `
+            <tr class="border-b border-[#262629]/50 hover:bg-[#262629]/20 transition-colors text-[#A1A1AA]">
+                <td class="p-4 whitespace-nowrap">${row.fecha}</td>
+                <td class="p-4 font-medium text-white">${row.admin_name}</td>
+                <td class="p-4"><span class="text-xs text-[#71717A] bg-[#27272A] px-2 py-1 rounded">${row.rol_nombre || 'Sistema'}</span></td>
+                <td class="p-4">
+                    <span class="px-2.5 py-1 text-[10px] uppercase font-bold tracking-wider rounded border ${getActionColor(row.accion)}">
+                        ${row.accion}
+                    </span>
+                </td>
+                <td class="p-4">${row.entidad}</td>
+                <td class="p-4">${row.detalle}</td>
+            </tr>
+        `).join('');
+
+        renderPagination();
+    }
+
+    function renderPagination() {
+        const paginationContainer = document.getElementById("audit-pagination");
+        if(!paginationContainer) return;
+
+        const totalPages = Math.ceil(allAuditData.length / ITEMS_PER_PAGE);
+
+        if (totalPages <= 1) {
+            paginationContainer.innerHTML = "";
+            return;
+        }
+
+        paginationContainer.innerHTML = `
+            <div class="text-[#71717A]">
+                Mostrando ${(currentPage - 1) * ITEMS_PER_PAGE + 1} a ${Math.min(currentPage * ITEMS_PER_PAGE, allAuditData.length)} de ${allAuditData.length} resultados
+            </div>
+            <div class="flex gap-2">
+                <button id="btn-prev-page" class="px-3 py-1 bg-[#17171A] border border-[#27272A] rounded-lg text-white hover:bg-[#27272A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors" ${currentPage === 1 ? 'disabled' : ''}>Anterior</button>
+                <div class="px-3 py-1 text-white bg-[#27272A] rounded-lg">
+                    Página ${currentPage} de ${totalPages}
+                </div>
+                <button id="btn-next-page" class="px-3 py-1 bg-[#17171A] border border-[#27272A] rounded-lg text-white hover:bg-[#27272A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors" ${currentPage === totalPages ? 'disabled' : ''}>Siguiente</button>
+            </div>
+        `;
+
+        const btnPrev = document.getElementById("btn-prev-page");
+        if(btnPrev) {
+            btnPrev.addEventListener("click", () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            });
+        }
+
+        const btnNext = document.getElementById("btn-next-page");
+        if(btnNext) {
+            btnNext.addEventListener("click", () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable();
+                }
+            });
+        }
+    }
+
+    async function loadAudit() {
+        const tbody = document.getElementById("audit-table-body");
+        const btn = document.getElementById("btn-refresh-audit");
+        if(!tbody) return;
+
+        if(btn) {
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg> Refrescando...`;
+            btn.classList.add("opacity-70", "cursor-not-allowed");
+        }
+
+        try {
+            const res = await fetch(`${API_URL}/api/auditoria.jsp`, { credentials: "include" });
+            const data = await res.json();
+
+            if (data.error) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-red-500">Error: ${data.error}</td></tr>`;
+                return;
+            }
+
+            allAuditData = data;
+            currentPage = 1;
+            renderTable();
+
+        } catch (e) {
+            tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-red-500">Error de conexión.</td></tr>`;
+        } finally {
+            if(btn) {
+                btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
+                </svg> Refrescar`;
+                btn.classList.remove("opacity-70", "cursor-not-allowed");
+            }
+        }
+    }
+
+    function initEvents() {
+        const btnRefresh = document.getElementById("btn-refresh-audit");
+        if(btnRefresh) {
+            btnRefresh.addEventListener("click", loadAudit);
+        }
+        loadAudit();
+    }
+
+    document.addEventListener("DOMContentLoaded", initEvents);
+    document.addEventListener("astro:page-load", initEvents);
+</script>

@@ -107,72 +107,75 @@
 <script>
   const API_URL = "http://localhost:8080/api/categorias.jsp";
 
-  let categories = [];
-  let nextId = 1;
-  let editId = null;
-  let deleteId = null;
-  let page = 1;
+  let categories: any[] = [];
+  let nextId: number = 1;
+  let editId: number | null = null;
+  let deleteId: number | null = null;
+  let page: number = 1;
   const PER_PAGE = 5;
 
-  const tbody       = document.getElementById('cat-table-body');
-  const countEl     = document.getElementById('cat-count');
-  const pageInfoEl  = document.getElementById('cat-page-info');
-  const btnPrev     = document.getElementById('cat-prev');
-  const btnNext     = document.getElementById('cat-next');
-  const searchInput = document.getElementById('cat-search');
+  const tbody       = document.getElementById('cat-table-body') as HTMLElement;
+  const countEl     = document.getElementById('cat-count') as HTMLElement;
+  const pageInfoEl  = document.getElementById('cat-page-info') as HTMLElement;
+  const btnPrev     = document.getElementById('cat-prev') as HTMLButtonElement;
+  const btnNext     = document.getElementById('cat-next') as HTMLButtonElement;
+  const searchInput = document.getElementById('cat-search') as HTMLInputElement;
 
-  const modalOverlay = document.getElementById('cat-modal-overlay');
-  const modalTitle   = document.getElementById('cat-modal-title');
-  const modalAvatar  = document.getElementById('cat-modal-avatar');
-  const modalName    = document.getElementById('cat-modal-name');
+  const modalOverlay = document.getElementById('cat-modal-overlay') as HTMLElement;
+  const modalTitle   = document.getElementById('cat-modal-title') as HTMLElement;
+  const modalAvatar  = document.getElementById('cat-modal-avatar') as HTMLElement;
+  const modalName    = document.getElementById('cat-modal-name') as HTMLInputElement;
 
-  const delOverlay   = document.getElementById('cat-delete-modal-overlay');
-  const delName      = document.getElementById('cat-delete-cat-name');
-  const toast        = document.getElementById('cat-toast');
+  const delOverlay   = document.getElementById('cat-delete-modal-overlay') as HTMLElement;
+  const delName      = document.getElementById('cat-delete-cat-name') as HTMLElement;
+  const toast        = document.getElementById('cat-toast') as HTMLElement;
 
-  const addButton    = document.getElementById('cat-add-btn');
+  const addButton    = document.getElementById('cat-add-btn') as HTMLButtonElement;
 
   async function loadCategories() {
-    const res = await fetch(API_URL);
+    const res = await fetch(API_URL, { credentials: "include" });
     const data = await res.json();
 
     categories = data;
 
     nextId = categories.length
-      ? Math.max(...categories.map(c => c.id)) + 1
+      ? Math.max(...categories.map((c: any) => c.id)) + 1
       : 1;
 
     render();
   }
 
-  async function createCategory(nombre) {
+  async function createCategory(nombre: string) {
     await fetch(API_URL, {
       method: "POST",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre })
     });
   }
 
-  async function updateCategory(id, nombre) {
+  async function updateCategory(id: number, nombre: string) {
     await fetch(API_URL, {
       method: "PUT",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, nombre })
     });
   }
 
-  async function deleteCategory(id) {
+  async function deleteCategory(id: number) {
     await fetch(API_URL, {
       method: "DELETE",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id })
     });
   }
 
-  function initials(name) {
+  function initials(name: string) {
     return name.trim()
       .split(' ')
-      .map(w => w[0])
+      .map((w: string) => w[0])
       .join('')
       .slice(0, 2)
       .toUpperCase() || '--';
@@ -183,17 +186,17 @@
     setTimeout(() => toast.classList.add('hidden'), 2500);
   }
 
-  function openModal(el) {
+  function openModal(el: HTMLElement) {
     el.classList.remove('hidden');
   }
 
-  function closeModal(el) {
+  function closeModal(el: HTMLElement) {
     el.classList.add('hidden');
   }
 
   function getFiltered() {
     const q = searchInput.value.toLowerCase();
-    return categories.filter(c =>
+    return categories.filter((c: any) =>
       !q || c.nombre.toLowerCase().includes(q)
     );
   }
@@ -254,11 +257,11 @@
     `).join('');
 
     tbody.querySelectorAll('[data-edit]').forEach(btn =>
-      btn.addEventListener('click', () => openEdit(+btn.dataset.edit))
+      btn.addEventListener('click', () => openEdit(Number((btn as HTMLElement).dataset.edit)))
     );
 
     tbody.querySelectorAll('[data-del]').forEach(btn =>
-      btn.addEventListener('click', () => openDelete(+btn.dataset.del))
+      btn.addEventListener('click', () => openDelete(Number((btn as HTMLElement).dataset.del)))
     );
   }
 
@@ -270,8 +273,8 @@
     openModal(modalOverlay);
   }
 
-  function openEdit(id) {
-    const c = categories.find(x => x.id === id);
+  function openEdit(id: number) {
+    const c = categories.find((x: any) => x.id === id);
     if (!c) return;
 
     editId = id;
@@ -282,8 +285,8 @@
     openModal(modalOverlay);
   }
 
-  function openDelete(id) {
-    const c = categories.find(x => x.id === id);
+  function openDelete(id: number) {
+    const c = categories.find((x: any) => x.id === id);
     if (!c) return;
 
     deleteId = id;
@@ -291,7 +294,7 @@
     openModal(delOverlay);
   }
 
-  document.getElementById('cat-modal-save').addEventListener('click', async () => {
+  document.getElementById('cat-modal-save')?.addEventListener('click', async () => {
     const nombre = modalName.value.trim();
     if (!nombre) return;
 
@@ -306,7 +309,7 @@
     await loadCategories();
   });
 
-  document.getElementById('cat-delete-confirm').addEventListener('click', async () => {
+  document.getElementById('cat-delete-confirm')?.addEventListener('click', async () => {
     if (!deleteId) return;
 
     await deleteCategory(deleteId);
@@ -316,11 +319,11 @@
     await loadCategories();
   });
 
-  document.getElementById('cat-modal-close').addEventListener('click', () =>
+  document.getElementById('cat-modal-close')?.addEventListener('click', () =>
     closeModal(modalOverlay)
   );
 
-  document.getElementById('cat-delete-cancel').addEventListener('click', () =>
+  document.getElementById('cat-delete-cancel')?.addEventListener('click', () =>
     closeModal(delOverlay)
   );
 

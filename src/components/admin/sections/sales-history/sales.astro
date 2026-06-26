@@ -1,32 +1,32 @@
 ---
 ---
-<div class="rounded-[24px] border border-[#262629] bg-[#17171A]/70 p-8 flex flex-col overflow-hidden transition-all duration-300 hover:border-[#A970FF]">
+<div class="rounded-[24px] border border-[#262629] bg-[#17171A]/70 p-8 flex flex-col overflow-hidden transition-all duration-300">
 
   <div class="flex items-center justify-between mb-8">
     <h2 class="text-[28px] font-medium text-white">Últimas Transacciones</h2>
     <div class="flex items-center gap-3">
-      <span id="tx-page-info" class="text-[12px] text-[#555560]">1 - 5</span>
+      <span id="tx-page-info" class="text-[12px] font-medium text-[#9ca3af]">1 - 5</span>
       <button id="btn-prev" disabled
-        class="px-3 py-2 rounded-xl text-sm text-[#555560] border border-[#262629] transition-colors duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:border-[#a970ff] hover:enabled:text-[#a970ff]">
+        class="px-3 py-2 rounded-xl text-sm font-medium text-[#9ca3af] border border-[#262629] bg-[#111214] transition-colors duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-white/[0.05] hover:enabled:text-white">
         ← Anterior
       </button>
       <button id="btn-next"
-        class="px-3 py-2 rounded-xl text-sm text-[#a970ff] border border-[#a970ff]/30 hover:bg-[#a970ff]/10 transition-colors duration-200 disabled:opacity-30 disabled:cursor-not-allowed">
+        class="px-3 py-2 rounded-xl text-sm font-medium text-[#111214] bg-[#A78BFA] transition-colors duration-200 disabled:opacity-30 disabled:cursor-not-allowed hover:enabled:bg-[#8B5CF6]">
         Siguiente →
       </button>
     </div>
   </div>
 
-  <div class="grid grid-cols-5 mb-3 px-2">
-    <span class="text-[11px] tracking-widest text-[#555560] uppercase">Cliente</span>
-    <span class="text-[11px] tracking-widest text-[#555560] uppercase">Juego</span>
-    <span class="text-[11px] tracking-widest text-[#555560] uppercase">Fecha</span>
-    <span class="text-[11px] tracking-widest text-[#555560] uppercase text-center">Cantidad</span>
-    <span class="text-[11px] tracking-widests text-[#555560] uppercase text-right">Total</span>
+  <div class="grid grid-cols-5 mb-4 px-4">
+    <span class="text-[12px] font-bold tracking-widest text-[#9ca3af] uppercase">Cliente</span>
+    <span class="text-[12px] font-bold tracking-widest text-[#9ca3af] uppercase">Juego</span>
+    <span class="text-[12px] font-bold tracking-widest text-[#9ca3af] uppercase">Fecha</span>
+    <span class="text-[12px] font-bold tracking-widest text-[#9ca3af] uppercase text-center">Cantidad</span>
+    <span class="text-[12px] font-bold tracking-widest text-[#9ca3af] uppercase text-right">Total</span>
   </div>
 
-  <div id="tx-list" class="flex flex-col gap-2">
-    <p class="text-zinc-500 text-sm px-2">Cargando...</p>
+  <div id="tx-list" class="flex flex-col gap-3 min-h-[400px]">
+    <p class="text-zinc-500 text-sm px-4">Cargando...</p>
   </div>
 
 </div>
@@ -44,7 +44,7 @@
     const pageInfo = document.getElementById("tx-page-info") as HTMLElement;
 
     async function loadPage() {
-      list.innerHTML = `<p class="text-zinc-500 text-sm px-2">Cargando...</p>`;
+      list.innerHTML = `<p class="text-zinc-500 text-sm px-4">Cargando...</p>`;
       btnPrev.disabled = true;
       btnNext.disabled = true;
 
@@ -64,44 +64,44 @@
         const ventas: any[] = todos.slice(0, PAGE);
 
         if (!ventas.length) {
-          list.innerHTML = `<p class="text-zinc-500 text-sm px-2">Sin transacciones</p>`;
+          list.innerHTML = `<p class="text-zinc-500 text-sm px-4">Sin transacciones</p>`;
           return;
         }
 
         pageInfo.textContent = `${offset + 1} - ${offset + ventas.length}`;
 
         list.innerHTML = ventas.map((v: any) => `
-          <div class="grid grid-cols-5 items-center px-3 py-3 rounded-xl hover:bg-white/[0.03] transition-colors duration-200">
+          <div class="grid grid-cols-5 items-center px-4 py-4 rounded-[16px] bg-[#111214] border border-[#262629] hover:border-white/10 hover:bg-white/[0.02] transition-colors duration-200">
 
-            <div class="flex items-center gap-3 min-w-0">
-              <div class="w-8 h-8 rounded-full bg-[#a970ff]/20 flex items-center justify-center flex-shrink-0">
-                <span class="text-[#a970ff] text-[13px] font-medium">
+            <div class="flex items-center gap-4 min-w-0">
+              <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#A78BFA] to-[#8B5CF6] flex items-center justify-center flex-shrink-0 shadow-lg shadow-[#A78BFA]/20">
+                <span class="text-white text-[14px] font-bold">
                   ${v.nombre?.charAt(0)?.toUpperCase() || "?"}
                 </span>
               </div>
               <div class="min-w-0">
-                <p class="text-[13px] text-white truncate">${v.nombre || ""}</p>
-                <p class="text-[11px] text-[#555560] truncate">@${v.usuario || ""}</p>
+                <p class="text-[14px] font-semibold text-white truncate">${v.nombre || ""}</p>
+                <p class="text-[12px] font-medium text-[#9ca3af] truncate">@${v.usuario || ""}</p>
               </div>
             </div>
 
             <div class="min-w-0 pr-4">
-              <p class="text-[13px] text-[#9b9ba8] truncate">${v.juego || ""}</p>
+              <p class="text-[14px] font-medium text-[#d1d5db] truncate">${v.juego || ""}</p>
             </div>
 
             <div>
-              <p class="text-[13px] text-[#9b9ba8]">${v.fecha || ""}</p>
+              <p class="text-[13px] font-medium text-[#9ca3af]">${v.fecha || ""}</p>
             </div>
 
             <div class="text-center">
-              <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-[#23232d] text-[13px] text-white font-medium">
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-white/[0.03] border border-white/10 text-[13px] font-bold text-white">
                 ${v.cantidad || 1}
               </span>
             </div>
 
             <div class="text-right">
-              <span class="text-[14px] font-medium text-[#f6b14b]">
-                $${((v.precio || 0) * (v.cantidad || 0)).toFixed(2)}
+              <span class="text-[15px] font-bold text-[#10B981]">
+                S/ ${((v.precio || 0) * (v.cantidad || 0)).toFixed(2)}
               </span>
             </div>
 
@@ -109,8 +109,8 @@
         `).join("");
 
       } catch (e) {
-        console.error("[transacciones] Error:", e);
-        list.innerHTML = `<p class="text-zinc-500 text-sm px-2">Error al cargar datos</p>`;
+        console.error(e);
+        list.innerHTML = `<p class="text-zinc-500 text-sm px-4">Error al cargar datos</p>`;
       } finally {
         btnPrev.disabled = offset === 0;
         btnNext.disabled = !hasMore;

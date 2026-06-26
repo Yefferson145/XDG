@@ -1,7 +1,6 @@
 ---
 import StatCard from "../sales-history/StatCard.astro";
 import RevenueChart from "../sales-history/revenue-section.astro";
-import CategoryDistribution from "../sales-history/Categorydistribution.astro";
 import Sales from "../sales-history/sales.astro";
 ---
 
@@ -9,13 +8,13 @@ import Sales from "../sales-history/sales.astro";
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
 
     <div id="stat-ingresos">
-      <StatCard title="INGRESOS TOTALES"    value="$0"  change="+0%" trend="up" accent />
+      <StatCard title="INGRESOS ANUALES"    value="$0"  change="+0%" trend="up" accent />
     </div>
     <div id="stat-vendidos">
-      <StatCard title="COMPRAS PROCESADAS"  value="0"   change="+0%" trend="up" />
+      <StatCard title="INGRESOS (ÚLT. 7 DÍAS)"  value="0"   change="+0%" trend="up" />
     </div>
     <div id="stat-clientes">
-      <StatCard title="NUEVOS CLIENTES"     value="0"   change="+0%" trend="up" />
+      <StatCard title="CLIENTES TOTALES"     value="0"   change="+0%" trend="up" />
     </div>
     <div id="stat-conversion">
       <StatCard title="TASA DE CONVERSIÓN"  value="0%"  change="+0%" trend="up" accent />
@@ -23,9 +22,8 @@ import Sales from "../sales-history/sales.astro";
 
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-4">
+  <div class="grid grid-cols-1 gap-4">
     <RevenueChart />
-    <CategoryDistribution />
     <Sales />
   </div>
 </div>
@@ -33,7 +31,6 @@ import Sales from "../sales-history/sales.astro";
 <script>
   const API = "http://localhost:8080";
 
-  // StatCard renderiza: h3 = value, el span con ↗/↘ = trend+change
   function updateCard(wrapperId: string, value: string, change: string) {
     const wrapper = document.getElementById(wrapperId);
     if (!wrapper) return;
@@ -60,12 +57,12 @@ import Sales from "../sales-history/sales.astro";
 
       updateCard(
         "stat-ingresos",
-        `$${Math.round(data.monthlyTotal ?? 0).toLocaleString("es-PE")}`,
+        `S/ ${Number(data.monthlyTotal ?? 0).toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
         data.monthlyChange ?? "+0%"
       );
       updateCard(
         "stat-vendidos",
-        (data.dailyTotal ?? 0).toLocaleString("es-PE"),
+        `S/ ${Number(data.dailyTotal ?? 0).toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
         data.dailyChange ?? "+0%"
       );
       updateCard(
