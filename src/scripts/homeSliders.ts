@@ -437,9 +437,7 @@ async function loadDestacados(): Promise<void> {
     const res = await fetch(`${API}/api/juegos_por_categoria.jsp?categoria_id=${categoriaId}`, { cache: 'no-store' });
     const juegos = await res.json();
 
-    const juegosVisibles: Juego[] = juegos.filter(
-      (j: Juego) => !j.fecha_lanzamiento || new Date(j.fecha_lanzamiento) <= hoy,
-    );
+    const juegosVisibles: Juego[] = juegos;
 
     if (sectionesEl) sectionesEl.style.display = "none";
 

@@ -283,7 +283,7 @@
       video_url: (document.getElementById("video_url") as HTMLInputElement).value.trim(),
       fecha_lanzamiento: (document.getElementById("fecha_lanzamiento") as HTMLInputElement).value,
       precio: (document.getElementById("precio") as HTMLInputElement).value.trim(),
-      categoria_ids: selectedCategoryIds,
+      categoria_ids: selectedCategoryIds.join(","),
       categorias: selectedCategoryNames,
       descuento_inicio: discountStartInput ? discountStartInput.value : "",
       descuento_fin: discountEndInput ? discountEndInput.value : "",
