@@ -39,11 +39,11 @@
 <script>
     const API_URL = "http://localhost:8080";
     
-    let allAuditData = [];
+    let allAuditData: any[] = [];
     let currentPage = 1;
     const ITEMS_PER_PAGE = 20;
 
-    function getActionColor(accion) {
+    function getActionColor(accion: string) {
         switch(accion) {
             case 'CREAR': return 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20';
             case 'EDITAR': return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
