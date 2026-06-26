@@ -132,7 +132,7 @@
     if (!container) return;
 
     try {
-      const res = await fetch(`${API}/api/categorias.jsp`, { credentials: "include" });
+      const res = await fetch(`${API}/api/categorias.jsp`, { credentials: "include", cache: "no-store" });
       const cats = await res.json() as { id: number; nombre: string }[];
 
       const todosBtn = `

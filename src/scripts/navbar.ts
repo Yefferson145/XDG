@@ -6,13 +6,13 @@ const API = "http://localhost:8080";
     sessionPromise: fetch(`${API}/api/session.jsp`, { credentials: "include" }).then(r => r.json()),
     getJuegos: function() {
         if (!this.juegosPromise) {
-            this.juegosPromise = fetch(`${API}/api/juegos.jsp`, { credentials: "include" }).then(r => r.json());
+            this.juegosPromise = fetch(`${API}/api/juegos.jsp`, { credentials: "include", cache: "no-store" }).then(r => r.json());
         }
         return this.juegosPromise;
     },
     getDescuentos: function() {
         if (!this.descuentosPromise) {
-            this.descuentosPromise = fetch(`${API}/api/descuentos.jsp`, { credentials: "include" }).then(r => r.json());
+            this.descuentosPromise = fetch(`${API}/api/descuentos.jsp`, { credentials: "include", cache: "no-store" }).then(r => r.json());
         }
         return this.descuentosPromise;
     }
