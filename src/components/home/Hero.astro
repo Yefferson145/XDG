@@ -1,34 +1,49 @@
 ---
 import HeroGame from "../HeroGame.astro";
 
-const games = [
-  {
-    title: "Cyberpunk 2077: Phantom Liberty",
-    description:
-      "Adéntrate en el peligroso distrito de Dogtown y vive una trepidante aventura de espionaje. Únete al agente secreto Solomon Reed para desentrañar una compleja red de lealtades destrozadas y oscuras conspiraciones políticas.",
-    image: "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/d96bb958-4e6c-4ce0-9447-fbe226fbbecf/dg7vy51-4ded8255-5131-41f3-b717-f2a88a25fcfd.jpg",
-    price: "$29.99",
-    genre: "Action RPG / Thriller",
-  },
+const API = import.meta.env.PUBLIC_API_URL || "http://localhost:8080";
+let games: any[] = [];
+try {
+  const res = await fetch(`${API}/api/carrusel.jsp`, { cache: "no-store" });
+  if (res.ok) {
+    const data = await res.json();
+    games = data.map((j: any) => ({
+      title: j.titulo,
+      description: j.descripcion,
+      image: j.imagen_url,
+      price: j.descuento_porcentaje ? `$${(j.precio - (j.precio * j.descuento_porcentaje / 100)).toFixed(2)}` : `$${j.precio.toFixed(2)}`,
+      genre: "Destacado",
+    }));
+  }
+} catch (e) {
+  console.error("Error fetching carrusel", e);
+}
 
-  {
-    title: "Red Dead Redemption 2",
-    description:
-      "Una épica historia sobre el honor y la lealtad en el implacable corazón de los Estados Unidos. Cabalga junto a Arthur Morgan y la banda de Van der Linde, sobreviviendo al ocaso del Salvaje Oeste en uno de los mundos abiertos más vivos y detallados jamás creados.",
-    image: "https://fotografias-neox.atresmedia.com/clipping/cmsimages01/2019/05/12/ED8ADE4A-1F8B-469D-BFB3-830225A5A163/98.jpg?crop=1280,720,x0,y0&width=1900&height=1069&optimize=high&format=webply",
-    price: "$59.99",
-    genre: "Acción y Aventura / Mundo Abierto",
-  },
-
-  {
-    title: "Elden Ring Nightreign",
-    description:
-      "Álzate, Sin Luz, y déjate guiar por la gracia para empuñar el poder del Círculo de Elden. Explora las majestuosas y peligrosas Tierras Intermedias en una obra maestra de fantasía oscura concebida por Hidetaka Miyazaki y George R. R. Martin.",
-    image: "https://assetsio.gnwcdn.com/ss_c97bcad291f4f45d4be4594f34bd78921d961099.1920x1080.jpg?width=690&quality=85&format=jpg&dpr=3&auto=webp",
-    price: "$59.99",
-    genre: "Action RPG / Souls-like",
-  },
-];
+if (games.length === 0) {
+  games = [
+    {
+      title: "Cyberpunk 2077: Phantom Liberty",
+      description: "Adéntrate en el peligroso distrito de Dogtown y vive una trepidante aventura de espionaje. Únete al agente secreto Solomon Reed para desentrañar una compleja red de lealtades destrozadas y oscuras conspiraciones políticas.",
+      image: "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/d96bb958-4e6c-4ce0-9447-fbe226fbbecf/dg7vy51-4ded8255-5131-41f3-b717-f2a88a25fcfd.jpg",
+      price: "$29.99",
+      genre: "Action RPG / Thriller",
+    },
+    {
+      title: "Red Dead Redemption 2",
+      description: "Una épica historia sobre el honor y la lealtad en el implacable corazón de los Estados Unidos. Cabalga junto a Arthur Morgan y la banda de Van der Linde, sobreviviendo al ocaso del Salvaje Oeste en uno de los mundos abiertos más vivos y detallados jamás creados.",
+      image: "https://fotografias-neox.atresmedia.com/clipping/cmsimages01/2019/05/12/ED8ADE4A-1F8B-469D-BFB3-830225A5A163/98.jpg?crop=1280,720,x0,y0&width=1900&height=1069&optimize=high&format=webply",
+      price: "$59.99",
+      genre: "Acción y Aventura / Mundo Abierto",
+    },
+    {
+      title: "Elden Ring Nightreign",
+      description: "Álzate, Sin Luz, y déjate guiar por la gracia para empuñar el poder del Círculo de Elden. Explora las majestuosas y peligrosas Tierras Intermedias en una obra maestra de fantasía oscura concebida por Hidetaka Miyazaki y George R. R. Martin.",
+      image: "https://assetsio.gnwcdn.com/ss_c97bcad291f4f45d4be4594f34bd78921d961099.1920x1080.jpg?width=690&quality=85&format=jpg&dpr=3&auto=webp",
+      price: "$59.99",
+      genre: "Action RPG / Souls-like",
+    }
+  ];
+}
 ---
 
 <HeroGame games={games} />

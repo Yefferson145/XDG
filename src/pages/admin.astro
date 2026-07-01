@@ -9,6 +9,7 @@ import ReportesSection from "../components/admin/sections/ReportesSection.astro"
 import CategoriasSection from "../components/admin/sections/gest-category/CategoryPanel.astro";
 import UserSection from "../components/admin/sections/gest-user/UserPanel.astro";
 import AuditoriaSection from "../components/admin/sections/AuditoriaSection.astro";
+import CarruselSection from "../components/admin/sections/CarruselSection.astro";
 import "../styles/global.css";
 ---
 
@@ -60,6 +61,10 @@ import "../styles/global.css";
 
                     <div data-admin-section="auditoria" class="hidden">
                         <AuditoriaSection />
+                    </div>
+
+                    <div data-admin-section="carrusel" class="hidden">
+                        <CarruselSection />
                     </div>
                 </div>
             </div>
