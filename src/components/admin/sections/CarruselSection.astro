@@ -1,8 +1,8 @@
-﻿---
+---
 import API from "../../../env";
 ---
 
-<section id="carrusel-section" class="admin-section hidden p-8">
+<section id="carrusel-section" class="admin-section p-8">
   <div class="flex justify-between items-center mb-8">
     <h1 class="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#A78BFA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -19,7 +19,10 @@ import API from "../../../env";
     <div class="bg-[#18181B] border border-gray-800 rounded-xl p-6">
       <h2 class="text-xl font-bold text-white mb-6 border-b border-gray-800 pb-4">Buscar y Agregar Juego</h2>
       <div class="flex gap-3 mb-6">
-        <input type="text" id="buscarJuegoCarrusel" placeholder="Escribe el nombre del juego..." class="w-full bg-[#27272A] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#8B5CF6] transition-colors" />
+        <input type="text" id="buscarJuegoCarrusel" placeholder="Escribe el nombre del juego..." class="flex-1 bg-[#27272A] border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#8B5CF6] transition-colors" />
+        <select id="filtroCategoriaCarrusel" class="w-1/3 bg-[#27272A] border border-gray-700 rounded-lg px-3 py-3 text-white focus:outline-none focus:border-[#8B5CF6] transition-colors">
+          <option value="">Todas las Categorías</option>
+        </select>
         <button id="btnBuscarJuegoCarrusel" class="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white px-6 py-3 rounded-lg font-semibold transition-colors whitespace-nowrap">
           Buscar
         </button>
@@ -148,11 +151,29 @@ import API from "../../../env";
 
   const btnBuscar = document.getElementById("btnBuscarJuegoCarrusel");
   const inputBuscar = document.getElementById("buscarJuegoCarrusel") as HTMLInputElement;
+  const selectCategoria = document.getElementById("filtroCategoriaCarrusel") as HTMLSelectElement;
   const resultadosBusqueda = document.getElementById("resultadosBusquedaCarrusel");
+
+  async function cargarCategoriasFiltro() {
+    try {
+      const res = await fetch(`${API}/api/categorias.jsp`, { cache: "no-store" });
+      if (res.ok) {
+        const categorias = await res.json();
+        if (selectCategoria) {
+          categorias.forEach((c: any) => {
+            selectCategoria.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+          });
+        }
+      }
+    } catch (e) {
+      console.error("Error al cargar categorías", e);
+    }
+  }
 
   if (btnBuscar && inputBuscar && resultadosBusqueda) {
     btnBuscar.addEventListener("click", async () => {
       const q = inputBuscar.value.trim().toLowerCase();
+      const cat = selectCategoria ? selectCategoria.value : "";
       resultadosBusqueda.innerHTML = `<div class="text-center text-gray-400 py-4">Buscando...</div>`;
       
       try {
@@ -160,9 +181,20 @@ import API from "../../../env";
         if (res.ok) {
           const todos = await res.json();
           let filtrados = todos;
-          if (q) {
-            filtrados = todos.filter((j: any) => j.titulo.toLowerCase().includes(q));
+          
+          if (cat) {
+            filtrados = filtrados.filter((j: any) => String(j.categoria_id) === cat);
           }
+          if (q) {
+            filtrados = filtrados.filter((j: any) => j.titulo.toLowerCase().includes(q));
+          }
+          
+          // Deduplicar juegos por id (si tienen múltiples categorías)
+          const unicos = new Map();
+          filtrados.forEach((j: any) => {
+            if (!unicos.has(j.id)) unicos.set(j.id, j);
+          });
+          filtrados = Array.from(unicos.values());
           
           if (filtrados.length === 0) {
             resultadosBusqueda.innerHTML = `<div class="text-center text-gray-500 py-4">No se encontraron resultados.</div>`;
@@ -198,6 +230,7 @@ import API from "../../../env";
   }
 
   document.addEventListener("DOMContentLoaded", () => {
+    cargarCategoriasFiltro();
     cargarJuegosCarrusel();
   });
 </script>
