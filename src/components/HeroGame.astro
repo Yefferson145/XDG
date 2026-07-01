@@ -16,12 +16,12 @@ const { games } = Astro.props;
 ---
 
 <section
-  class="hero-slider relative w-full h-[550px] md:h-[650px] lg:h-[750px] mt-24 rounded-2xl overflow-hidden bg-black"
+  class="hero-slider relative w-full mt-24 rounded-2xl overflow-hidden bg-black grid"
 >
   {
     games.map((game, index) => (
       <figure
-        class={`slide absolute inset-0 w-full h-full transition-opacity duration-700 ${
+        class={`slide col-start-1 row-start-1 w-full h-full transition-opacity duration-700 ${
           index === 0 ? "opacity-100 z-10" : "opacity-0 z-0"
         }`}
         data-slide={index}
@@ -29,7 +29,7 @@ const { games } = Astro.props;
         <img
           src={game.image}
           alt={game.title}
-          class="absolute inset-0 w-full h-full object-cover"
+          class="w-full h-auto object-cover block"
         />
 
         <div class="absolute inset-0 bg-black/55 z-0"></div>
