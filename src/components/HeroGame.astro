@@ -28,13 +28,8 @@ const { games } = Astro.props;
       >
         <img
           src={game.image}
-          alt=""
-          class="absolute inset-0 w-full h-full object-cover blur-3xl opacity-40 scale-110"
-        />
-        <img
-          src={game.image}
           alt={game.title}
-          class="absolute inset-0 w-full h-full object-contain drop-shadow-2xl"
+          class="absolute inset-0 w-full h-full object-cover"
         />
 
         <div class="absolute inset-0 bg-black/55 z-0"></div>
