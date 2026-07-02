@@ -204,7 +204,7 @@ const hasDiscount = discount != null && discount > 0;
                                     )}
 
                                     <div class="flex flex-col gap-3 mb-5">
-                                        <button class="w-full flex items-center justify-center gap-2 bg-[#f4710a] hover:bg-[#ff8a2b] text-black font-bold py-3.5 rounded-lg transition-colors uppercase tracking-widest text-sm">
+                                        <button id="buyNowBtn" data-juego-id={juego.id} class="w-full flex items-center justify-center gap-2 bg-[#f4710a] hover:bg-[#ff8a2b] text-black font-bold py-3.5 rounded-lg transition-colors uppercase tracking-widest text-sm">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="18" fill="none" viewBox="0 0 16 20"><path fill="#000" d="m6.55 16.2 5.175-6.2h-4l.725-5.675L3.825 11H7.3zM4 20l1-7H0L9 0h2l-1 8h6L6 20z"/></svg>
                                             COMPRA AHORA
                                         </button>
@@ -300,8 +300,49 @@ const hasDiscount = discount != null && discount > 0;
                 window.dispatchEvent(new CustomEvent("add-notification", { detail: { message: `Se agregó exitosamente ${gameTitle} al carrito.`, type: 'cart' } }));
                 setTimeout(() => { btnText.textContent = "AÑADIR A CARRITO"; btn.classList.replace("bg-green-600", "bg-[#a078ff]"); btn.disabled = false; }, 2000);
             } else { btnText.textContent = "Error"; btn.disabled = false; }
-        } catch { btnText.textContent = "Error"; btn.disabled = false; }
+        } catch (err) {
+            console.error("Error addToCart:", err);
+            btnText.textContent = "Error"; btn.disabled = false;
+        }
     });
+
+    const buyNowBtn = document.getElementById("buyNowBtn") as HTMLButtonElement;
+    if (buyNowBtn) {
+        buyNowBtn.addEventListener("click", async () => {
+            const originalHtml = buyNowBtn.innerHTML;
+            buyNowBtn.innerHTML = "Procesando...";
+            buyNowBtn.disabled = true;
+
+            const session = await fetch("http://localhost:8080/api/session.jsp", { credentials: "include" }).then(r => r.json());
+            if (!session.logged) {
+                window.dispatchEvent(new CustomEvent("open-login-modal"));
+                buyNowBtn.innerHTML = originalHtml;
+                buyNowBtn.disabled = false;
+                return;
+            }
+
+            try {
+                const res = await fetch("http://localhost:8080/api/carrito.jsp", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: session.id, juego_id: buyNowBtn.dataset.juegoId, cantidad: 1 }),
+                    credentials: "include"
+                });
+                const data = await res.json();
+                if (data.success || data.error === "already_exists") {
+                    window.location.href = "/shopping";
+                } else {
+                    alert("Error: " + data.error);
+                    buyNowBtn.innerHTML = originalHtml;
+                    buyNowBtn.disabled = false;
+                }
+            } catch (err) {
+                console.error("Error buyNow:", err);
+                buyNowBtn.innerHTML = originalHtml;
+                buyNowBtn.disabled = false;
+            }
+        });
+    }
 
     const wishBtn = document.getElementById("addToWishlistBtn") as HTMLButtonElement;
     const wishText = document.getElementById("addToWishlistText");

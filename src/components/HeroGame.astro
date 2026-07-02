@@ -62,12 +62,12 @@ const { games } = Astro.props;
           </p>
 
           <div class="flex items-center gap-4">
-            <a
-              href={`/detail/${game.id}`}
-              class="bg-violet-500 hover:bg-violet-400 text-white font-semibold px-7 py-4 rounded-xl transition-all duration-300 inline-block text-center"
+            <button
+              data-id={game.id}
+              class="buy-now-hero bg-violet-500 hover:bg-violet-400 text-white font-semibold px-7 py-4 rounded-xl transition-all duration-300 inline-block text-center cursor-pointer"
             >
               Compra Ahora - {game.price}
-            </a>
+            </button>
 
             <button
               data-id={game.id}
@@ -212,6 +212,48 @@ const { games } = Astro.props;
         }
       } catch (err) {
         console.error("Error al agregar a wishlist:", err);
+      }
+    });
+  });
+
+  const buyNowBtns = document.querySelectorAll(".buy-now-hero");
+  buyNowBtns.forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const target = e.currentTarget as HTMLButtonElement;
+      const id = target.getAttribute("data-id");
+      const originalHtml = target.innerHTML;
+
+      target.innerHTML = "Procesando...";
+      target.disabled = true;
+
+      try {
+        const session = await fetch("http://localhost:8080/api/session.jsp", { credentials: "include" }).then(r => r.json());
+        if (!session.logged) {
+          window.dispatchEvent(new CustomEvent("open-login-modal"));
+          target.innerHTML = originalHtml;
+          target.disabled = false;
+          return;
+        }
+
+        const res = await fetch("http://localhost:8080/api/carrito.jsp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: session.id, juego_id: id, cantidad: 1 }),
+          credentials: "include"
+        });
+        const data = await res.json();
+        if (data.success || data.error === "already_exists") {
+          window.location.href = "/shopping";
+        } else {
+          alert("Error: " + data.error);
+          target.innerHTML = originalHtml;
+          target.disabled = false;
+        }
+      } catch (err) {
+        console.error("Error buyNow:", err);
+        target.innerHTML = originalHtml;
+        target.disabled = false;
       }
     });
   });

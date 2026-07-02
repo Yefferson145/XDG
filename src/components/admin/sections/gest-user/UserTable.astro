@@ -325,7 +325,7 @@
     try {
       const res  = await fetch(API_DISC, {
         method: "POST", headers: { "Content-Type": "application/json" }, credentials: "include",
-        body: JSON.stringify({ juego_id: juegoId, porcentaje: pct, fecha_fin: fechaFin }),
+        body: JSON.stringify({ juego_id: juegoId, porcentaje: pct, fecha_fin: fechaFin, usuario_id: discountUserId }),
       });
       const data = await res.json();
       if (data.success) {

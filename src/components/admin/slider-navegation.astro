@@ -225,6 +225,17 @@
                         if (roleBadge) {
                             roleBadge.textContent = actualRole.toUpperCase();
                         }
+
+                        if (actualRole.toUpperCase() === "SOPORTE") {
+                            const ventasLink = document.querySelector('[data-section="registro-ventas"]');
+                            if (ventasLink && ventasLink.parentElement) {
+                                ventasLink.parentElement.style.display = 'none';
+                            }
+                            const reportesLink = document.querySelector('[data-section="reportes"]');
+                            if (reportesLink && reportesLink.parentElement) {
+                                reportesLink.parentElement.style.display = 'none';
+                            }
+                        }
                     }
                 })
                 .catch(err => console.error("Error cargando sesión en slider:", err));

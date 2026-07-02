@@ -97,6 +97,65 @@ import PaymentOption from "../../components/shop/PaymentOption.astro";
       </svg>
       14-Day Refund Guarantee
     </div>
+</div>
+
+<!-- Modal de Recibo -->
+<div id="receipt-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm">
+  <div class="bg-white text-black rounded-sm p-8 max-w-sm w-full relative" id="receipt-content">
+    <div class="text-center mb-6">
+      <h2 class="text-2xl font-black tracking-tighter">XDG S.A.C.</h2>
+      <p class="text-xs text-gray-500 font-mono mt-1">RUC: 20543219876</p>
+      <p class="text-xs text-gray-500 font-mono">Av. Los Videojuegos 123, Lima</p>
+      
+      <div class="mt-6 border-b-2 border-dashed border-gray-300 pb-4">
+        <h3 class="text-sm font-bold uppercase tracking-widest">Boleta Electrónica</h3>
+        <p class="text-xs font-mono mt-1">N° <span id="receipt-id"></span></p>
+      </div>
+    </div>
+    
+    <div class="mb-6 space-y-1">
+      <div class="flex justify-between text-xs font-mono">
+        <span class="text-gray-600">Fecha:</span>
+        <span class="font-medium" id="receipt-date"></span>
+      </div>
+      <div class="flex justify-between text-xs font-mono">
+        <span class="text-gray-600">Tarjeta:</span>
+        <span class="font-medium">**** <span id="receipt-card-last4"></span></span>
+      </div>
+    </div>
+
+    <div class="border-b-2 border-dashed border-gray-300 pb-4 mb-4">
+      <div class="flex justify-between text-xs font-bold uppercase tracking-wider mb-2">
+        <span>Cant. / Desc</span>
+        <span>Importe</span>
+      </div>
+      <div id="receipt-items-list" class="space-y-2 text-xs font-mono">
+        <!-- items will be injected here -->
+      </div>
+    </div>
+
+    <div class="space-y-1 mb-8">
+      <div class="flex justify-between text-xs font-mono">
+        <span class="text-gray-600">Op. Gravada:</span>
+        <span class="font-medium" id="receipt-subtotal"></span>
+      </div>
+      <div class="flex justify-between text-xs font-mono">
+        <span class="text-gray-600">IGV (18%):</span>
+        <span class="font-medium" id="receipt-igv"></span>
+      </div>
+      <div class="flex justify-between text-sm font-bold mt-2 pt-2 border-t border-gray-200">
+        <span>TOTAL:</span>
+        <span id="receipt-total"></span>
+      </div>
+    </div>
+    <div class="flex gap-3">
+      <button id="btn-print-receipt" class="flex-1 bg-[#211E27] border border-[#494454] hover:border-zinc-500 text-white py-3 rounded-lg font-space text-sm transition-colors">
+        Imprimir Boleta
+      </button>
+      <button id="btn-close-receipt" class="flex-1 bg-[#a078ff] hover:bg-[#b794ff] text-[#2d0066] font-bold py-3 rounded-lg font-space text-sm transition-colors">
+        Continuar
+      </button>
+    </div>
   </div>
 </div>
 
@@ -112,6 +171,32 @@ import PaymentOption from "../../components/shop/PaymentOption.astro";
     btn.style.opacity = "0.7";
 
     try {
+      const cardNumber = (document.getElementById("card_number") as HTMLInputElement)?.value.replace(/\s+/g, '');
+      const expiry = (document.getElementById("expiry") as HTMLInputElement)?.value;
+      const cvv = (document.getElementById("cvv") as HTMLInputElement)?.value;
+
+      if (!cardNumber || !expiry || !cvv) {
+        throw new Error("Por favor, completa todos los datos de la tarjeta.");
+      }
+      if (cardNumber.length !== 16 || isNaN(Number(cardNumber))) {
+        throw new Error("El número de tarjeta debe tener 16 dígitos.");
+      }
+      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) {
+        throw new Error("La fecha de expiración debe tener el formato MM/YY.");
+      }
+      
+      const [expMonth, expYear] = expiry.split('/').map(Number);
+      const now = new Date();
+      const currentYear = now.getFullYear() % 100; // Obtiene 26 de 2026
+      const currentMonth = now.getMonth() + 1;
+
+      if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+        throw new Error("La tarjeta se encuentra expirada (año 2026 en adelante).");
+      }
+      if (cvv.length < 3 || cvv.length > 4 || isNaN(Number(cvv))) {
+        throw new Error("El CVV debe tener 3 o 4 dígitos.");
+      }
+
       const sessionRes = await fetch(`${API}/api/session.jsp`, { credentials: "include" });
       const session = await sessionRes.json();
       if (!session.logged) return;
@@ -137,6 +222,7 @@ import PaymentOption from "../../components/shop/PaymentOption.astro";
           cartCount.textContent = "Tu carrito está vacío";
         }
 
+        const elTotalOriginalAmount = document.getElementById("summary-total")?.textContent;
         window.dispatchEvent(new CustomEvent("add-notification", { detail: { message: `Se completó tu compra exitosamente.`, type: 'purchase' } }));
     
         const elSub   = document.getElementById("summary-subtotal");
@@ -167,15 +253,71 @@ import PaymentOption from "../../components/shop/PaymentOption.astro";
           btn.style.transform = "scale(1.03)";
           const icon = btn.querySelector("svg");
           if (icon) icon.setAttribute("style", "stroke-dasharray:30;stroke-dashoffset:0;transition:stroke-dashoffset 0.4s ease 0.1s");
-          setTimeout(() => { btn.style.transform = "scale(1)"; }, 150);
+          setTimeout(() => { 
+            btn.style.transform = "scale(1)"; 
+            
+            // Show Receipt Modal
+            // Show Receipt Modal
+            const modal = document.getElementById("receipt-modal");
+            const rid = document.getElementById("receipt-id");
+            const rdate = document.getElementById("receipt-date");
+            const rlast4 = document.getElementById("receipt-card-last4");
+            const rtotal = document.getElementById("receipt-total");
+            const rsubtotal = document.getElementById("receipt-subtotal");
+            const rigv = document.getElementById("receipt-igv");
+            const ritems = document.getElementById("receipt-items-list");
+            
+            if (modal && rid && rdate && rlast4 && rtotal) {
+              rid.textContent = data.venta_id.substring(0, 8).toUpperCase();
+              rdate.textContent = new Date().toLocaleDateString();
+              const cardNumber = (document.getElementById("card_number") as HTMLInputElement)?.value.replace(/\s+/g, '');
+              rlast4.textContent = cardNumber ? cardNumber.slice(-4) : "0000";
+              rtotal.textContent = elTotalOriginalAmount || "$0.00";
+              
+              if (rsubtotal) rsubtotal.textContent = elSub ? elSub.textContent : "$0.00";
+              if (rigv) rigv.textContent = elIgv ? elIgv.textContent : "$0.00";
+
+              if (ritems) {
+                // Grab items from DOM before we clear them! (Wait, we already cleared them at line 187!)
+                // Oh no! We already did cartItems.innerHTML = ... at line 187.
+                // We need to fetch the items or grab them before clearing.
+                // But wait, the backend `checkout.jsp` just returns `{success: true, venta_id: uuid}`.
+                // We can just fetch `/api/ventas.jsp` and get the items for this venta_id!
+                ritems.innerHTML = `<p>Cargando items...</p>`;
+                fetch(`${(window as any).xdgStore.API || 'http://localhost:8080'}/api/ventas.jsp?user_id=${session.id}`, {credentials: "include"})
+                  .then(r => r.json())
+                  .then(ventas => {
+                     const myItems = ventas.filter((v:any) => v.venta_id === data.venta_id);
+                     ritems.innerHTML = myItems.map((v:any) => {
+                        let extraInfo = "";
+                        const isPreventa = v.fecha_lanzamiento && (new Date(v.fecha_lanzamiento) > new Date(v.fecha));
+                        if (isPreventa) {
+                           extraInfo = `<span class="text-[9px] bg-blue-100 text-blue-800 px-1 rounded ml-1">PREVENTA</span>`;
+                        } else if (v.precio_original > v.precio) {
+                          const percent = Math.round((1 - (v.precio / v.precio_original)) * 100);
+                          extraInfo = `<span class="text-[9px] bg-red-100 text-red-800 px-1 rounded ml-1">OFERTA (-${percent}%)</span>`;
+                        }
+                        return `
+                        <div class="flex justify-between items-start mb-2 gap-2">
+                          <span class="break-words">1 x ${v.titulo} ${extraInfo}</span>
+                          <span class="shrink-0 whitespace-nowrap">S/ ${Number(v.precio).toFixed(2)}</span>
+                        </div>
+                        `;
+                     }).join("");
+                  }).catch(() => ritems.innerHTML = `<p>Error al cargar items</p>`);
+              }
+              
+              modal.classList.remove("hidden");
+            }
+          }, 150);
         });
 
       } else {
         throw new Error(data.message ?? "Error desconocido");
       }
 
-    } catch (err) {
-      alert("Error al procesar la compra.");
+    } catch (err: any) {
+      alert(err.message || "Error al procesar la compra.");
       btn.style.opacity = "1";
       btn.style.backgroundColor = "";
       btn.style.color = "";
@@ -188,5 +330,13 @@ import PaymentOption from "../../components/shop/PaymentOption.astro";
         <span id="btn-checkout-text">Completar Compra</span>
       `;
     }
+  });
+
+  document.getElementById("btn-close-receipt")?.addEventListener("click", () => {
+    document.getElementById("receipt-modal")?.classList.add("hidden");
+  });
+
+  document.getElementById("btn-print-receipt")?.addEventListener("click", () => {
+    window.print();
   });
 </script>

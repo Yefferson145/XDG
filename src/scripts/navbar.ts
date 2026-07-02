@@ -332,6 +332,14 @@ document.addEventListener("DOMContentLoaded", () => {
             type: e.detail.type || "general"
         });
         saveNotifications(notifs);
+
+        if (e.detail.type === 'cart' || e.detail.type === 'purchase') {
+            const cartDot = document.getElementById("nav-cart-dot");
+            if (cartDot) {
+                if (e.detail.type === 'cart') cartDot.classList.remove("hidden");
+                if (e.detail.type === 'purchase') cartDot.classList.add("hidden");
+            }
+        }
     }) as EventListener);
 
     async function checkDiscountsForNotifications() {
@@ -365,6 +373,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 updateNavUI(data.name, data.role, data.sub_role);
                 renderNotifications();
                 checkDiscountsForNotifications();
+
+                // Check cart indicator
+                try {
+                    const cart = await fetch(`${(window as any).xdgStore.API}/api/carrito.jsp?user_id=${data.id}`, { credentials: "include" }).then(r => r.json());
+                    const cartDot = document.getElementById("nav-cart-dot");
+                    if (cartDot) {
+                        if (cart.length > 0 && !cart.error) cartDot.classList.remove("hidden");
+                        else cartDot.classList.add("hidden");
+                    }
+                } catch(e){}
             }
         } catch (err) { console.error("Error al verificar sesión:", err); }
     };
