@@ -1,0 +1,113 @@
+---
+---
+<div class="p-6 font-space">
+    <div class="mb-8">
+        <h1 class="text-white font-bold text-4xl pb-1">Configuración</h1>
+        <p class="text-[#71717A] text-sm">Administra tu información personal y preferencias visuales.</p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-8 max-w-3xl">
+        <!-- Panel de Perfil -->
+        <div class="w-full rounded-[24px] border border-[#262629] bg-[#17171A]/70 p-8">
+            <h2 class="text-white text-[22px] font-medium mb-6">Información Personal</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#71717A]">Nombre Completo</label>
+                    <input id="conf-nombre" type="text" class="mt-2 w-full bg-[#1A1A1D] border border-[#262629] rounded-xl px-4 py-3 text-white placeholder:text-[#3F3F46] focus:outline-none focus:border-[#A78BFA] transition-colors text-sm" />
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#71717A]">Correo Electrónico</label>
+                    <input id="conf-correo" type="email" class="mt-2 w-full bg-[#1A1A1D] border border-[#262629] rounded-xl px-4 py-3 text-white placeholder:text-[#3F3F46] focus:outline-none focus:border-[#A78BFA] transition-colors text-sm" />
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#71717A]">Nueva Contraseña</label>
+                    <input id="conf-pass" type="password" placeholder="Dejar en blanco para no cambiar" class="mt-2 w-full bg-[#1A1A1D] border border-[#262629] rounded-xl px-4 py-3 text-white placeholder:text-[#3F3F46] focus:outline-none focus:border-[#A78BFA] transition-colors text-sm" />
+                </div>
+            </div>
+
+            <p id="conf-msg" class="hidden mt-4 text-xs font-semibold"></p>
+            
+            <button id="conf-save-btn" class="mt-6 w-full h-12 rounded-xl bg-[#A78BFA] text-black text-sm font-semibold hover:bg-[#8B5CF6] transition-colors flex items-center justify-center gap-2">
+                <span>Guardar Cambios</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const btnSave = document.getElementById("conf-save-btn");
+        const msg = document.getElementById("conf-msg");
+        const inpNombre = document.getElementById("conf-nombre") as HTMLInputElement;
+        const inpCorreo = document.getElementById("conf-correo") as HTMLInputElement;
+        const inpPass = document.getElementById("conf-pass") as HTMLInputElement;
+        let userId = "";
+        let username = "";
+
+        // Load data on open
+        window.addEventListener("section-opened", (e: any) => {
+            if (e.detail?.section === "configuracion") {
+                fetch("http://localhost:8080/api/session.jsp", { credentials: "include" })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.logged) {
+                            userId = data.id;
+                            username = data.username;
+                            inpNombre.value = data.name || "";
+                            inpCorreo.value = data.email || "";
+                        }
+                    });
+            }
+        });
+
+        if (btnSave) {
+            btnSave.addEventListener("click", async () => {
+                if (!userId) return;
+                
+                const payload: any = {
+                    id: userId,
+                    nombre: inpNombre.value.trim(),
+                    correo: inpCorreo.value.trim(),
+                    usuario: username
+                };
+                
+                if (inpPass.value) {
+                    payload.contrasena = inpPass.value;
+                }
+
+                try {
+                    const res = await fetch("http://localhost:8080/api/usuarios.jsp", {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    const result = await res.json();
+                    
+                    if (msg) {
+                        msg.classList.remove("hidden");
+                        if (result.error) {
+                            msg.textContent = result.error;
+                            msg.className = "mt-4 text-xs font-semibold text-red-400";
+                        } else {
+                            msg.textContent = "Perfil actualizado correctamente.";
+                            msg.className = "mt-4 text-xs font-semibold text-green-400";
+                            inpPass.value = "";
+                            
+                            // Update navbar name if element exists
+                            const topNavName = document.getElementById("topNavName");
+                            if (topNavName) {
+                                topNavName.textContent = `Hola, ${inpNombre.value.trim() || inpCorreo.value.trim().split('@')[0] || 'Usuario'}`;
+                            }
+                        }
+                        setTimeout(() => msg.classList.add("hidden"), 3000);
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            });
+        }
+    });
+</script>
