@@ -68,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
             credentials: "include",
             body: JSON.stringify({ action: "logout" }),
         });
+        if (currentUserId) sessionStorage.removeItem("xdg_discounts_checked_" + currentUserId);
         if (navUserName) navUserName.textContent = "Iniciar sesión";
         if (navUserRole) navUserRole.classList.add("hidden");
         if (logoutBtn) logoutBtn.classList.add("hidden");
@@ -372,7 +373,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 currentUserId = data.id;
                 updateNavUI(data.name, data.role, data.sub_role);
                 renderNotifications();
-                checkDiscountsForNotifications();
+
+                const discountFlagKey = "xdg_discounts_checked_" + currentUserId;
+                if (!sessionStorage.getItem(discountFlagKey)) {
+                    sessionStorage.setItem(discountFlagKey, "1");
+                    checkDiscountsForNotifications();
+                }
 
                 // Check cart indicator
                 try {

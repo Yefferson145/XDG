@@ -17,30 +17,47 @@ import TextField from "../../components/TextField.astro";
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
 
     <TextField
-      label="Primer Nombre"
-      placeholder="John"
-    />
+  label="Primer Nombre"
+  name="checkoutNombre"
+  placeholder="John"
+/>
 
-    <TextField
-      label="Apellido"
-      placeholder="Doe"
-    />
+<TextField
+  label="Apellido"
+  name="checkoutApellido"
+  placeholder="Doe"
+/>
 
   </div>
 
   <div class="space-y-6">
 
     <TextField
-      label="Correo Electrónico"
-      type="email"
-      placeholder="gamer@xdg.store"
-    />
+  label="Correo Electrónico"
+  name="checkoutCorreo"
+  type="email"
+  placeholder="gamer@xdg.store"
+/>
 
-    <TextField
-      label="Dirección"
-      placeholder="123 Neon Circuit"
-    />
+<TextField
+  label="Dirección"
+  name="checkoutDireccion"
+  placeholder="123 Neon Circuit"
+/>
 
   </div>
 
 </section>
+<script>
+  (async () => {
+    try {
+      const data = await (window as any).xdgStore.sessionPromise;
+      if (data.logged) {
+        const nombreInput = document.getElementById("checkoutNombre") as HTMLInputElement | null;
+        const correoInput = document.getElementById("checkoutCorreo") as HTMLInputElement | null;
+        if (nombreInput && !nombreInput.value) nombreInput.value = data.name || "";
+        if (correoInput && !correoInput.value) correoInput.value = data.email || "";
+      }
+    } catch (e) {}
+  })();
+</script>

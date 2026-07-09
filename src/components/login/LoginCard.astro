@@ -225,6 +225,9 @@
     function isValidEmail(email: string) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
+    function isValidRegisterEmail(email: string) {
+    return /^[a-zA-Z0-9](?:[a-zA-Z0-9._-]{3,}[a-zA-Z0-9])?@(gmail|hotmail|outlook)\.com$/.test(email);
+}
 
     ["loginCorreo", "loginContrasena"].forEach(id =>
         document.getElementById(id)?.addEventListener("input", () => clearError(id))
@@ -370,9 +373,9 @@
         }
         if (!correo) {
             showError("regCorreo", "Ingresa tu correo electrónico."); valid = false;
-        } else if (!isValidEmail(correo)) {
-            showError("regCorreo", "El correo no tiene un formato válido."); valid = false;
-        }
+       } else if (!isValidRegisterEmail(correo)) {
+    showError("regCorreo", "El correo debe ser de gmail.com, hotmail.com u outlook.com y tener al menos 5 caracteres antes del @."); valid = false;
+}
         if (!contrasena) {
             showError("regContrasena", "Ingresa una contraseña."); valid = false;
         } else if (contrasena.length < 6) {
