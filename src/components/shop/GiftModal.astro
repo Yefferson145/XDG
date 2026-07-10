@@ -1,0 +1,316 @@
+---
+---
+
+<div
+  id="gift-modal"
+  class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 px-4 backdrop-blur-sm"
+>
+  <div class="w-full max-w-xl rounded-2xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl shadow-black/40">
+    <div class="mb-6 flex items-start justify-between gap-4">
+      <div>
+        <p class="text-[10px] font-black uppercase tracking-[0.25em] text-[#a078ff]">
+          Regalo
+        </p>
+        <h3 class="text-xl font-bold text-white">Regalar a un usuario</h3>
+        <p class="mt-2 text-sm text-zinc-400">
+          Ingresa el usuario al que quieres regalar este producto.
+        </p>
+      </div>
+      <button
+        type="button"
+        id="gift-modal-close"
+        class="rounded-full border border-zinc-700 p-2 text-zinc-400 transition hover:border-zinc-500 hover:text-white"
+        aria-label="Cerrar modal de regalo"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 6L6 18"></path>
+          <path d="M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <form id="gift-form" class="space-y-4">
+      <label class="relative block text-sm text-zinc-300">
+        <span class="mb-2 block text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-500">Usuario</span>
+        <input
+          id="gift-recipient"
+          name="gift-recipient"
+          type="text"
+          placeholder="Nombre de usuario"
+          autocomplete="off"
+          class="w-full rounded-lg border border-zinc-800 bg-zinc-900/80 px-4 py-3 text-sm text-white outline-none transition focus:border-[#a078ff]"
+        />
+
+        <ul
+          id="gift-recipient-suggestions"
+          class="absolute left-0 right-0 top-full z-10 mt-1 hidden max-h-56 overflow-y-auto rounded-lg border border-zinc-800 bg-zinc-900 shadow-xl shadow-black/40"
+        ></ul>
+
+        <p id="gift-recipient-feedback" class="mt-2 text-xs hidden"></p>
+      </label>
+
+      <div class="flex flex-wrap justify-end gap-3 pt-2">
+        <button
+          type="button"
+          id="gift-modal-cancel"
+          class="rounded-lg border border-zinc-700 px-4 py-2.5 text-sm font-semibold text-zinc-300 transition hover:border-zinc-500 hover:text-white"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="rounded-lg bg-[#a078ff] px-4 py-2.5 text-sm font-bold text-[#2d0066] transition hover:bg-[#b794ff]"
+        >
+          Guardar regalo
+        </button>
+      </div>
+
+      <p id="gift-success" class="hidden text-sm text-emerald-400">
+        El regalo quedó listo para el usuario indicado.
+      </p>
+    </form>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById("gift-modal");
+  const openButton = document.getElementById("btn-gift");
+  const closeButton = document.getElementById("gift-modal-close");
+  const cancelButton = document.getElementById("gift-modal-cancel");
+  const form = document.getElementById("gift-form") as HTMLFormElement | null;
+  const successMessage = document.getElementById("gift-success");
+  const giftButton = document.getElementById("btn-gift");
+  const giftInput = document.getElementById("gift-recipient") as HTMLInputElement | null;
+  const feedbackEl = document.getElementById("gift-recipient-feedback");
+  const suggestionsEl = document.getElementById("gift-recipient-suggestions");
+
+  const API_BASE = "http://localhost:8080";
+  let usuarioValido = false;
+  let usuarioSeleccionadoId: string | null = null;
+
+  // Estado global compartido con el checkout: si hay alguien aquí, la compra
+  // se hace "para" ese usuario. Si es null, la compra es para uno mismo.
+  (window as any).giftRecipient = (window as any).giftRecipient || null;
+
+  const DEFAULT_GIFT_BUTTON_HTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="16" fill="currentColor" viewBox="0 0 22 16"><path d="M0 16v-2.8q0-.85.438-1.562.437-.713 1.162-1.088a15 15 0 0 1 3.15-1.163A13.8 13.8 0 0 1 8 9q1.65 0 3.25.387 1.6.388 3.15 1.163.724.375 1.162 1.087Q16 12.35 16 13.2V16zm18 0v-3q0-1.1-.613-2.113-.612-1.012-1.737-1.737 1.275.15 2.4.512 1.125.363 2.1.888.9.5 1.375 1.112Q22 12.277 22 13v3zM8 8Q6.35 8 5.175 6.825T4 4t1.175-2.825T8 0t2.825 1.175T12 4t-1.175 2.825T8 8m10-4q0 1.65-1.175 2.825T14 8q-.275 0-.7-.062a6 6 0 0 1-.7-.138 6 6 0 0 0 1.037-1.775Q14 5.05 14 4t-.363-2.025A6 6 0 0 0 12.6.2a3 3 0 0 1 .7-.162Q13.65 0 14 0q1.65 0 2.825 1.175T18 4M2 14h12v-.8a.97.97 0 0 0-.5-.85q-1.35-.675-2.725-1.012a11.6 11.6 0 0 0-5.55 0Q3.85 11.675 2.5 12.35a.97.97 0 0 0-.5.85zm6-8q.825 0 1.412-.588Q10 4.826 10 4q0-.824-.588-1.412A1.93 1.93 0 0 0 8 2q-.824 0-1.412.587A1.93 1.93 0 0 0 6 4q0 .824.588 1.412Q7.175 6 8 6"/></svg>
+    <span>Comprar como regalo</span>
+  `;
+
+  const setFeedback = (texto: string, tipo: "ok" | "error" | "loading" | "idle") => {
+    if (!feedbackEl) return;
+    feedbackEl.textContent = texto;
+    feedbackEl.classList.remove("hidden", "text-emerald-400", "text-red-400", "text-zinc-500");
+    if (tipo === "ok") feedbackEl.classList.add("text-emerald-400");
+    else if (tipo === "error") feedbackEl.classList.add("text-red-400");
+    else if (tipo === "loading") feedbackEl.classList.add("text-zinc-500");
+    else feedbackEl.classList.add("hidden");
+  };
+
+  const cerrarSugerencias = () => {
+    if (!suggestionsEl) return;
+    suggestionsEl.innerHTML = "";
+    suggestionsEl.classList.add("hidden");
+  };
+
+  const seleccionarUsuario = (usuario: string, id: string) => {
+    if (giftInput) giftInput.value = usuario;
+    usuarioValido = true;
+    usuarioSeleccionadoId = id;
+    setFeedback(`Usuario válido: ${usuario}`, "ok");
+    cerrarSugerencias();
+  };
+
+  const renderSugerencias = (usuarios: Array<{ id: string; usuario: string; nombre: string }>) => {
+    if (!suggestionsEl) return;
+
+    if (usuarios.length === 0) {
+      cerrarSugerencias();
+      return;
+    }
+
+    suggestionsEl.innerHTML = usuarios
+      .map(
+        (u) => `
+          <li>
+            <button
+              type="button"
+              data-usuario="${u.usuario}"
+              data-id="${u.id}"
+              class="flex w-full flex-col items-start gap-0.5 px-4 py-2.5 text-left text-sm text-white transition hover:bg-zinc-800"
+            >
+              <span class="font-semibold">${u.usuario}</span>
+              <span class="text-xs text-zinc-500">${u.nombre}</span>
+            </button>
+          </li>
+        `
+      )
+      .join("");
+
+    suggestionsEl.classList.remove("hidden");
+
+    suggestionsEl.querySelectorAll("button[data-usuario]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const usuario = (btn as HTMLButtonElement).dataset.usuario;
+        const id = (btn as HTMLButtonElement).dataset.id;
+        if (usuario && id) seleccionarUsuario(usuario, id);
+      });
+    });
+  };
+
+  const buscarUsuario = async (valor: string) => {
+    if (!valor) {
+      usuarioValido = false;
+      usuarioSeleccionadoId = null;
+      setFeedback("", "idle");
+      cerrarSugerencias();
+      return;
+    }
+
+    setFeedback("Buscando...", "loading");
+
+    try {
+      const res = await fetch(`${API_BASE}/api/buscar_usuarios.jsp?usuario=${encodeURIComponent(valor)}`, {
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        usuarioValido = false;
+        console.error("buscar_usuarios.jsp respondió con status:", res.status);
+        setFeedback(
+          res.status === 401
+            ? "Debes iniciar sesión para buscar usuarios"
+            : `Error del servidor (status ${res.status})`,
+          "error"
+        );
+        cerrarSugerencias();
+        return;
+      }
+
+      const data = await res.json();
+
+      if (!Array.isArray(data)) {
+        usuarioValido = false;
+        console.error("Respuesta inesperada de buscar_usuarios.jsp:", data);
+        setFeedback("No se pudo verificar el usuario", "error");
+        cerrarSugerencias();
+        return;
+      }
+
+      renderSugerencias(data);
+
+      const coincidenciaExacta = data.find(
+        (u: any) => u.usuario.toLowerCase() === valor.toLowerCase()
+      );
+
+      if (coincidenciaExacta) {
+        usuarioValido = true;
+        usuarioSeleccionadoId = coincidenciaExacta.id;
+        setFeedback(`Usuario válido: ${coincidenciaExacta.usuario}`, "ok");
+      } else {
+        usuarioValido = false;
+        usuarioSeleccionadoId = null;
+        setFeedback(data.length > 0 ? "Selecciona un usuario de la lista" : "Usuario no encontrado", "error");
+      }
+    } catch (err) {
+      usuarioValido = false;
+      usuarioSeleccionadoId = null;
+      console.error("Fallo al llamar a buscar_usuarios.jsp:", err);
+      setFeedback("Error de conexión con el servidor (revisa la consola)", "error");
+      cerrarSugerencias();
+    }
+  };
+
+  giftInput?.addEventListener("input", () => {
+    const valor = giftInput.value.trim();
+    usuarioValido = false;
+    usuarioSeleccionadoId = null;
+    buscarUsuario(valor);
+  });
+
+  document.addEventListener("click", (event) => {
+    if (
+      suggestionsEl &&
+      !suggestionsEl.contains(event.target as Node) &&
+      event.target !== giftInput
+    ) {
+      cerrarSugerencias();
+    }
+  });
+
+  const openGiftModal = () => {
+    modal?.classList.remove("hidden");
+    modal?.classList.add("flex");
+  };
+
+  const closeGiftModal = () => {
+    modal?.classList.add("hidden");
+    modal?.classList.remove("flex");
+    successMessage?.classList.add("hidden");
+    setFeedback("", "idle");
+    cerrarSugerencias();
+    usuarioValido = false;
+    usuarioSeleccionadoId = null;
+    if (giftInput) giftInput.value = "";
+  };
+
+  // Quita la selección de regalo y vuelve el botón a su estado original,
+  // sin necesidad de abrir el modal de nuevo.
+  const quitarSeleccionRegalo = () => {
+    (window as any).giftRecipient = null;
+    if (giftButton) {
+      giftButton.innerHTML = DEFAULT_GIFT_BUTTON_HTML;
+    }
+    document.getElementById("btn-gift-clear")?.remove();
+  };
+
+  const mostrarBotonQuitarRegalo = () => {
+    if (!giftButton || document.getElementById("btn-gift-clear")) return;
+    giftButton.insertAdjacentHTML(
+      "afterend",
+      `<button
+        type="button"
+        id="btn-gift-clear"
+        class="w-full text-center text-[11px] font-bold uppercase tracking-widest text-zinc-500 transition hover:text-white"
+      >
+        Quitar selección de regalo
+      </button>`
+    );
+    document.getElementById("btn-gift-clear")?.addEventListener("click", quitarSeleccionRegalo);
+  };
+
+  openButton?.addEventListener("click", openGiftModal);
+  closeButton?.addEventListener("click", closeGiftModal);
+  cancelButton?.addEventListener("click", closeGiftModal);
+
+  modal?.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      closeGiftModal();
+    }
+  });
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const recipientName = giftInput?.value.trim();
+
+    if (!recipientName || !usuarioValido || !usuarioSeleccionadoId) {
+      setFeedback("Ingresa un usuario válido antes de continuar", "error");
+      return;
+    }
+
+    // Guarda el regalo en el estado global: el checkout lo va a leer de aquí.
+    (window as any).giftRecipient = { id: usuarioSeleccionadoId, usuario: recipientName };
+
+    if (giftButton) {
+      giftButton.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="16" fill="currentColor" viewBox="0 0 22 16"><path d="M0 16v-2.8q0-.85.438-1.562.437-.713 1.162-1.088a15 15 0 0 1 3.15-1.163A13.8 13.8 0 0 1 8 9q1.65 0 3.25.387 1.6.388 3.15 1.163.724.375 1.162 1.087Q16 12.35 16 13.2V16zm18 0v-3q0-1.1-.613-2.113-.612-1.012-1.737-1.737 1.275.15 2.4.512 1.125.363 2.1.888.9.5 1.375 1.112Q22 12.277 22 13v3zM8 8Q6.35 8 5.175 6.825T4 4t1.175-2.825T8 0t2.825 1.175T12 4t-1.175 2.825T8 8m10-4q0 1.65-1.175 2.825T14 8q-.275 0-.7-.062a6 6 0 0 1-.7-.138 6 6 0 0 0 1.037-1.775Q14 5.05 14 4t-.363-2.025A6 6 0 0 0 12.6.2a3 3 0 0 1 .7-.162Q13.65 0 14 0q1.65 0 2.825 1.175T18 4M2 14h12v-.8a.97.97 0 0 0-.5-.85q-1.35-.675-2.725-1.012a11.6 11.6 0 0 0-5.55 0Q3.85 11.675 2.5 12.35a.97.97 0 0 0-.5.85zm6-8q.825 0 1.412-.588Q10 4.826 10 4q0-.824-.588-1.412A1.93 1.93 0 0 0 8 2q-.824 0-1.412.587A1.93 1.93 0 0 0 6 4q0 .824.588 1.412Q7.175 6 8 6"/></svg>
+        <span>Regalo para ${recipientName}</span>
+      `;
+    }
+
+    mostrarBotonQuitarRegalo();
+    successMessage?.classList.remove("hidden");
+    closeGiftModal();
+  });
+</script>

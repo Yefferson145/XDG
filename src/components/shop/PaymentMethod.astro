@@ -1,6 +1,7 @@
 ---
 import TextField from "../../components/TextField.astro";
 import PaymentOption from "../../components/shop/PaymentOption.astro";
+import GiftModal from "../../components/shop/GiftModal.astro";
 ---
 
 <aside class="flex flex-col gap-6">
@@ -71,11 +72,12 @@ import PaymentOption from "../../components/shop/PaymentOption.astro";
       <span id="btn-checkout-text">Completar Compra</span>
     </button>
       <button
-      id="btn-checkout"
+      id="btn-gift"
+      type="button"
       class="w-full flex items-center justify-center gap-2 bg-[#f4710a] hover:bg-[#ff8a2b] text-[#000000] font-bold py-3.5 rounded-lg transition-colors uppercase tracking-widest text-sm"
     >
       <svg xmlns="http://www.w3.org/2000/svg" width="22" height="16" fill="currentColor" viewBox="0 0 22 16"><path d="M0 16v-2.8q0-.85.438-1.562.437-.713 1.162-1.088a15 15 0 0 1 3.15-1.163A13.8 13.8 0 0 1 8 9q1.65 0 3.25.387 1.6.388 3.15 1.163.724.375 1.162 1.087Q16 12.35 16 13.2V16zm18 0v-3q0-1.1-.613-2.113-.612-1.012-1.737-1.737 1.275.15 2.4.512 1.125.363 2.1.888.9.5 1.375 1.112Q22 12.277 22 13v3zM8 8Q6.35 8 5.175 6.825T4 4t1.175-2.825T8 0t2.825 1.175T12 4t-1.175 2.825T8 8m10-4q0 1.65-1.175 2.825T14 8q-.275 0-.7-.062a6 6 0 0 1-.7-.138 6 6 0 0 0 1.037-1.775Q14 5.05 14 4t-.363-2.025A6 6 0 0 0 12.6.2a3 3 0 0 1 .7-.162Q13.65 0 14 0q1.65 0 2.825 1.175T18 4M2 14h12v-.8a.97.97 0 0 0-.5-.85q-1.35-.675-2.725-1.012a11.6 11.6 0 0 0-5.55 0Q3.85 11.675 2.5 12.35a.97.97 0 0 0-.5.85zm6-8q.825 0 1.412-.588Q10 4.826 10 4q0-.824-.588-1.412A1.93 1.93 0 0 0 8 2q-.824 0-1.412.587A1.93 1.93 0 0 0 6 4q0 .824.588 1.412Q7.175 6 8 6"/></svg>
-      <span id="btn-gift">Comprar como regalo</span>
+      <span>Comprar como regalo</span>
     </button>
 
     <p
@@ -106,8 +108,10 @@ import PaymentOption from "../../components/shop/PaymentOption.astro";
     </div>
 </div>
 
+<GiftModal />
+
 <!-- Modal de Recibo -->
-<div id="receipt-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm">
+<div id="receipt-modal" class="fixed inset-0 z-40 hidden items-center justify-center bg-black/80 backdrop-blur-sm">
   <div class="bg-white text-black rounded-sm p-8 max-w-sm w-full relative" id="receipt-content">
     <div class="text-center mb-6">
       <h2 class="text-2xl font-black tracking-tighter">XDG S.A.C.</h2>
@@ -208,11 +212,20 @@ import PaymentOption from "../../components/shop/PaymentOption.astro";
       const session = await sessionRes.json();
       if (!session.logged) return;
 
+      // Si en el modal de regalo se seleccionó un usuario, la compra es "para" ese usuario.
+      // Si no hay nadie seleccionado, la compra es para uno mismo (comportamiento normal).
+      const giftRecipient = (window as any).giftRecipient as { id: string; usuario: string } | null;
+
+      const checkoutBody: Record<string, unknown> = { user_id: session.id };
+      if (giftRecipient?.id) {
+        checkoutBody.destinatario_id = giftRecipient.id;
+      }
+
       const res = await fetch(`${API}/api/checkout.jsp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ user_id: session.id }),
+        body: JSON.stringify(checkoutBody),
       });
 
       const data = await res.json();
@@ -230,8 +243,12 @@ import PaymentOption from "../../components/shop/PaymentOption.astro";
         }
 
         const elTotalOriginalAmount = document.getElementById("summary-total")?.textContent;
-        window.dispatchEvent(new CustomEvent("add-notification", { detail: { message: `Se completó tu compra exitosamente.`, type: 'purchase' } }));
-    
+
+        const notificationMessage = giftRecipient?.usuario
+          ? `Se completó tu compra de regalo para ${giftRecipient.usuario}.`
+          : `Se completó tu compra exitosamente.`;
+        window.dispatchEvent(new CustomEvent("add-notification", { detail: { message: notificationMessage, type: 'purchase' } }));
+
         const elSub   = document.getElementById("summary-subtotal");
         const elIgv   = document.getElementById("summary-igv");
         const elTotal = document.getElementById("summary-total");
@@ -239,7 +256,17 @@ import PaymentOption from "../../components/shop/PaymentOption.astro";
         if (elIgv)   elIgv.textContent   = "$0.00";
         if (elTotal) elTotal.textContent = "$0.00";
 
-    
+        // La compra ya se hizo: se limpia la selección de regalo para la próxima compra.
+        (window as any).giftRecipient = null;
+        const giftBtn = document.getElementById("btn-gift");
+        if (giftBtn) {
+          giftBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="16" fill="currentColor" viewBox="0 0 22 16"><path d="M0 16v-2.8q0-.85.438-1.562.437-.713 1.162-1.088a15 15 0 0 1 3.15-1.163A13.8 13.8 0 0 1 8 9q1.65 0 3.25.387 1.6.388 3.15 1.163.724.375 1.162 1.087Q16 12.35 16 13.2V16zm18 0v-3q0-1.1-.613-2.113-.612-1.012-1.737-1.737 1.275.15 2.4.512 1.125.363 2.1.888.9.5 1.375 1.112Q22 12.277 22 13v3zM8 8Q6.35 8 5.175 6.825T4 4t1.175-2.825T8 0t2.825 1.175T12 4t-1.175 2.825T8 8m10-4q0 1.65-1.175 2.825T14 8q-.275 0-.7-.062a6 6 0 0 1-.7-.138 6 6 0 0 0 1.037-1.775Q14 5.05 14 4t-.363-2.025A6 6 0 0 0 12.6.2a3 3 0 0 1 .7-.162Q13.65 0 14 0q1.65 0 2.825 1.175T18 4M2 14h12v-.8a.97.97 0 0 0-.5-.85q-1.35-.675-2.725-1.012a11.6 11.6 0 0 0-5.55 0Q3.85 11.675 2.5 12.35a.97.97 0 0 0-.5.85zm6-8q.825 0 1.412-.588Q10 4.826 10 4q0-.824-.588-1.412A1.93 1.93 0 0 0 8 2q-.824 0-1.412.587A1.93 1.93 0 0 0 6 4q0 .824.588 1.412Q7.175 6 8 6"/></svg>
+            <span>Comprar como regalo</span>
+          `;
+        }
+        document.getElementById("btn-gift-clear")?.remove();
+
         btn.style.opacity = "1";
         btn.style.transition = "background-color 0.2s, transform 0.35s cubic-bezier(0.34,1.56,0.64,1)";
         btn.style.backgroundColor = "#16a34a";
