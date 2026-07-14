@@ -159,7 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const html = matches.map(g => {
             const disc = discountMap.get(g.id);
             const priceHtml = disc
-                ? `<span class="search-item-price discounted">$${disc.precio_con_descuento} <span style="text-decoration:line-through;color:#52525B;font-size:10px">$${g.precio}</span></span>`
+                ? `<span class="search-item-price discounted">S/ ${disc.precio_con_descuento} <span style="text-decoration:line-through;color:#52525B;font-size:10px">S/ ${g.precio}</span></span>`
                 : `<span class="search-item-price">$${g.precio}</span>`;
             const img = g.imagen_url || `https://placehold.co/36x48/1A1A1D/A78BFA?text=XDG`;
             const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');

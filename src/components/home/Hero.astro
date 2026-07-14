@@ -12,7 +12,7 @@ try {
       title: j.titulo,
       description: j.descripcion,
       image: j.imagen_url,
-      price: j.descuento_porcentaje ? `$${(j.precio - (j.precio * j.descuento_porcentaje / 100)).toFixed(2)}` : `$${j.precio.toFixed(2)}`,
+      price: j.descuento_porcentaje ? `S/ ${(j.precio - (j.precio * j.descuento_porcentaje / 100)).toFixed(2)}` : `S/ ${j.precio.toFixed(2)}`,
       genre: "Destacado",
     }));
   }

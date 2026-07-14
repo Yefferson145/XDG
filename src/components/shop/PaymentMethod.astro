@@ -53,7 +53,7 @@ import GiftModal from "../../components/shop/GiftModal.astro";
       class="text-[#a078ff] font-black text-3xl leading-none font-space tracking-tight"
       id="summary-total"
     >
-      $0.00
+      S/ 0.00
     </span>
 
     <button
@@ -306,10 +306,10 @@ import GiftModal from "../../components/shop/GiftModal.astro";
               rdate.textContent = new Date().toLocaleDateString();
               const cardNumber = (document.getElementById("card_number") as HTMLInputElement)?.value.replace(/\s+/g, '');
               rlast4.textContent = cardNumber ? cardNumber.slice(-4) : "0000";
-              rtotal.textContent = elTotalOriginalAmount || "$0.00";
-              
-              if (rsubtotal) rsubtotal.textContent = elSub ? elSub.textContent : "$0.00";
-              if (rigv) rigv.textContent = elIgv ? elIgv.textContent : "$0.00";
+              const toSoles = (txt: string | null | undefined) => (txt || "$0.00").replace("$", "S/ ");
+              rtotal.textContent = toSoles(elTotalOriginalAmount);
+              if (rsubtotal) rsubtotal.textContent = toSoles(elSub ? elSub.textContent : null);
+              if (rigv) rigv.textContent = toSoles(elIgv ? elIgv.textContent : null);
 
               if (ritems) {
                 // Grab items from DOM before we clear them! (Wait, we already cleared them at line 187!)
@@ -317,31 +317,26 @@ import GiftModal from "../../components/shop/GiftModal.astro";
                 // We need to fetch the items or grab them before clearing.
                 // But wait, the backend `checkout.jsp` just returns `{success: true, venta_id: uuid}`.
                 // We can just fetch `/api/ventas.jsp` and get the items for this venta_id!
-                ritems.innerHTML = `<p>Cargando items...</p>`;
-                fetch(`${(window as any).xdgStore.API || 'http://localhost:8080'}/api/ventas.jsp?user_id=${session.id}`, {credentials: "include"})
-                  .then(r => r.json())
-                  .then(ventas => {
-                     const myItems = ventas.filter((v:any) => v.venta_id === data.venta_id);
-                     ritems.innerHTML = myItems.map((v:any) => {
-                        let extraInfo = "";
-                        const isPreventa = v.fecha_lanzamiento && (new Date(v.fecha_lanzamiento) > new Date(v.fecha));
-                        if (isPreventa) {
-                           extraInfo = `<span class="text-[9px] bg-blue-100 text-blue-800 px-1 rounded ml-1">PREVENTA</span>`;
-                        } else if (v.precio_original > v.precio) {
-                          const percent = Math.round((1 - (v.precio / v.precio_original)) * 100);
-                          extraInfo = `<span class="text-[9px] bg-red-100 text-red-800 px-1 rounded ml-1">OFERTA (-${percent}%)</span>`;
-                        }
-                        return `
-                        <div class="flex justify-between items-start mb-2 gap-2">
-                          <span class="break-words">1 x ${v.titulo} ${extraInfo}</span>
-                         <span class="shrink-0 whitespace-nowrap">$${Number(v.precio).toFixed(2)}</span>
-                        </div>
-                        `;
-                     }).join("");
-                  }).catch(() => ritems.innerHTML = `<p>Error al cargar items</p>`);
+                ritems.innerHTML = (data.items || []).map((v: any) => {
+    let extraInfo = "";
+    const isPreventa = v.fecha_lanzamiento && (new Date(v.fecha_lanzamiento) > new Date());
+    if (isPreventa) {
+        extraInfo = `<span class="text-[9px] bg-blue-100 text-blue-800 px-1 rounded ml-1">PREVENTA</span>`;
+    } else if (v.precio_original > v.precio) {
+        const percent = Math.round((1 - (v.precio / v.precio_original)) * 100);
+        extraInfo = `<span class="text-[9px] bg-red-100 text-red-800 px-1 rounded ml-1">OFERTA (-${percent}%)</span>`;
+    }
+    return `
+    <div class="flex justify-between items-start mb-2 gap-2">
+      <span class="break-words">${v.cantidad} x ${v.titulo} ${extraInfo}</span>
+      <span class="shrink-0 whitespace-nowrap">S/ ${Number(v.precio).toFixed(2)}</span>
+    </div>
+    `;
+}).join("");
               }
               
               modal.classList.remove("hidden");
+              modal.classList.add("flex");
             }
           }, 150);
         });
@@ -367,7 +362,9 @@ import GiftModal from "../../components/shop/GiftModal.astro";
   });
 
   document.getElementById("btn-close-receipt")?.addEventListener("click", () => {
-    document.getElementById("receipt-modal")?.classList.add("hidden");
+    const rm = document.getElementById("receipt-modal");
+    rm?.classList.add("hidden");
+    rm?.classList.remove("flex");
   });
 
   document.getElementById("btn-print-receipt")?.addEventListener("click", () => {

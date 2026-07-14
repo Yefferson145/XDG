@@ -54,8 +54,8 @@ const hasDiscount = discount != null && discount > 0;
     <div class="flex items-center gap-4 bg-[#A78BFA]/10 border border-[#A78BFA]/30 rounded-xl px-6 py-4">
       <span class="bg-[#A78BFA] text-[#09090B] text-sm font-bold px-3 py-1 rounded-md">-{discount}%</span>
       <div class="flex items-center gap-3">
-        <span class="text-zinc-500 line-through text-sm">${originalPrice?.toFixed(2)}</span>
-        <span class="text-white font-bold text-lg">${price?.toFixed(2)}</span>
+        <span class="text-zinc-500 line-through text-sm">S/ {originalPrice?.toFixed(2)}</span>
+        <span class="text-white font-bold text-lg">S/ {price?.toFixed(2)}</span>
       </div>
       <span class="text-[#A78BFA] text-xs ml-auto">¡Oferta por tiempo limitado!</span>
     </div>

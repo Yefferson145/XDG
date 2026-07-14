@@ -217,7 +217,7 @@
           <p class="text-[#71717A] text-xs mt-1 line-clamp-2">${j.descripcion}</p>
         </div>
         <div class="mt-4 flex justify-between items-center">
-          <span class="text-white font-semibold">$${j.precio}</span>
+          <span class="text-white font-semibold">S/ ${j.precio}</span>
           <button class="bg-[#27272A] text-white p-2 rounded-full hover:bg-[#A78BFA] hover:text-[#09090B] transition-colors">${cartIcon}</button>
         </div>
       </div>
@@ -242,8 +242,8 @@
         </div>
         <div class="mt-4 flex justify-between items-center">
           <div class="flex flex-col">
-            <span class="text-[#71717A] text-xs line-through">$${j.precio_original}</span>
-            <span class="text-[#F472B6] font-semibold">$${j.precio_con_descuento}</span>
+            <span class="text-[#71717A] text-xs line-through">S/ ${j.precio_original}</span>
+            <span class="text-[#F472B6] font-semibold">S/ ${j.precio_con_descuento}</span>
           </div>
           <button class="bg-[#27272A] text-white p-2 rounded-full hover:bg-[#F472B6] hover:text-[#09090B] transition-colors">${cartIcon}</button>
         </div>
@@ -292,7 +292,7 @@
       <div class="p-4 flex flex-col grow justify-between">
         <div>
           <h3 class="text-white font-bold text-lg truncate">${j.titulo}</h3>
-          <span class="text-[#F472B6] font-semibold text-sm">$${j.precio}</span>
+          <span class="text-[#F472B6] font-semibold text-sm">S/ ${j.precio}</span>
         </div>
         <div class="mt-4 flex justify-between items-center gap-2">
           <button
@@ -321,7 +321,7 @@
 
     let badge = "";
     let hoverBorder = "hover:border-[#A78BFA]";
-    let precioHtml = `<span class="text-white font-semibold">$${j.precio}</span>`;
+    let precioHtml = `<span class="text-white font-semibold">S/ ${j.precio}</span>`;
     let btnHover = "hover:bg-[#A78BFA] hover:text-[#09090B]";
     let actionBtn = `<button class="bg-[#27272A] text-white p-2 rounded-full ${btnHover} transition-colors">${cartIcon}</button>`;
 
@@ -337,8 +337,8 @@
       hoverBorder = "hover:border-[#F472B6]";
       precioHtml = `
         <div class="flex flex-col">
-          <span class="text-[#71717A] text-xs line-through">$${descuento.precio_original}</span>
-          <span class="text-[#F472B6] font-semibold">$${descuento.precio_con_descuento}</span>
+          <span class="text-[#71717A] text-xs line-through">S/ ${descuento.precio_original}</span>
+          <span class="text-[#F472B6] font-semibold">S/ ${descuento.precio_con_descuento}</span>
         </div>`;
       btnHover = "hover:bg-[#F472B6] hover:text-[#09090B]";
       actionBtn = `<button class="bg-[#27272A] text-white p-2 rounded-full ${btnHover} transition-colors">${cartIcon}</button>`;
@@ -529,11 +529,11 @@ userId = session?.id ?? null;
 
 async function addToCart(juegoId: number): Promise<void> {
   try {
-    const sessionRes = await fetch($API/api/session.jsp, { credentials: "include" });
+    const sessionRes = await fetch(`${API}/api/session.jsp`, { credentials: "include" });
     const session = await sessionRes.json();
     if (!session.id) return;
 
-    await fetch($API/api/carrito.jsp, {
+    await fetch(`${API}/api/carrito.jsp`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },

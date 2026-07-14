@@ -39,10 +39,10 @@ const hasDiscount = discount != null && discount > 0;
         <div class="mt-4 flex justify-between items-center">
             <div class="flex flex-col">
                 {hasDiscount && (
-                    <span class="text-[#71717A] text-xs line-through">${originalPrice?.toFixed(2)}</span>
+                    <span class="text-[#71717A] text-xs line-through">S/ {originalPrice?.toFixed(2)}</span>
                 )}
                 <span class={`font-semibold ${hasDiscount ? "text-[#A78BFA]" : "text-white"}`}>
-                    ${price.toFixed(2)}
+                    S/ {price.toFixed(2)}
                 </span>
             </div>
             <button class="bg-[#27272A] text-white p-2 rounded-full hover:bg-[#A78BFA] hover:text-[#09090B] transition-colors">

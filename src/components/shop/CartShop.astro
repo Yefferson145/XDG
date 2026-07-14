@@ -23,7 +23,7 @@ function updateSummary(items: any[]) {
     const igv      = subtotal * IGV;
     const total    = subtotal + igv;
 
-    const fmt = (n: number) => `$${n.toFixed(2)}`;
+    const fmt = (n: number) => `S/ ${n.toFixed(2)}`;
 
     const elSub   = document.getElementById("summary-subtotal");
     const elIgv   = document.getElementById("summary-igv");
@@ -62,15 +62,15 @@ function renderItems(items: any[]) {
                     <div>
                         <h3 class="text-white font-bold text-lg leading-tight">${item.titulo}</h3>
                         <div class="flex items-center gap-2 mt-0.5">
-                            ${hasDiscount ? `<span class="text-zinc-500 text-xs line-through">$${item.precio.toFixed(2)}</span>` : ""}
+                            ${hasDiscount ? `<span class="text-zinc-500 text-xs line-through">S/ ${item.precio.toFixed(2)}</span>` : ""}
                             <span class="text-xs font-bold uppercase tracking-wider ${hasDiscount ? 'text-[#A78BFA]' : 'text-zinc-500'}">
-                                $${item.precio_final.toFixed(2)} c/u
+                                S/ ${item.precio_final.toFixed(2)} c/u
                             </span>
                             ${hasDiscount ? `<span class="bg-[#A78BFA] text-[#09090B] text-[10px] font-bold px-1.5 py-0.5 rounded">-${item.porcentaje}%</span>` : ""}
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-white font-bold text-xl" data-subtotal>$${subtotal}</p>
+                        <p class="text-white font-bold text-xl" data-subtotal>S/ ${subtotal}</p>
                     </div>
                 </div>
 
@@ -163,7 +163,7 @@ document.getElementById("cartItems")!.addEventListener("click", async (e) => {
         const row      = document.querySelector<HTMLElement>(`[data-detalle-id="${id}"]`);
         if (row) {
             row.querySelector<HTMLElement>(".qty-display")!.textContent    = String(item.cantidad);
-            row.querySelector<HTMLElement>("[data-subtotal]")!.textContent = `$${(precio * item.cantidad).toFixed(2)}`;
+            row.querySelector<HTMLElement>("[data-subtotal]")!.textContent = `S/ ${(precio * item.cantidad).toFixed(2)}`;
         }
         updateSummary(currentItems);
         

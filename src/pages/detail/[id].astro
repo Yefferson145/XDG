@@ -182,9 +182,9 @@ const hasDiscount = discount != null && discount > 0;
                                         <h2 class="text-white text-lg font-bold leading-tight max-w-[155px]">{juego.titulo}</h2>
                                         <div class="text-right shrink-0 ml-2">
                                             {hasDiscount && (
-                                                <span class="text-zinc-500 line-through text-xs block mb-0.5">${originalPrice.toFixed(2)}</span>
+                                                <span class="text-zinc-500 line-through text-xs block mb-0.5">S/ {originalPrice.toFixed(2)}</span>
                                             )}
-                                            <span class="text-white text-2xl font-bold">${discountedPrice.toFixed(2)}</span>
+                                            <span class="text-white text-2xl font-bold">S/ {discountedPrice.toFixed(2)}</span>
                                         </div>
                                     </div>
 

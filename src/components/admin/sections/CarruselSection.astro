@@ -95,7 +95,7 @@ import API from "../../../env";
           <img src="${j.imagen_url}" alt="${j.titulo}" class="w-20 h-14 object-cover rounded-md shadow-md" />
           <div class="flex-1 min-w-0">
             <h3 class="text-white font-semibold truncate">${j.titulo}</h3>
-            <p class="text-gray-400 text-sm">$${j.precio.toFixed(2)}</p>
+            <p class="text-gray-400 text-sm">S/ ${j.precio.toFixed(2)}</p>
           </div>
           <button onclick="removerDelCarrusel(${j.id})" class="p-2 text-gray-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors" title="Quitar del carrusel">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
