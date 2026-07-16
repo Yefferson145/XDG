@@ -208,7 +208,14 @@ import "../styles/global.css";
         <span class="text-gray-600">Cliente:</span>
         <span class="font-medium" id="r-client-prof"></span>
       </div>
-    </div>
+      <div id="r-dest-row-prof" class="justify-between text-xs font-mono" style="display:none">
+        <span class="text-gray-600">Destinatario:</span>
+        <span class="font-medium" id="r-dest-prof"></span>
+      </div>
+      <div id="r-correo-row-prof" class="justify-between text-xs font-mono" style="display:none">
+        <span class="text-gray-600">Correo:</span>
+        <span class="font-medium" id="r-correo-prof"></span>
+      </div>
 
     <div class="border-b-2 border-dashed border-gray-300 pb-4 mb-4">
       <div class="flex justify-between text-xs font-bold uppercase tracking-wider mb-2">
@@ -244,39 +251,56 @@ import "../styles/global.css";
   </div>
 </div>
 <script>
-  (window as any).showProfileReceipt = function(vid:string, fecha:string, titulo:string, precio:number, original:number, fechaLanzamiento:string) {
-      const modal = document.getElementById("receipt-modal-profile");
-      if(!modal) return;
+      (window as any).showProfileReceipt = function(
+        vid: string, fecha: string, titulo: string, precio: number, original: number,
+        fechaLanzamiento: string, esRegalo: boolean = false,
+        destinatario: string = "", correoDestinatario: string = ""
+      ) {
+          const modal = document.getElementById("receipt-modal-profile");
+          if(!modal) return;
 
-      document.getElementById("r-id-prof")!.textContent = vid.substring(0,8).toUpperCase();
-      document.getElementById("r-date-prof")!.textContent = fecha.substring(0,10);
-      document.getElementById("r-client-prof")!.textContent = document.getElementById("profileDisplayName")?.textContent || "Cliente";
+          document.getElementById("r-id-prof")!.textContent = vid.substring(0,8).toUpperCase();
+          document.getElementById("r-date-prof")!.textContent = fecha.substring(0,10);
+          document.getElementById("r-client-prof")!.textContent = document.getElementById("profileDisplayName")?.textContent || "Cliente";
 
-      let extraInfo = "";
-      const isPreventa = fechaLanzamiento && (new Date(fechaLanzamiento) > new Date(fecha));
-      if (isPreventa) {
-        extraInfo = `<span class="text-[9px] bg-blue-100 text-blue-800 px-1 rounded ml-1">PREVENTA</span>`;
-      } else if (original > precio) {
-        const percent = Math.round((1 - (precio / original)) * 100);
-        extraInfo = `<span class="text-[9px] bg-red-100 text-red-800 px-1 rounded ml-1">OFERTA (-${percent}%)</span>`;
-      }
+          // Destinatario y correo solo si es regalo
+          const destRow = document.getElementById("r-dest-row-prof")!;
+          const correoRow = document.getElementById("r-correo-row-prof")!;
+          if (esRegalo) {
+  document.getElementById("r-dest-prof")!.textContent = destinatario || "—";
+  document.getElementById("r-correo-prof")!.textContent = document.getElementById("profileDisplayEmail")?.textContent || "—";
+  destRow.style.display = "flex";
+  correoRow.style.display = "flex";
+} else {
+  destRow.style.display = "none";
+  correoRow.style.display = "none";
+}
 
-      document.getElementById("r-items-prof")!.innerHTML = `
-        <div class="flex justify-between items-start mb-2 gap-2">
-          <span class="break-words">1 x ${titulo} ${extraInfo}</span>
-          <span class="shrink-0 whitespace-nowrap">S/ ${precio.toFixed(2)}</span>
-        </div>
-      `;
+          let extraInfo = "";
+          const isPreventa = fechaLanzamiento && (new Date(fechaLanzamiento) > new Date(fecha));
+          if (isPreventa) {
+            extraInfo = `<span class="text-[9px] bg-blue-100 text-blue-800 px-1 rounded ml-1">PREVENTA</span>`;
+          } else if (original > precio) {
+            const percent = Math.round((1 - (precio / original)) * 100);
+            extraInfo = `<span class="text-[9px] bg-red-100 text-red-800 px-1 rounded ml-1">OFERTA (-${percent}%)</span>`;
+          }
 
-      const subtotal = precio / 1.18;
-      const igv = precio - subtotal;
+          document.getElementById("r-items-prof")!.innerHTML = `
+            <div class="flex justify-between items-start mb-2 gap-2">
+              <span class="break-words">1 x ${titulo} ${extraInfo}</span>
+              <span class="shrink-0 whitespace-nowrap">S/ ${precio.toFixed(2)}</span>
+            </div>
+          `;
 
-      document.getElementById("r-sub-prof")!.textContent = "S/ " + subtotal.toFixed(2);
-      document.getElementById("r-igv-prof")!.textContent = "S/ " + igv.toFixed(2);
-      document.getElementById("r-tot-prof")!.textContent = "S/ " + precio.toFixed(2);
+          const subtotal = precio / 1.18;
+          const igv = precio - subtotal;
 
-      modal.classList.remove("hidden");
-  };
+          document.getElementById("r-sub-prof")!.textContent = "S/ " + subtotal.toFixed(2);
+          document.getElementById("r-igv-prof")!.textContent = "S/ " + igv.toFixed(2);
+          document.getElementById("r-tot-prof")!.textContent = "S/ " + precio.toFixed(2);
+
+          modal.classList.remove("hidden");
+      };
 </script>
 </body>
 </html>
@@ -471,8 +495,8 @@ el.innerHTML = data.map(v => {
     <div class="flex items-center gap-2">
       ${badge}
       ${mostrarBoleta
-        ? `<button onclick="window.showProfileReceipt('${v.venta_id}', '${v.fecha}', '${v.titulo.replace(/'/g,"\\'").replace(/"/g,"&quot;")}', ${v.precio}, ${v.precio_original || v.precio}, '${v.fecha_lanzamiento || ''}')" class="text-[10px] uppercase font-bold tracking-widest text-[#A78BFA] hover:text-white border border-[#A78BFA]/30 hover:border-[#A78BFA] px-2 py-1 rounded transition-colors">Boleta</button>`
-        : ``}
+  ? `<button onclick="window.showProfileReceipt('${v.venta_id}', '${v.fecha}', '${v.titulo.replace(/'/g,"\\'").replace(/"/g,"&quot;")}', ${v.precio}, ${v.precio_original || v.precio}, '${v.fecha_lanzamiento || ''}', ${esRegaloEnviado}, '${(v.relacionado_usuario || "").replace(/'/g,"\\'")}', '${(v.relacionado_correo || "").replace(/'/g,"\\'")}')" class="text-[10px] uppercase font-bold tracking-widest text-[#A78BFA] hover:text-white border border-[#A78BFA]/30 hover:border-[#A78BFA] px-2 py-1 rounded transition-colors">Boleta</button>`
+  : ``}
     </div>
   </div>`;
 }).join("");
