@@ -446,20 +446,36 @@ import "../styles/global.css";
 
       if (!data.length) { el.innerHTML = `<p class="text-[#71717A] text-sm text-center py-8">Aún no tienes compras en tu historial.</p>`; return; }
 
-      el.innerHTML = data.map(v => `
-        <div class="grid grid-cols-[1.5fr_2fr_1fr_1fr] items-center gap-4 px-8 py-5 hover:bg-[#1A1625] transition-colors">
-          <span class="text-[#A1A1AA] text-xs font-medium tracking-wide">${v.fecha?.substring(0,10) || "—"}</span>
-          <div class="flex items-center gap-4 min-w-0">
-            <img src="${v.imagen_url || 'https://placehold.co/48x64/1A1A1D/A78BFA?text=XDG'}"
-                 class="w-10 h-12 object-cover object-center rounded shadow-md shrink-0" alt="${v.titulo}" />
-            <span class="text-white text-sm font-semibold truncate tracking-wide">${v.titulo}</span>
-          </div>
-          <span class="text-white font-bold text-sm">S/ ${Number(v.precio).toFixed(2)}</span>
-          <div class="flex items-center gap-2">
-            <span class="inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold tracking-widest uppercase rounded">Adquirido</span>
-            <button onclick="window.showProfileReceipt('${v.venta_id}', '${v.fecha}', '${v.titulo.replace(/'/g,"\\'").replace(/"/g,"&quot;")}', ${v.precio}, ${v.precio_original || v.precio}, '${v.fecha_lanzamiento || ''}')" class="text-[10px] uppercase font-bold tracking-widest text-[#A78BFA] hover:text-white border border-[#A78BFA]/30 hover:border-[#A78BFA] px-2 py-1 rounded transition-colors">Boleta</button>
-          </div>
-        </div>`).join("");
+el.innerHTML = data.map(v => {
+  const esRegaloEnviado  = v.es_regalo && v.rol_regalo === "enviado";
+  const esRegaloRecibido = v.es_regalo && v.rol_regalo === "recibido";
+
+  let badge = `<span class="inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold tracking-widest uppercase rounded">Adquirido</span>`;
+  if (esRegaloEnviado) {
+    badge = `<span class="inline-block px-3 py-1 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[10px] font-bold tracking-widest uppercase rounded">Regalado a ${v.relacionado_usuario || "otro usuario"}</span>`;
+  } else if (esRegaloRecibido) {
+    badge = `<span class="inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold tracking-widest uppercase rounded">Adquirido (regalo de ${v.relacionado_usuario || "un amigo"})</span>`;
+  }
+
+  const mostrarBoleta = v.tiene_boleta !== false;
+
+  return `
+  <div class="grid grid-cols-[1.5fr_2fr_1fr_1fr] items-center gap-4 px-8 py-5 hover:bg-[#1A1625] transition-colors">
+    <span class="text-[#A1A1AA] text-xs font-medium tracking-wide">${v.fecha?.substring(0,10) || "—"}</span>
+    <div class="flex items-center gap-4 min-w-0">
+      <img src="${v.imagen_url || 'https://placehold.co/48x64/1A1A1D/A78BFA?text=XDG'}"
+           class="w-10 h-12 object-cover object-center rounded shadow-md shrink-0" alt="${v.titulo}" />
+      <span class="text-white text-sm font-semibold truncate tracking-wide">${v.titulo}</span>
+    </div>
+    <span class="text-white font-bold text-sm">${mostrarBoleta ? "S/ " + Number(v.precio).toFixed(2) : "—"}</span>
+    <div class="flex items-center gap-2">
+      ${badge}
+      ${mostrarBoleta
+        ? `<button onclick="window.showProfileReceipt('${v.venta_id}', '${v.fecha}', '${v.titulo.replace(/'/g,"\\'").replace(/"/g,"&quot;")}', ${v.precio}, ${v.precio_original || v.precio}, '${v.fecha_lanzamiento || ''}')" class="text-[10px] uppercase font-bold tracking-widest text-[#A78BFA] hover:text-white border border-[#A78BFA]/30 hover:border-[#A78BFA] px-2 py-1 rounded transition-colors">Boleta</button>`
+        : ``}
+    </div>
+  </div>`;
+}).join("");
     } catch { el.innerHTML = `<p class="text-red-400 text-sm text-center py-8">Error al cargar historial.</p>`; }
   }
 
@@ -469,11 +485,13 @@ import "../styles/global.css";
     try {
       const sess = await fetch(`${API}/api/session.jsp`, { credentials: "include" }).then(r => r.json());
       if (!sess.logged) { el.innerHTML = `<p class="text-[#71717A] text-sm col-span-full py-8 text-center">Inicia sesión.</p>`; return; }
-
       const ventas: any[] = await fetch(`${API}/api/ventas.jsp?user_id=${sess.id}`, { credentials: "include" }).then(r => r.json());
-      const seen = new Set<string>();
-      const unique = ventas.filter(v => { const k = String(v.juego_id || v.titulo); if(seen.has(k)) return false; seen.add(k); return true; });
 
+      // Un juego regalado (rol_regalo === 'enviado') no cuenta como parte de la biblioteca propia
+      const ventasPropias = ventas.filter(v => v.rol_regalo !== "enviado");
+
+      const seen = new Set<string>();
+      const unique = ventasPropias.filter(v => { const k = String(v.juego_id || v.titulo); if(seen.has(k)) return false; seen.add(k); return true; });
       if (!unique.length) { el.innerHTML = `<p class="text-[#71717A] text-sm col-span-full py-8 text-center">No tienes juegos en tu biblioteca aún.</p>`; return; }
 
       const allGames: any[] = await fetch(`${API}/api/juegos.jsp`, { credentials: "include" }).then(r => r.json());
