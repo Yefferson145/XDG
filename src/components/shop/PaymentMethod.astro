@@ -133,6 +133,14 @@ import GiftModal from "../../components/shop/GiftModal.astro";
         <span class="text-gray-600">Tarjeta:</span>
         <span class="font-medium">**** <span id="receipt-card-last4"></span></span>
       </div>
+      <div id="receipt-dest-row" class="justify-between text-xs font-mono" style="display:none">
+        <span class="text-gray-600">Destinatario:</span>
+        <span class="font-medium" id="receipt-dest"></span>
+      </div>
+      <div id="receipt-correo-row" class="justify-between text-xs font-mono" style="display:none">
+        <span class="text-gray-600">Correo:</span>
+        <span class="font-medium" id="receipt-correo"></span>
+      </div>
     </div>
 
     <div class="border-b-2 border-dashed border-gray-300 pb-4 mb-4">
@@ -326,6 +334,19 @@ if (data.success) {
         rdate.textContent = new Date().toLocaleDateString();
         const cardNumber = (document.getElementById("card_number") as HTMLInputElement)?.value.replace(/\s+/g, '');
         rlast4.textContent = cardNumber ? cardNumber.slice(-4) : "0000";
+
+        // --- Destinatario y correo (solo si fue compra como regalo) ---
+        const destRow   = document.getElementById("receipt-dest-row")!;
+        const correoRow = document.getElementById("receipt-correo-row")!;
+        if (giftRecipient?.usuario) {
+          document.getElementById("receipt-dest")!.textContent = giftRecipient.usuario;
+          document.getElementById("receipt-correo")!.textContent = session.email || "—";
+          destRow.style.display = "flex";
+          correoRow.style.display = "flex";
+        } else {
+          destRow.style.display = "none";
+          correoRow.style.display = "none";
+        }
 
         // --- Cálculo idéntico al de profile.astro: se deriva matemáticamente del total ---
         // total = suma de "precio" (ya incluye IGV) de todos los items, o el monto mostrado
