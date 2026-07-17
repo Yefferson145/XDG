@@ -133,6 +133,14 @@ import GiftModal from "../../components/shop/GiftModal.astro";
         <span class="text-gray-600">Tarjeta:</span>
         <span class="font-medium">**** <span id="receipt-card-last4"></span></span>
       </div>
+      <div id="receipt-dest-row" class="justify-between text-xs font-mono" style="display:none">
+        <span class="text-gray-600">Destinatario:</span>
+        <span class="font-medium" id="receipt-dest"></span>
+      </div>
+      <div id="receipt-correo-row" class="justify-between text-xs font-mono" style="display:none">
+        <span class="text-gray-600">Correo:</span>
+        <span class="font-medium" id="receipt-correo"></span>
+      </div>
     </div>
 
     <div class="border-b-2 border-dashed border-gray-300 pb-4 mb-4">
@@ -172,6 +180,26 @@ import GiftModal from "../../components/shop/GiftModal.astro";
 
 <script>
   const API = "http://localhost:8080";
+
+      const cardInput = document.getElementById("card_number") as HTMLInputElement | null;
+    cardInput?.addEventListener("input", () => {
+      cardInput.value = cardInput.value.replace(/\D/g, "").slice(0, 16);
+    });
+
+    const cvvInput = document.getElementById("cvv") as HTMLInputElement | null;
+    cvvInput?.addEventListener("input", () => {
+      cvvInput.value = cvvInput.value.replace(/\D/g, "").slice(0, 3);
+    });
+
+    const expiryInput = document.getElementById("expiry") as HTMLInputElement | null;
+    expiryInput?.addEventListener("input", () => {
+      let digits = expiryInput.value.replace(/\D/g, "").slice(0, 4);
+      if (digits.length >= 3) {
+        expiryInput.value = digits.slice(0, 2) + "/" + digits.slice(2);
+      } else {
+        expiryInput.value = digits;
+      }
+    });
 
   document.getElementById("btn-checkout")?.addEventListener("click", async () => {
     const btn = document.getElementById("btn-checkout") as HTMLButtonElement;
@@ -230,118 +258,73 @@ import GiftModal from "../../components/shop/GiftModal.astro";
 
       const data = await res.json();
 
-      if (data.success) {
-     
-        const cartItems = document.getElementById("cartItems");
-        const cartCount = document.getElementById("cartCount");
+if (data.success) {
 
-        if (cartItems) {
-          cartItems.innerHTML = `<p class="text-zinc-500 py-12 text-center">Tu carrito está vacío.</p>`;
-        }
-        if (cartCount) {
-          cartCount.textContent = "Tu carrito está vacío";
-        }
+  const cartItems = document.getElementById("cartItems");
+  const cartCount = document.getElementById("cartCount");
 
-        const elTotalOriginalAmount = document.getElementById("summary-total")?.textContent;
+  if (cartItems) {
+    cartItems.innerHTML = `<p class="text-zinc-500 py-12 text-center">Tu carrito está vacío.</p>`;
+  }
+  if (cartCount) {
+    cartCount.textContent = "Tu carrito está vacío";
+  }
 
-        const notificationMessage = giftRecipient?.usuario
-          ? `Se completó tu compra de regalo para ${giftRecipient.usuario}.`
-          : `Se completó tu compra exitosamente.`;
-        window.dispatchEvent(new CustomEvent("add-notification", { detail: { message: notificationMessage, type: 'purchase' } }));
+  // Guardamos el total ANTES de limpiar el resumen (única fuente confiable)
+  const elTotalOriginalAmount = document.getElementById("summary-total")?.textContent;
 
-        const elSub   = document.getElementById("summary-subtotal");
-        const elIgv   = document.getElementById("summary-igv");
-        const elTotal = document.getElementById("summary-total");
-        if (elSub)   elSub.textContent   = "$0.00";
-        if (elIgv)   elIgv.textContent   = "$0.00";
-        if (elTotal) elTotal.textContent = "$0.00";
+  const giftRecipient = (window as any).giftRecipient as { id: string; usuario: string } | null;
 
-        // La compra ya se hizo: se limpia la selección de regalo para la próxima compra.
-        (window as any).giftRecipient = null;
-        const giftBtn = document.getElementById("btn-gift");
-        if (giftBtn) {
-          giftBtn.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="16" fill="currentColor" viewBox="0 0 22 16"><path d="M0 16v-2.8q0-.85.438-1.562.437-.713 1.162-1.088a15 15 0 0 1 3.15-1.163A13.8 13.8 0 0 1 8 9q1.65 0 3.25.387 1.6.388 3.15 1.163.724.375 1.162 1.087Q16 12.35 16 13.2V16zm18 0v-3q0-1.1-.613-2.113-.612-1.012-1.737-1.737 1.275.15 2.4.512 1.125.363 2.1.888.9.5 1.375 1.112Q22 12.277 22 13v3zM8 8Q6.35 8 5.175 6.825T4 4t1.175-2.825T8 0t2.825 1.175T12 4t-1.175 2.825T8 8m10-4q0 1.65-1.175 2.825T14 8q-.275 0-.7-.062a6 6 0 0 1-.7-.138 6 6 0 0 0 1.037-1.775Q14 5.05 14 4t-.363-2.025A6 6 0 0 0 12.6.2a3 3 0 0 1 .7-.162Q13.65 0 14 0q1.65 0 2.825 1.175T18 4M2 14h12v-.8a.97.97 0 0 0-.5-.85q-1.35-.675-2.725-1.012a11.6 11.6 0 0 0-5.55 0Q3.85 11.675 2.5 12.35a.97.97 0 0 0-.5.85zm6-8q.825 0 1.412-.588Q10 4.826 10 4q0-.824-.588-1.412A1.93 1.93 0 0 0 8 2q-.824 0-1.412.587A1.93 1.93 0 0 0 6 4q0 .824.588 1.412Q7.175 6 8 6"/></svg>
-            <span>Comprar como regalo</span>
-          `;
-        }
-        document.getElementById("btn-gift-clear")?.remove();
+  const notificationMessage = giftRecipient?.usuario
+    ? `Se completó tu compra de regalo para ${giftRecipient.usuario}.`
+    : `Se completó tu compra exitosamente.`;
+  window.dispatchEvent(new CustomEvent("add-notification", { detail: { message: notificationMessage, type: 'purchase' } }));
 
-        btn.style.opacity = "1";
-        btn.style.transition = "background-color 0.2s, transform 0.35s cubic-bezier(0.34,1.56,0.64,1)";
-        btn.style.backgroundColor = "#16a34a";
-        btn.style.color = "#fff";
-        btn.style.transform = "scale(0.94)";
+  const elSub   = document.getElementById("summary-subtotal");
+  const elIgv   = document.getElementById("summary-igv");
+  const elTotal = document.getElementById("summary-total");
+  if (elSub)   elSub.textContent   = "$0.00";
+  if (elIgv)   elIgv.textContent   = "$0.00";
+  if (elTotal) elTotal.textContent = "$0.00";
 
-        btn.innerHTML = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-               fill="none" stroke="#fff" stroke-width="3"
-               stroke-linecap="round" stroke-linejoin="round"
-               style="stroke-dasharray:30;stroke-dashoffset:30;transition:stroke-dashoffset 0.4s ease 0.1s">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-          <span>¡Compra completada!</span>
-        `;
-
-        requestAnimationFrame(() => {
-          btn.style.transform = "scale(1.03)";
-          const icon = btn.querySelector("svg");
-          if (icon) icon.setAttribute("style", "stroke-dasharray:30;stroke-dashoffset:0;transition:stroke-dashoffset 0.4s ease 0.1s");
-          setTimeout(() => { 
-            btn.style.transform = "scale(1)"; 
-            
-            // Show Receipt Modal
-            // Show Receipt Modal
-            const modal = document.getElementById("receipt-modal");
-            const rid = document.getElementById("receipt-id");
-            const rdate = document.getElementById("receipt-date");
-            const rlast4 = document.getElementById("receipt-card-last4");
-            const rtotal = document.getElementById("receipt-total");
-            const rsubtotal = document.getElementById("receipt-subtotal");
-            const rigv = document.getElementById("receipt-igv");
-            const ritems = document.getElementById("receipt-items-list");
-            
-            if (modal && rid && rdate && rlast4 && rtotal) {
-              rid.textContent = data.venta_id.substring(0, 8).toUpperCase();
-              rdate.textContent = new Date().toLocaleDateString();
-              const cardNumber = (document.getElementById("card_number") as HTMLInputElement)?.value.replace(/\s+/g, '');
-              rlast4.textContent = cardNumber ? cardNumber.slice(-4) : "0000";
-              const toSoles = (txt: string | null | undefined) => (txt || "$0.00").replace("$", "S/ ");
-              rtotal.textContent = toSoles(elTotalOriginalAmount);
-              if (rsubtotal) rsubtotal.textContent = toSoles(elSub ? elSub.textContent : null);
-              if (rigv) rigv.textContent = toSoles(elIgv ? elIgv.textContent : null);
-
-              if (ritems) {
-                // Grab items from DOM before we clear them! (Wait, we already cleared them at line 187!)
-                // Oh no! We already did cartItems.innerHTML = ... at line 187.
-                // We need to fetch the items or grab them before clearing.
-                // But wait, the backend `checkout.jsp` just returns `{success: true, venta_id: uuid}`.
-                // We can just fetch `/api/ventas.jsp` and get the items for this venta_id!
-                ritems.innerHTML = (data.items || []).map((v: any) => {
-    let extraInfo = "";
-    const isPreventa = v.fecha_lanzamiento && (new Date(v.fecha_lanzamiento) > new Date());
-    if (isPreventa) {
-        extraInfo = `<span class="text-[9px] bg-blue-100 text-blue-800 px-1 rounded ml-1">PREVENTA</span>`;
-    } else if (v.precio_original > v.precio) {
-        const percent = Math.round((1 - (v.precio / v.precio_original)) * 100);
-        extraInfo = `<span class="text-[9px] bg-red-100 text-red-800 px-1 rounded ml-1">OFERTA (-${percent}%)</span>`;
-    }
-    return `
-    <div class="flex justify-between items-start mb-2 gap-2">
-      <span class="break-words">${v.cantidad} x ${v.titulo} ${extraInfo}</span>
-      <span class="shrink-0 whitespace-nowrap">S/ ${Number(v.precio).toFixed(2)}</span>
-    </div>
+  (window as any).giftRecipient = null;
+  const giftBtn = document.getElementById("btn-gift");
+  if (giftBtn) {
+    giftBtn.innerHTML = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="16" fill="currentColor" viewBox="0 0 22 16"><path d="M0 16v-2.8q0-.85.438-1.562.437-.713 1.162-1.088a15 15 0 0 1 3.15-1.163A13.8 13.8 0 0 1 8 9q1.65 0 3.25.387 1.6.388 3.15 1.163.724.375 1.162 1.087Q16 12.35 16 13.2V16zm18 0v-3q0-1.1-.613-2.113-.612-1.012-1.737-1.737 1.275.15 2.4.512 1.125.363 2.1.888.9.5 1.375 1.112Q22 12.277 22 13v3zM8 8Q6.35 8 5.175 6.825T4 4t1.175-2.825T8 0t2.825 1.175T12 4t-1.175 2.825T8 8m10-4q0 1.65-1.175 2.825T14 8q-.275 0-.7-.062a6 6 0 0 1-.7-.138 6 6 0 0 0 1.037-1.775Q14 5.05 14 4t-.363-2.025A6 6 0 0 0 12.6.2a3 3 0 0 1 .7-.162Q13.65 0 14 0q1.65 0 2.825 1.175T18 4M2 14h12v-.8a.97.97 0 0 0-.5-.85q-1.35-.675-2.725-1.012a11.6 11.6 0 0 0-5.55 0Q3.85 11.675 2.5 12.35a.97.97 0 0 0-.5.85zm6-8q.825 0 1.412-.588Q10 4.826 10 4q0-.824-.588-1.412A1.93 1.93 0 0 0 8 2q-.824 0-1.412.587A1.93 1.93 0 0 0 6 4q0 .824.588 1.412Q7.175 6 8 6"/></svg>
+      <span>Comprar como regalo</span>
     `;
-}).join("");
-              }
-              
-              modal.classList.remove("hidden");
-              modal.classList.add("flex");
-            }
-          }, 150);
-        });
+  }
+  document.getElementById("btn-gift-clear")?.remove();
 
-      } else {
+  btn.style.opacity = "1";
+  btn.style.transition = "background-color 0.2s, transform 0.35s cubic-bezier(0.34,1.56,0.64,1)";
+  btn.style.backgroundColor = "#16a34a";
+  btn.style.color = "#fff";
+  btn.style.transform = "scale(0.94)";
+
+  btn.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+         fill="none" stroke="#fff" stroke-width="3"
+         stroke-linecap="round" stroke-linejoin="round"
+         style="stroke-dasharray:30;stroke-dashoffset:30;transition:stroke-dashoffset 0.4s ease 0.1s">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+    <span>¡Compra completada!</span>
+  `;
+
+  requestAnimationFrame(() => {
+    btn.style.transform = "scale(1.03)";
+    const icon = btn.querySelector("svg");
+    if (icon) icon.setAttribute("style", "stroke-dasharray:30;stroke-dashoffset:0;transition:stroke-dashoffset 0.4s ease 0.1s");
+    setTimeout(() => {
+      btn.style.transform = "scale(1)";
+
+      window.location.href = "/profile";
+    }, 150);
+  });
+
+} else {
         throw new Error(data.message ?? "Error desconocido");
       }
 

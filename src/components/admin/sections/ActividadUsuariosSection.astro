@@ -1,0 +1,254 @@
+---
+---
+<div class="px-6 py-4 font-space">
+  <!-- Title -->
+  <div class="mb-6 flex justify-between items-end">
+    <div>
+      <h2 class="text-[32px] text-white font-medium">Actividad de Usuarios</h2>
+      <p class="text-[#71717A] text-sm mt-1">Estadísticas de crecimiento, retención e interacción de la comunidad.</p>
+    </div>
+    <button id="btn-refresh-activity" class="px-4 py-2 bg-[#17171A] border border-[#27272A] rounded-lg text-white hover:bg-[#27272A] transition-colors flex items-center gap-2 text-sm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
+        </svg>
+        Refrescar
+    </button>
+  </div>
+
+  <!-- Cards Summary Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <!-- Card 1: Total -->
+    <div class="bg-[#17171A]/70 border border-[#262629] p-5 rounded-2xl flex flex-col justify-between h-32 hover:border-[#8b5cf6]/50 transition-colors">
+      <span class="text-[#71717A] text-xs font-semibold tracking-wider uppercase">Usuarios Registrados</span>
+      <h3 id="act-total-users" class="text-white text-[32px] font-bold leading-none mt-2">0</h3>
+      <span class="text-[10px] text-[#A78BFA] font-medium tracking-wide">Base total de cuentas</span>
+    </div>
+    <!-- Card 2: Activos Hoy -->
+    <div class="bg-[#17171A]/70 border border-[#262629] p-5 rounded-2xl flex flex-col justify-between h-32 hover:border-emerald-500/50 transition-colors">
+      <span class="text-[#71717A] text-xs font-semibold tracking-wider uppercase">Activos Hoy (24h)</span>
+      <h3 id="act-active-today" class="text-white text-[32px] font-bold leading-none mt-2">0</h3>
+      <span class="text-[10px] text-emerald-400 font-medium tracking-wide">Conexiones en las últimas 24h</span>
+    </div>
+    <!-- Card 3: Activos Semana -->
+    <div class="bg-[#17171A]/70 border border-[#262629] p-5 rounded-2xl flex flex-col justify-between h-32 hover:border-blue-500/50 transition-colors">
+      <span class="text-[#71717A] text-xs font-semibold tracking-wider uppercase">Activos Semana (7d)</span>
+      <h3 id="act-active-week" class="text-white text-[32px] font-bold leading-none mt-2">0</h3>
+      <span class="text-[10px] text-blue-400 font-medium tracking-wide">Conexiones en los últimos 7 días</span>
+    </div>
+    <!-- Card 4: Inactivos -->
+    <div class="bg-[#17171A]/70 border border-[#262629] p-5 rounded-2xl flex flex-col justify-between h-32 hover:border-red-500/50 transition-colors">
+      <span class="text-[#71717A] text-xs font-semibold tracking-wider uppercase">Inactivos (+30d)</span>
+      <h3 id="act-inactive" class="text-white text-[32px] font-bold leading-none mt-2">0</h3>
+      <span class="text-[10px] text-red-400 font-medium tracking-wide">Sin conexión en más de un mes</span>
+    </div>
+  </div>
+
+  <!-- Charts & Top Buyers Row -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+    <!-- Chart 1: Line Growth (Col Span 2) -->
+    <div class="lg:col-span-2 bg-[#17171A]/70 border border-[#262629] p-6 rounded-[24px] flex flex-col">
+      <h3 class="text-white text-lg font-medium mb-6">Crecimiento de la Base de Usuarios (Últimos 30 días)</h3>
+      <div class="relative h-64 w-full">
+        <canvas id="userGrowthChart"></canvas>
+      </div>
+    </div>
+    
+    <!-- Chart 2: Activity Distribution (Col Span 1) -->
+    <div class="bg-[#17171A]/70 border border-[#262629] p-6 rounded-[24px] flex flex-col justify-between">
+      <h3 class="text-white text-lg font-medium mb-4">Estado de Actividad</h3>
+      <div class="relative h-48 w-full flex justify-center items-center">
+        <canvas id="userActivityDoughnut"></canvas>
+      </div>
+      <div class="grid grid-cols-2 gap-2 mt-4 text-xs text-[#A1A1AA]">
+         <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-[#34D399] inline-block"></span> Activos (&lt; 30d)</div>
+         <div class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-[#EF4444] inline-block"></span> Inactivos</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Buyers Section -->
+  <div class="bg-[#17171A]/70 border border-[#262629] p-6 rounded-[24px]">
+    <h3 class="text-white text-lg font-medium mb-4">Compradores Estrella (Top 5)</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-[#262629] text-[#71717A] text-xs uppercase tracking-wider">
+            <th class="pb-3 pl-2">Usuario</th>
+            <th class="pb-3">Nombre</th>
+            <th class="pb-3">Correo</th>
+            <th class="pb-3 text-center">Compras Realizadas</th>
+            <th class="pb-3 text-right pr-2">Total Invertido</th>
+          </tr>
+        </thead>
+        <tbody id="top-buyers-table-body" class="text-sm">
+          <tr><td colspan="5" class="py-6 text-center text-[#71717A]">Cargando compradores estrella...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  const API = "http://localhost:8080";
+  let growthChart: any = null;
+  let doughnutChart: any = null;
+
+  async function loadActivityData() {
+    const btn = document.getElementById("btn-refresh-activity");
+    if (btn) btn.classList.add("opacity-50", "pointer-events-none");
+
+    try {
+      const res = await fetch(`${API}/api/actividad_usuarios.jsp`, { credentials: "include" });
+      const data = await res.json();
+      if (data.error) {
+        console.error("Error fetching activity reports:", data.error);
+        return;
+      }
+
+      // Update metrics cards
+      document.getElementById("act-total-users")!.textContent = Number(data.total_usuarios ?? 0).toLocaleString();
+      document.getElementById("act-active-today")!.textContent = Number(data.activos_hoy ?? 0).toLocaleString();
+      document.getElementById("act-active-week")!.textContent = Number(data.activos_semana ?? 0).toLocaleString();
+      document.getElementById("act-inactive")!.textContent = Number(data.inactivos ?? 0).toLocaleString();
+
+      // Render Growth Line Chart
+      renderGrowthChart(data.growth || []);
+
+      // Render Activity Doughnut
+      renderDoughnutChart(data.activos_mes ?? 0, data.inactivos ?? 0);
+
+      // Render Top Buyers Table
+      renderTopBuyersTable(data.top_buyers || []);
+
+    } catch (e) {
+      console.error("Connection error activity data:", e);
+    } finally {
+      if (btn) btn.classList.remove("opacity-50", "pointer-events-none");
+    }
+  }
+
+  function renderGrowthChart(growthList: any[]) {
+    const ctx = document.getElementById("userGrowthChart") as HTMLCanvasElement;
+    if (!ctx) return;
+    if (growthChart) growthChart.destroy();
+
+    const labels = growthList.map(g => {
+      const datePart = (g.fecha || "").split(" ")[0];
+      const parts = datePart.split("-");
+      return parts.length === 3 ? `${parts[2]}/${parts[1]}` : g.fecha;
+    });
+    
+    const values = growthList.map(g => g.cantidad);
+
+    // @ts-ignore
+    growthChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Nuevos Registros',
+          data: values,
+          borderColor: '#A78BFA',
+          backgroundColor: 'rgba(167, 139, 250, 0.05)',
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#8B5CF6'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { color: '#71717A', font: { family: 'Inter', size: 10 } }
+          },
+          y: {
+            grid: { color: '#262629' },
+            ticks: { color: '#71717A', font: { family: 'Inter', size: 10 }, stepSize: 1 },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+
+  function renderDoughnutChart(activeMes: number, inactive: number) {
+    const ctx = document.getElementById("userActivityDoughnut") as HTMLCanvasElement;
+    if (!ctx) return;
+    if (doughnutChart) doughnutChart.destroy();
+
+    // @ts-ignore
+    doughnutChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Activos (<30d)', 'Inactivos'],
+        datasets: [{
+          data: [activeMes, inactive],
+          backgroundColor: ['#34D399', '#EF4444'],
+          borderColor: '#17171A',
+          borderWidth: 2,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        cutout: '75%'
+      }
+    });
+  }
+
+  function renderTopBuyersTable(buyers: any[]) {
+    const tbody = document.getElementById("top-buyers-table-body");
+    if (!tbody) return;
+
+    if (buyers.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-[#71717A]">No hay registros de compras.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = buyers.map((b, idx) => `
+      <tr class="border-b border-[#262629]/50 hover:bg-[#262629]/20 transition-colors text-[#A1A1AA]">
+        <td class="py-4 pl-2 font-medium text-white flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-[#8B5CF6]/15 border border-[#8B5CF6]/30 flex items-center justify-center text-xs font-bold text-[#A78BFA]">
+             ${String(b.usuario || b.nombre || "?").substring(0, 2).toUpperCase()}
+          </div>
+          <span>@${b.usuario}</span>
+        </td>
+        <td class="py-4">${b.nombre}</td>
+        <td class="py-4 text-xs font-mono">${b.correo}</td>
+        <td class="py-4 text-center font-bold text-white">${b.compras}</td>
+        <td class="py-4 text-right pr-2 font-bold text-emerald-400">S/ ${Number(b.gastado).toFixed(2)}</td>
+      </tr>
+    `).join('');
+  }
+
+  // Setup listeners
+  function initEvents() {
+    const btn = document.getElementById("btn-refresh-activity");
+    if (btn) btn.addEventListener("click", loadActivityData);
+
+    // Fetch data if section is opened
+    window.addEventListener("section-opened", (e: any) => {
+      if (e.detail?.section === "actividad-usuarios") {
+        loadActivityData();
+      }
+    });
+
+    // Run initial fetch
+    loadActivityData();
+  }
+
+  document.addEventListener("DOMContentLoaded", initEvents);
+  document.addEventListener("astro:page-load", initEvents);
+</script>

@@ -208,7 +208,14 @@ import "../styles/global.css";
         <span class="text-gray-600">Cliente:</span>
         <span class="font-medium" id="r-client-prof"></span>
       </div>
-    </div>
+      <div id="r-dest-row-prof" class="justify-between text-xs font-mono" style="display:none">
+        <span class="text-gray-600">Destinatario:</span>
+        <span class="font-medium" id="r-dest-prof"></span>
+      </div>
+      <div id="r-correo-row-prof" class="justify-between text-xs font-mono" style="display:none">
+        <span class="text-gray-600">Correo:</span>
+        <span class="font-medium" id="r-correo-prof"></span>
+      </div>
 
     <div class="border-b-2 border-dashed border-gray-300 pb-4 mb-4">
       <div class="flex justify-between text-xs font-bold uppercase tracking-wider mb-2">
@@ -244,39 +251,62 @@ import "../styles/global.css";
   </div>
 </div>
 <script>
-  (window as any).showProfileReceipt = function(vid:string, fecha:string, titulo:string, precio:number, original:number, fechaLanzamiento:string) {
-      const modal = document.getElementById("receipt-modal-profile");
-      if(!modal) return;
+      (window as any).showProfileReceipt = function(
+        vid: string, fecha: string, itemsJsonStrEncoded: string, esRegalo: boolean = false,
+        destinatario: string = "", correoDestinatario: string = ""
+      ) {
+          const modal = document.getElementById("receipt-modal-profile");
+          if(!modal) return;
 
-      document.getElementById("r-id-prof")!.textContent = vid.substring(0,8).toUpperCase();
-      document.getElementById("r-date-prof")!.textContent = fecha.substring(0,10);
-      document.getElementById("r-client-prof")!.textContent = document.getElementById("profileDisplayName")?.textContent || "Cliente";
+          document.getElementById("r-id-prof")!.textContent = vid.substring(0,8).toUpperCase();
+          document.getElementById("r-date-prof")!.textContent = fecha.substring(0,10);
+          document.getElementById("r-client-prof")!.textContent = document.getElementById("profileDisplayName")?.textContent || "Cliente";
 
-      let extraInfo = "";
-      const isPreventa = fechaLanzamiento && (new Date(fechaLanzamiento) > new Date(fecha));
-      if (isPreventa) {
-        extraInfo = `<span class="text-[9px] bg-blue-100 text-blue-800 px-1 rounded ml-1">PREVENTA</span>`;
-      } else if (original > precio) {
-        const percent = Math.round((1 - (precio / original)) * 100);
-        extraInfo = `<span class="text-[9px] bg-red-100 text-red-800 px-1 rounded ml-1">OFERTA (-${percent}%)</span>`;
-      }
+          // Destinatario y correo solo si es regalo
+          const destRow = document.getElementById("r-dest-row-prof")!;
+          const correoRow = document.getElementById("r-correo-row-prof")!;
+          if (esRegalo) {
+            document.getElementById("r-dest-prof")!.textContent = destinatario || "—";
+            document.getElementById("r-correo-prof")!.textContent = correoDestinatario || "—";
+            destRow.style.display = "flex";
+            correoRow.style.display = "flex";
+          } else {
+            destRow.style.display = "none";
+            correoRow.style.display = "none";
+          }
 
-      document.getElementById("r-items-prof")!.innerHTML = `
-        <div class="flex justify-between items-start mb-2 gap-2">
-          <span class="break-words">1 x ${titulo} ${extraInfo}</span>
-          <span class="shrink-0 whitespace-nowrap">S/ ${precio.toFixed(2)}</span>
-        </div>
-      `;
+          const items = JSON.parse(decodeURIComponent(itemsJsonStrEncoded));
+          let totalPrice = 0;
 
-      const subtotal = precio / 1.18;
-      const igv = precio - subtotal;
+          document.getElementById("r-items-prof")!.innerHTML = items.map((v: any) => {
+            let extraInfo = "";
+            const isPreventa = v.fecha_lanzamiento && (new Date(v.fecha_lanzamiento) > new Date(fecha));
+            if (isPreventa) {
+              extraInfo = `<span class="text-[9px] bg-blue-100 text-blue-800 px-1 rounded ml-1">PREVENTA</span>`;
+            } else if (v.precio_original > v.precio) {
+              const percent = Math.round((1 - (v.precio / v.precio_original)) * 100);
+              extraInfo = `<span class="text-[9px] bg-red-100 text-red-800 px-1 rounded ml-1">OFERTA (-${percent}%)</span>`;
+            }
+            const itemTotal = v.precio * v.cantidad;
+            totalPrice += itemTotal;
 
-      document.getElementById("r-sub-prof")!.textContent = "S/ " + subtotal.toFixed(2);
-      document.getElementById("r-igv-prof")!.textContent = "S/ " + igv.toFixed(2);
-      document.getElementById("r-tot-prof")!.textContent = "S/ " + precio.toFixed(2);
+            return `
+              <div class="flex justify-between items-start mb-2 gap-2 text-xs font-mono">
+                <span class="break-words">${v.cantidad} x ${v.titulo} ${extraInfo}</span>
+                <span class="shrink-0 whitespace-nowrap">S/ ${itemTotal.toFixed(2)}</span>
+              </div>
+            `;
+          }).join("");
 
-      modal.classList.remove("hidden");
-  };
+          const subtotal = totalPrice / 1.18;
+          const igv = totalPrice - subtotal;
+
+          document.getElementById("r-sub-prof")!.textContent = "S/ " + subtotal.toFixed(2);
+          document.getElementById("r-igv-prof")!.textContent = "S/ " + igv.toFixed(2);
+          document.getElementById("r-tot-prof")!.textContent = "S/ " + totalPrice.toFixed(2);
+
+          modal.classList.remove("hidden");
+      };
 </script>
 </body>
 </html>
@@ -446,21 +476,82 @@ import "../styles/global.css";
 
       if (!data.length) { el.innerHTML = `<p class="text-[#71717A] text-sm text-center py-8">Aún no tienes compras en tu historial.</p>`; return; }
 
-      el.innerHTML = data.map(v => `
+      // Group items by transaction (venta_id)
+      const groups: Record<string, any> = {};
+      data.forEach(v => {
+        if (!groups[v.venta_id]) {
+          groups[v.venta_id] = {
+            venta_id: v.venta_id,
+            fecha: v.fecha,
+            comprador_id: v.comprador_id,
+            usuario_id: v.usuario_id,
+            comprador_usuario: v.comprador_usuario,
+            comprador_nombre: v.comprador_nombre,
+            destinatario_nombre: v.destinatario_nombre,
+            destinatario_usuario: v.destinatario_usuario,
+            destinatario_correo: v.destinatario_correo,
+            es_regalo: v.es_regalo,
+            items: []
+          };
+        }
+        groups[v.venta_id].items.push({
+          juego_id: v.juego_id,
+          titulo: v.titulo,
+          imagen_url: v.imagen_url,
+          precio: v.precio,
+          precio_original: v.precio_original,
+          cantidad: v.cantidad,
+          fecha_lanzamiento: v.fecha_lanzamiento
+        });
+      });
+
+      const groupedArray = Object.values(groups);
+
+      el.innerHTML = groupedArray.map((group: any) => {
+        const esRegaloEnviado  = group.es_regalo && (group.comprador_id === sess.id) && (group.comprador_id !== group.usuario_id);
+        const esRegaloRecibido = group.es_regalo && (group.comprador_id !== sess.id);
+
+        let badge = `<span class="inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold tracking-widest uppercase rounded">Adquirido</span>`;
+        if (esRegaloEnviado) {
+          badge = `<span class="inline-block px-3 py-1 bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[10px] font-bold tracking-widest uppercase rounded">Regalado a @${group.destinatario_usuario || "otro usuario"}</span>`;
+        } else if (esRegaloRecibido) {
+          badge = `<span class="inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold tracking-widest uppercase rounded">Adquirido (regalo de @${group.comprador_usuario || "un amigo"})</span>`;
+        }
+
+        const mostrarBoleta = group.comprador_id === sess.id;
+        const totalPrice = group.items.reduce((sum: number, it: any) => sum + (it.precio * it.cantidad), 0);
+
+        // Render overlapping stacked images
+        const imagesHtml = group.items.map((it: any) => `
+          <img src="${it.imagen_url || 'https://placehold.co/48x64/1A1A1D/A78BFA?text=XDG'}"
+               class="w-10 h-12 object-cover object-center rounded shadow-md shrink-0 -mr-3 border-2 border-[#13101A]" alt="${it.titulo}" />
+        `).join("");
+
+        const titles = group.items.map((it: any) => it.titulo).join(", ");
+        const encodedItems = encodeURIComponent(JSON.stringify(group.items));
+
+        return `
         <div class="grid grid-cols-[1.5fr_2fr_1fr_1fr] items-center gap-4 px-8 py-5 hover:bg-[#1A1625] transition-colors">
-          <span class="text-[#A1A1AA] text-xs font-medium tracking-wide">${v.fecha?.substring(0,10) || "—"}</span>
-          <div class="flex items-center gap-4 min-w-0">
-            <img src="${v.imagen_url || 'https://placehold.co/48x64/1A1A1D/A78BFA?text=XDG'}"
-                 class="w-10 h-12 object-cover object-center rounded shadow-md shrink-0" alt="${v.titulo}" />
-            <span class="text-white text-sm font-semibold truncate tracking-wide">${v.titulo}</span>
+          <span class="text-[#A1A1AA] text-xs font-medium tracking-wide">${group.fecha?.substring(0,10) || "—"}</span>
+          <div class="flex items-center gap-4 min-w-0 pr-4">
+            <div class="flex items-center shrink-0 pr-2">
+              ${imagesHtml}
+            </div>
+            <span class="text-white text-sm font-semibold truncate tracking-wide" title="${titles}">${titles}</span>
           </div>
-          <span class="text-white font-bold text-sm">S/ ${Number(v.precio).toFixed(2)}</span>
+          <span class="text-white font-bold text-sm">${mostrarBoleta ? "S/ " + totalPrice.toFixed(2) : "—"}</span>
           <div class="flex items-center gap-2">
-            <span class="inline-block px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold tracking-widest uppercase rounded">Adquirido</span>
-            <button onclick="window.showProfileReceipt('${v.venta_id}', '${v.fecha}', '${v.titulo.replace(/'/g,"\\'").replace(/"/g,"&quot;")}', ${v.precio}, ${v.precio_original || v.precio}, '${v.fecha_lanzamiento || ''}')" class="text-[10px] uppercase font-bold tracking-widest text-[#A78BFA] hover:text-white border border-[#A78BFA]/30 hover:border-[#A78BFA] px-2 py-1 rounded transition-colors">Boleta</button>
+            ${badge}
+            ${mostrarBoleta
+              ? `<button onclick="window.showProfileReceipt('${group.venta_id}', '${group.fecha}', '${encodedItems}', ${esRegaloEnviado}, '${(group.destinatario_nombre || group.destinatario_usuario || "").replace(/'/g,"\\'")}', '${(group.destinatario_correo || "").replace(/'/g,"\\'")}')" class="text-[10px] uppercase font-bold tracking-widest text-[#A78BFA] hover:text-white border border-[#A78BFA]/30 hover:border-[#A78BFA] px-2 py-1 rounded transition-colors">Boleta</button>`
+              : ``}
           </div>
-        </div>`).join("");
-    } catch { el.innerHTML = `<p class="text-red-400 text-sm text-center py-8">Error al cargar historial.</p>`; }
+        </div>`;
+      }).join("");
+    } catch (err) {
+      console.error("Error loading purchases:", err);
+      el.innerHTML = `<p class="text-red-400 text-sm text-center py-8">Error al cargar historial.</p>`;
+    }
   }
 
   async function loadGames() {
@@ -469,11 +560,10 @@ import "../styles/global.css";
     try {
       const sess = await fetch(`${API}/api/session.jsp`, { credentials: "include" }).then(r => r.json());
       if (!sess.logged) { el.innerHTML = `<p class="text-[#71717A] text-sm col-span-full py-8 text-center">Inicia sesión.</p>`; return; }
+      const ventas: any[] = await fetch(`${API}/api/ventas.jsp?user_id=${sess.id}&library=true`, { credentials: "include" }).then(r => r.json());
 
-      const ventas: any[] = await fetch(`${API}/api/ventas.jsp?user_id=${sess.id}`, { credentials: "include" }).then(r => r.json());
       const seen = new Set<string>();
       const unique = ventas.filter(v => { const k = String(v.juego_id || v.titulo); if(seen.has(k)) return false; seen.add(k); return true; });
-
       if (!unique.length) { el.innerHTML = `<p class="text-[#71717A] text-sm col-span-full py-8 text-center">No tienes juegos en tu biblioteca aún.</p>`; return; }
 
       const allGames: any[] = await fetch(`${API}/api/juegos.jsp`, { credentials: "include" }).then(r => r.json());
@@ -483,6 +573,12 @@ import "../styles/global.css";
       el.innerHTML = unique.map(v => {
         const g = gamesMap[String(v.juego_id)] || {};
         const img = g.imagen_url || `https://placehold.co/400x200/1A1A1D/A78BFA?text=XDG`;
+        
+        const isGift = v.es_regalo && (v.comprador_id !== sess.id);
+        const giftText = isGift
+          ? `<p class="text-[#A78BFA] text-xs mt-1 font-semibold">Obsequiado por @${v.comprador_usuario || v.comprador_nombre}</p>`
+          : `<p class="text-[#71717A] text-xs mt-1">Instalado</p>`;
+
         return `
         <div class="group bg-[#13101A] border border-[#2A2633] rounded-2xl overflow-hidden hover:border-[#A78BFA]/50 transition-all shadow-xl flex flex-col justify-between">
           <figure class="relative aspect-[3/4] overflow-hidden bg-[#1A1625]">
@@ -491,7 +587,7 @@ import "../styles/global.css";
           <div class="p-4 flex flex-col grow justify-between bg-[#13101A]">
             <div class="mb-4">
               <h3 class="text-white text-lg font-bold truncate">${v.titulo}</h3>
-              <p class="text-[#71717A] text-xs mt-1">Instalado</p>
+              ${giftText}
             </div>
             <div class="flex gap-2">
               <button class="flex-1 bg-[#A78BFA]/10 hover:bg-[#A78BFA] text-[#A78BFA] hover:text-black border border-[#A78BFA]/20 hover:border-transparent font-bold py-2 rounded-xl text-[10px] tracking-widest uppercase transition-all">Jugar Ahora</button>

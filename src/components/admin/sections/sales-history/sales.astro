@@ -87,6 +87,7 @@
 
             <div class="min-w-0 pr-4">
               <p class="text-[14px] font-medium text-[#d1d5db] truncate">${v.juego || ""}</p>
+              ${v.es_regalo ? `<p class="text-[11px] font-semibold text-[#A78BFA] mt-0.5 truncate flex items-center gap-1"><svg class="w-3.5 h-3.5 text-[#A78BFA] flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm-2 4h4M5 11h14v10H5V11z"></path></svg> Para: ${v.dest_nombre || v.dest_usuario || ""} (${v.dest_correo || ""})</p>` : ""}
             </div>
 
             <div>

@@ -380,9 +380,22 @@ document.addEventListener("DOMContentLoaded", () => {
                     checkDiscountsForNotifications();
                 }
 
+                // Check new gifts for notifications
+                try {
+                    const gifts = await fetch(`${API}/api/regalos_nuevos.jsp?user_id=${data.id}`, { credentials: "include" }).then(r => r.json());
+                    if (Array.isArray(gifts)) {
+                        gifts.forEach((g: any) => {
+                            const msg = `El usuario ${g.comprador_usuario || g.comprador_nombre} te regaló el juego ${g.juego_titulo}`;
+                            window.dispatchEvent(new CustomEvent("add-notification", { detail: { message: msg, type: 'gift' } }));
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error checking gifts:", e);
+                }
+
                 // Check cart indicator
                 try {
-                    const cart = await fetch(`${(window as any).xdgStore.API}/api/carrito.jsp?user_id=${data.id}`, { credentials: "include" }).then(r => r.json());
+                    const cart = await fetch(`${API}/api/carrito.jsp?user_id=${data.id}`, { credentials: "include" }).then(r => r.json());
                     const cartDot = document.getElementById("nav-cart-dot");
                     if (cartDot) {
                         if (cart.length > 0 && !cart.error) cartDot.classList.remove("hidden");

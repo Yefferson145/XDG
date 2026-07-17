@@ -1,8 +1,78 @@
 ---
 import UserHeader from "../../../../components/admin/sections/gest-user/UserHeader.astro";
 import UserTable from "../../../../components/admin/sections/gest-user/UserTable.astro";
+import ActividadUsuariosSection from "../ActividadUsuariosSection.astro";
 ---
 
-<UserHeader />
+<div class="px-2 py-4">
+  <!-- Tabs Navigation -->
+  <div class="flex gap-6 border-b border-[#262629] mb-6 px-4">
+    <button id="tab-btn-users-list" class="pb-3 text-sm font-semibold border-b-2 border-[#8B5CF6] text-white hover:text-white transition-all cursor-pointer outline-none">
+      Lista de Usuarios
+    </button>
+    <button id="tab-btn-users-activity" class="pb-3 text-sm font-semibold border-b-2 border-transparent text-[#71717A] hover:text-white transition-all cursor-pointer outline-none">
+      Métricas y Actividad
+    </button>
+  </div>
 
-<UserTable />
+  <!-- Content Container 1: Users List -->
+  <div id="tab-content-users-list" class="block">
+     <UserHeader />
+     <UserTable />
+  </div>
+
+  <!-- Content Container 2: Activity Report -->
+  <div id="tab-content-users-activity" class="hidden">
+     <ActividadUsuariosSection />
+  </div>
+</div>
+
+<script>
+  function initTabs() {
+    const btnList = document.getElementById("tab-btn-users-list");
+    const btnActivity = document.getElementById("tab-btn-users-activity");
+    const contentList = document.getElementById("tab-content-users-list");
+    const contentActivity = document.getElementById("tab-content-users-activity");
+
+    if (!btnList || !btnActivity || !contentList || !contentActivity) return;
+
+    btnList.addEventListener("click", () => {
+      // Toggle button classes
+      btnList.classList.remove("border-transparent", "text-[#71717A]");
+      btnList.classList.add("border-[#8B5CF6]", "text-white");
+      
+      btnActivity.classList.remove("border-[#8B5CF6]", "text-white");
+      btnActivity.classList.add("border-transparent", "text-[#71717A]");
+
+      // Toggle content visibility
+      contentList.classList.remove("hidden");
+      contentList.classList.add("block");
+      
+      contentActivity.classList.remove("block");
+      contentActivity.classList.add("hidden");
+    });
+
+    btnActivity.addEventListener("click", () => {
+      // Toggle button classes
+      btnActivity.classList.remove("border-transparent", "text-[#71717A]");
+      btnActivity.classList.add("border-[#8B5CF6]", "text-white");
+      
+      btnList.classList.remove("border-[#8B5CF6]", "text-white");
+      btnList.classList.add("border-transparent", "text-[#71717A]");
+
+      // Toggle content visibility
+      contentList.classList.remove("block");
+      contentList.classList.add("hidden");
+      
+      contentActivity.classList.remove("hidden");
+      contentActivity.classList.add("block");
+
+      // Trigger section opened event for activity report charts loading
+      window.dispatchEvent(new CustomEvent("section-opened", { detail: { section: "actividad-usuarios" } }));
+    });
+  }
+
+  // Setup tab switcher on DOM content load
+  document.addEventListener("DOMContentLoaded", initTabs);
+  document.addEventListener("astro:page-load", initTabs);
+</script>
