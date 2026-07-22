@@ -38,6 +38,11 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
                 Exportar Excel
             </button>
+
+            <button id="exportPdfBtn" class="text-sm font-semibold text-white bg-[#EF4444] rounded-full px-5 py-2 hover:bg-[#DC2626] transition-colors flex items-center gap-2 cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M14 4.5V14a2 2 0 0 1-2 2h-1v-1h1a1 1 0 0 0 1-1V4.5h-2A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v9H2V2a2 2 0 0 1 2-2h5.5L14 4.5zM1.6 11.85H0v3.999h.791v-1.342h.803c.734 0 1.316-.492 1.316-1.323 0-.79-.545-1.334-1.31-1.334zm.803.65c0 .44-.32.72-.8.72h-.72v-1.483h.72c.48 0 .8.283.8.762zm1.098-.65v3.999h1.36c1.228 0 1.984-.708 1.984-1.998 0-1.29-.756-2.001-1.985-2.001H3.501zm.791.677h.51c.752 0 1.202.406 1.202 1.325 0 .918-.45 1.322-1.201 1.322h-.512v-2.647zM10.336 14.09v.906h1.902v-.744h-1.902v-.965h2.037v-.741H9.542v3.999h.794v-1.455z"/></svg>
+                Exportar PDF
+            </button>
         </div>
     </div>
 
@@ -87,11 +92,14 @@
 </div>
 
 <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 
 <script>
     const API = "http://localhost:8080";
     let chartInstance: any = null;
     let currentReportData: any[] = [];
+    let currentTopGames: any[] = [];
     let selectedMonths: string[] = [];
 
     const monthsNames = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -267,6 +275,8 @@
             const data = await res.json();
             if (data.error) throw new Error(data.error);
 
+            currentTopGames = data;
+
             if (data.length === 0) {
                 list.innerHTML = `<tr><td colspan="4" class="text-[#71717A] text-sm text-center py-10">No hay ventas registradas.</td></tr>`;
                 return;
@@ -351,6 +361,132 @@
         document.body.removeChild(link);
     }
 
+    // Renderiza un pie chart en un canvas fuera de pantalla y devuelve su imagen en base64
+    function generatePieChartImage(labels: string[], data: number[], colors: string[]): Promise<string> {
+        return new Promise((resolve) => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 500;
+            canvas.height = 420;
+            canvas.style.position = 'fixed';
+            canvas.style.left = '-9999px';
+            canvas.style.top = '0';
+            document.body.appendChild(canvas);
+
+            // @ts-ignore
+            const chart = new Chart(canvas, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    animation: false,
+                    devicePixelRatio: 2,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { font: { size: 13 }, boxWidth: 14, color: '#111214' }
+                        },
+                        title: { display: false }
+                    }
+                }
+            });
+
+            // Esperamos un tick para asegurar el render antes de exportar la imagen
+            setTimeout(() => {
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                chart.destroy();
+                document.body.removeChild(canvas);
+                resolve(imgData);
+            }, 250);
+        });
+    }
+
+    async function exportToPDF() {
+        if (!currentReportData || currentReportData.length === 0) {
+            alert("No hay datos para exportar.");
+            return;
+        }
+
+        // @ts-ignore
+        const { jsPDF } = (window as any).jspdf;
+        const doc = new jsPDF();
+
+        const sumIngresos = currentReportData.reduce((a: number, d: any) => a + d.ingresos, 0);
+        const sumEgresos = currentReportData.reduce((a: number, d: any) => a + d.egresos, 0);
+        const sumGanancia = currentReportData.reduce((a: number, d: any) => a + d.ganancia, 0);
+
+        // Encabezado
+        doc.setFontSize(18);
+        doc.setTextColor(139, 92, 246);
+        doc.text("Reporte Financiero", 14, 18);
+
+        doc.setFontSize(10);
+        doc.setTextColor(120, 120, 120);
+        doc.text(`Generado: ${new Date().toLocaleString('es-PE')}`, 14, 25);
+
+        // Totales
+        doc.setFontSize(11);
+        doc.setTextColor(30, 30, 30);
+        doc.text(`Ingreso Bruto: S/ ${sumIngresos.toFixed(2)}`, 14, 34);
+        doc.setTextColor(16, 185, 129);
+        doc.text(`Ganancia Neta: S/ ${sumGanancia.toFixed(2)}`, 90, 34);
+        doc.setTextColor(239, 68, 68);
+        doc.text(`Egresos: S/ ${sumEgresos.toFixed(2)}`, 150, 34);
+        doc.setTextColor(30, 30, 30);
+
+        // Gráfico circular 1: composición Ganancia vs Egresos
+        const pieComposicion = await generatePieChartImage(
+            ['Ganancia Neta', 'Egresos'],
+            [sumGanancia, sumEgresos],
+            ['#10B981', '#EF4444']
+        );
+        doc.addImage(pieComposicion, 'PNG', 12, 40, 88, 74);
+        doc.setFontSize(9);
+        doc.setTextColor(90, 90, 90);
+        doc.text('Composición: Ganancia vs Egresos', 20, 117);
+
+        // Gráfico circular 2: top 5 juegos por ingresos
+        if (currentTopGames && currentTopGames.length > 0) {
+            const top5 = currentTopGames.slice(0, 5);
+            const pieTopGames = await generatePieChartImage(
+                top5.map((j: any) => j.titulo),
+                top5.map((j: any) => j.ingresos_totales),
+                ['#A78BFA', '#3B82F6', '#F59E0B', '#EC4899', '#14B8A6']
+            );
+            doc.addImage(pieTopGames, 'PNG', 108, 40, 88, 74);
+            doc.setFontSize(9);
+            doc.setTextColor(90, 90, 90);
+            doc.text('Top 5 Juegos por Ingresos', 118, 117);
+        }
+
+        // Tabla con el detalle del reporte
+        const tableBody = currentReportData.map((d: any) => [
+            d.fecha,
+            `S/ ${d.ingresos.toFixed(2)}`,
+            `S/ ${d.egresos.toFixed(2)}`,
+            `S/ ${d.ganancia.toFixed(2)}`
+        ]);
+
+        // @ts-ignore
+        doc.autoTable({
+            startY: 125,
+            head: [['Fecha', 'Ingreso Bruto (S/)', 'Comisión de Juegos (S/)', 'Ganancia Neta (S/)']],
+            body: tableBody,
+            headStyles: { fillColor: [139, 92, 246], textColor: 255, fontSize: 9 },
+            bodyStyles: { fontSize: 8 },
+            alternateRowStyles: { fillColor: [245, 243, 255] }
+        });
+
+        doc.save(`reporte_financiero_${Date.now()}.pdf`);
+    }
+
     window.addEventListener("DOMContentLoaded", () => {
         const rangoSelect = document.getElementById("rangoReporte") as HTMLSelectElement;
         const multiContainer = document.getElementById("multiSelectContainer") as HTMLElement;
@@ -401,6 +537,7 @@
         });
 
         document.getElementById("exportExcelBtn")?.addEventListener("click", exportToExcel);
+        document.getElementById("exportPdfBtn")?.addEventListener("click", exportToPDF);
 
         window.addEventListener("section-opened", (e: any) => {
             if (e.detail?.section === "reportes") {
